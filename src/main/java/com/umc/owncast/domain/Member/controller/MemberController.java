@@ -1,9 +1,9 @@
-package com.umc.owncast.domain.member.controller;
+package com.umc.owncast.domain.Member.controller;
 
 import com.umc.owncast.common.response.ApiResponse;
-import com.umc.owncast.domain.member.dto.MemberLoginRequestDTO;
-import com.umc.owncast.domain.member.dto.MemberResponseDTO;
-import com.umc.owncast.domain.member.dto.MemberSignUpRequestDto;
+import com.umc.owncast.domain.Member.dto.MemberLoginRequestDTO;
+import com.umc.owncast.domain.Member.dto.MemberResponseDTO;
+import com.umc.owncast.domain.Member.dto.MemberSignUpRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class MemberController {
     @CrossOrigin
     @Operation(summary = "회원가입 API")
     @PostMapping("/signup")
-    public ApiResponse<String> signUp(@Valid @RequestBody MemberSignUpRequestDto memberSignUpRequestDto) {
+    public ApiResponse<String> signUp(@Valid @RequestBody MemberSignUpRequestDTO memberSignUpRequestDto) {
         return null;
     }
 

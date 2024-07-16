@@ -1,4 +1,4 @@
-package com.umc.owncast.domain.member.service;
+package com.umc.owncast.domain.Member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.umc.owncast.domain.member.dto;
+package com.umc.owncast.domain.Member.dto;
 
 
 import lombok.Builder;
