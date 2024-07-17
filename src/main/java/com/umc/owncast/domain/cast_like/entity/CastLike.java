@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @Entity
-@Table(name = "maincategory")
+@Table(name = "cast_like")
 @AllArgsConstructor
 public class CastLike extends BaseTimeEntity{
     @Id

@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @Entity
-@Table(name = "maincategory")
+@Table(name = "sentence")
 @AllArgsConstructor
 public class Sentence extends BaseTimeEntity {
     @Id

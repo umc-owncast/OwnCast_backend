@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @Entity
-@Table(name = "subcategory")
+@Table(name = "sub_category")
 @AllArgsConstructor
 public class SubCategory {
     @Id

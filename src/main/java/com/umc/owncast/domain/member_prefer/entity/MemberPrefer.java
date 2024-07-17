@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @Entity
-@Table(name = "maincategory")
+@Table(name = "member_prefer")
 @AllArgsConstructor
 public class MemberPrefer extends BaseTimeEntity{
     @Id
