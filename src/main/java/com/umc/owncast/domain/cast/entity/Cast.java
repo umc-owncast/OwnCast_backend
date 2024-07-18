@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @Entity
-@Table(name = "cast")
+@Table(name = "cast_table")
 @AllArgsConstructor
 public class Cast extends BaseTimeEntity {
 
