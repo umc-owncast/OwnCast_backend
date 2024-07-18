@@ -29,6 +29,6 @@ public class Sentence extends BaseTimeEntity {
     @JoinColumn(name = "cast_id")
     private Cast cast;
 
-    /*@OneToMany(mappedBy = "sentence", cascade = CascadeType.ALL)
+    /*@OneToOne(mappedBy = "sentence", cascade = CascadeType.ALL)
     private List<Bookmark> bookmarkList = new ArrayList<>();*/
 }

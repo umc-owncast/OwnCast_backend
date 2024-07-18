@@ -22,7 +22,7 @@ public class Bookmark extends BaseTimeEntity{
     @JoinColumn(name = "cast_playlist_id")
     private CastPlaylist castPlaylist;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sentence_id")
     private Sentence sentence;
 }
