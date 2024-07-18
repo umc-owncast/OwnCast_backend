@@ -1,6 +1,6 @@
-package com.umc.owncast.domain.category.sub_category.entity;
+package com.umc.owncast.domain.category.entity;
 
-import com.umc.owncast.domain.category.main_category.entity.MainCategory;
+import com.umc.owncast.domain.category.entity.MainCategory;
 import jakarta.persistence.*;
 import lombok.*;
 

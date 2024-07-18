@@ -1,8 +1,8 @@
-package com.umc.owncast.domain.cast_playlist.entity;
+package com.umc.owncast.domain.bookmarkplaylist.entity;
 
 import com.umc.owncast.common.entity.BaseTimeEntity;
 import com.umc.owncast.domain.playlist.entity.Playlist;
-import com.umc.owncast.domain.cast.entity.Cast;
+import com.umc.owncast.domain.sentence.entity.Sentence;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,18 +10,18 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @Entity
-@Table(name = "cast_playlist")
+@Table(name = "bookmark_playlist")
 @AllArgsConstructor
-public class CastPlaylist extends BaseTimeEntity{
+public class BookmarkPlaylist extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "playlist_id")
-    private Playlist playlist;
+    @JoinColumn(name = "sentence_id")
+    private Sentence sentence;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cast_id")
-    private Cast cast;
+    @JoinColumn(name = "playlist_id")
+    private Playlist playlist;
 }

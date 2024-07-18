@@ -1,4 +1,4 @@
-package com.umc.owncast.domain.cast_like.entity;
+package com.umc.owncast.domain.castlike.entity;
 
 import com.umc.owncast.common.entity.BaseTimeEntity;
 import com.umc.owncast.domain.cast.entity.Cast;

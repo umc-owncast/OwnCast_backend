@@ -1,7 +1,7 @@
-package com.umc.owncast.domain.member_prefer.entity;
+package com.umc.owncast.domain.memberprefer.entity;
 
 import com.umc.owncast.common.entity.BaseTimeEntity;
-import com.umc.owncast.domain.category.main_category.entity.MainCategory;
+import com.umc.owncast.domain.category.entity.MainCategory;
 import com.umc.owncast.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;

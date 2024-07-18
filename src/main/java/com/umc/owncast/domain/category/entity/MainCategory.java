@@ -1,4 +1,4 @@
-package com.umc.owncast.domain.category.main_category.entity;
+package com.umc.owncast.domain.category.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

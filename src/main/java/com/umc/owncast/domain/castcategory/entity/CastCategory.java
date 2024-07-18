@@ -1,8 +1,8 @@
-package com.umc.owncast.domain.cast_category.entity;
+package com.umc.owncast.domain.castcategory.entity;
 
 import com.umc.owncast.common.entity.BaseTimeEntity;
 import com.umc.owncast.domain.cast.entity.Cast;
-import com.umc.owncast.domain.category.sub_category.entity.SubCategory;
+import com.umc.owncast.domain.category.entity.SubCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
