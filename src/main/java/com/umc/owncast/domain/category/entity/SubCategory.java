@@ -16,7 +16,7 @@ public class SubCategory {
     private Long id;
 
     @Column(nullable = false, length = 50)
-    private String subCategory;
+    private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")

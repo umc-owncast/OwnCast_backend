@@ -1,8 +1,9 @@
-package com.umc.owncast.domain.memberprefer.entity;
+package com.umc.owncast.domain.castcategory.entity;
 
 import com.umc.owncast.common.entity.BaseTimeEntity;
+import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.category.entity.MainCategory;
-import com.umc.owncast.domain.member.entity.Member;
+import com.umc.owncast.domain.category.entity.SubCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,18 +11,18 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @Entity
-@Table(name = "member_prefer")
+@Table(name = "cast_sub_category")
 @AllArgsConstructor
-public class MemberPrefer extends BaseTimeEntity{
+public class CastSubCategory extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "cast_id")
+    private Cast cast;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private MainCategory mainCategory;
+    @JoinColumn(name = "sub_category_id")
+    private SubCategory subCategory;
 }

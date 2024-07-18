@@ -21,7 +21,10 @@ public class Playlist extends BaseTimeEntity {
     private Member member;
 
     @Column(name = "title", nullable = false, length = 50)
-    private String title;
+    private String name;
+
+    @Column
+    private String imagePath;
 
     @Column(nullable = false)
     private boolean isPublic;

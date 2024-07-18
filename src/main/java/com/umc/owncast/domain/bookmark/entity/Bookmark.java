@@ -1,6 +1,7 @@
 package com.umc.owncast.domain.bookmark.entity;
 
 import com.umc.owncast.common.entity.BaseTimeEntity;
+import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import com.umc.owncast.domain.member.entity.Member;
 import jakarta.persistence.*;
@@ -18,8 +19,8 @@ public class Bookmark extends BaseTimeEntity{
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "cast_playlist_id")
+    private CastPlaylist castPlaylist;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sentence_id")
