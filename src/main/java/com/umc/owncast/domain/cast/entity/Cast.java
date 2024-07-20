@@ -1,7 +1,7 @@
 package com.umc.owncast.domain.cast.entity;
 
 import com.umc.owncast.common.entity.BaseTimeEntity;
-import com.umc.owncast.domain.enums.Voice;
+import com.umc.owncast.domain.enums.Formality;
 import com.umc.owncast.domain.language.entity.Language;
 import com.umc.owncast.domain.member.entity.Member;
 import jakarta.persistence.*;
@@ -30,7 +30,10 @@ public class Cast extends BaseTimeEntity {
     private Integer audioLength;
 
     @Enumerated(EnumType.STRING)
-    private Voice voice;
+    private String voice;
+
+    @Enumerated(EnumType.STRING)
+    private Formality formality;
 
     @Column(nullable = false)
     private boolean isPublic;

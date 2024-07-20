@@ -1,5 +1,5 @@
 package com.umc.owncast.domain.enums;
 
-public enum Voice {
+public enum Formality {
     OFFICIAL, CASUAL
 }
