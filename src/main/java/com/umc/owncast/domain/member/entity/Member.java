@@ -25,16 +25,11 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, length = 50)
     private String password;
 
-    @Column(length = 50)
-    private String email;
-
     private LocalDate inactiveDate;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(255) DEFAULT 'ACTIVE'")
     private Status status;
-
-    private boolean emailVerified;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id")
