@@ -35,11 +35,16 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // DB
-    runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
 
     // swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+
+    // Google Speech To Text
+    //implementation 'com.google.cloud:google-cloud-storage:2.6.1'
+    implementation 'com.google.cloud:google-cloud-texttospeech:2.47.0'
+
 }
 
 tasks.named('test') {
