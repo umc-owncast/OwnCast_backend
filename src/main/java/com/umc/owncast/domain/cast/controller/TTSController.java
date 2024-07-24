@@ -1,4 +1,4 @@
-package com.umc.owncast.domain.cast.web;
+package com.umc.owncast.domain.cast.controller;
 
 import com.umc.owncast.domain.cast.service.TTSService;
 import lombok.RequiredArgsConstructor;
