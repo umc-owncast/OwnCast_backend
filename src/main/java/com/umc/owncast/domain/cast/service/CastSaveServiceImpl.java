@@ -31,33 +31,43 @@ public class CastSaveServiceImpl {
     private final CastPlaylistRepository castPlaylistRepository;
     private final CastRepository castRepository;
 
-    public void saveCast(Long castId) {
+    public Long saveCast(CastDTO.CastSaveRequestDTO castSaveRequestDTO) {
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
 
-        Optional<Playlist> optionalPlaylist = playlistRepository.findSavedPlaylist(1L);
-        //담아온 캐스트란 항목을 찾는다.
-        Optional<Cast> optionalCast = castRepository.findById(castId);
-        Cast cast;
-        Playlist playlist;
+        Optional<Playlist> optionalSavedPlaylist = playlistRepository.findSavedPlaylist(1L);
+        Optional<Playlist> optionalCastPlaylist = playlistRepository.findById(castSaveRequestDTO.getCategoryId());
+        Optional<Cast> optionalCast = castRepository.findById(castSaveRequestDTO.getCastId());
 
-        if (optionalCast.isEmpty() || optionalPlaylist.isEmpty()){
+        Cast cast;
+        Playlist savedPlaylist;
+        Playlist castPlaylist;
+
+
+        if (optionalCast.isEmpty() || optionalSavedPlaylist.isEmpty() || optionalCastPlaylist.isEmpty()){
             throw new UserHandler(ErrorCode.CAST_NOT_FOUND);
         } else {
             cast = optionalCast.get();
-            playlist = optionalPlaylist.get();
+            savedPlaylist = optionalSavedPlaylist.get();
+            castPlaylist = optionalCastPlaylist.get();
         }
 
-        if(castPlaylistRepository.existsByPlaylistIdAndCastId(playlist.getId(), cast.getId())){
+        if(castPlaylistRepository.existsByPlaylistIdAndCastId(castPlaylist.getId(), cast.getId())){
             throw new UserHandler(ErrorCode.CAST_ALREADY_EXIST);
         }; // 이미 존재하는 경우
 
         CastPlaylist newCastPlaylist = CastPlaylist.builder()
                 .cast(cast)
-                .playlist(playlist)
-                .id(1L)
+                .playlist(castPlaylist)
                 .build();
 
         castPlaylistRepository.save(newCastPlaylist);
+
+        castPlaylistRepository.save(CastPlaylist.builder()
+                .cast(cast)
+                .playlist(savedPlaylist)
+                .build());
+
+        return newCastPlaylist.getId();
     }
 }

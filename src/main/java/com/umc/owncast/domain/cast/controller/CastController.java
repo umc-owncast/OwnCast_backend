@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,16 +28,15 @@ public class CastController {
     @CrossOrigin
     @Operation(summary = "검색 홈 API")
     @GetMapping("/search/{page}")
-    public ApiResponse<List<CastDTO.CastHomeDTO>> searchHome(@PathVariable Integer page) {
+    public ApiResponse<List<CastDTO.CastHomeDTO>> searchHome(@PathVariable("page") Integer page) {
         return ApiResponse.onSuccess(castSearchService.getHomeCast(page));
     }
 
     @CrossOrigin
     @Operation(summary = "캐스트 저장")
-    @GetMapping("/save/{castId}")
-    public ApiResponse<String> saveCast(@PathVariable Long castId) {
-        castSaveService.saveCast(castId);
-        return ApiResponse.onSuccess("추가 성공!");
+    @PostMapping("/save")
+    public ApiResponse<Long> saveCast(@RequestBody CastDTO.CastSaveRequestDTO castDTO) {
+        return ApiResponse.onSuccess(castSaveService.saveCast(castDTO));
     }
 
     @CrossOrigin

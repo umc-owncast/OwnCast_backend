@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface CastMainCategoryRepository extends JpaRepository<CastMainCatego
             "JOIN cmc.cast c " +
             "WHERE cmc.mainCategory.id = :mainCategoryId " +
             "ORDER BY c.hits DESC")
-    List<CastMainCategory> findTop5ByMainCategoryIdOrderByHitsDesc(Long mainCategoryId, Pageable pageable);
+    List<CastMainCategory> findTop5ByMainCategoryIdOrderByHitsDesc(@Param("mainCategoryId") Long mainCategoryId, @Param("pageable") Pageable pageable);
 
     CastMainCategory findByCastId(Long castId);
 }
