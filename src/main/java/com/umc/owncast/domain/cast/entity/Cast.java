@@ -29,7 +29,7 @@ public class Cast extends BaseTimeEntity {
     @Column(nullable = false)
     private Integer audioLength;
 
-    @Enumerated(EnumType.STRING)
+    @Column
     private String voice;
 
     @Enumerated(EnumType.STRING)
