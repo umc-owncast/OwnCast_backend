@@ -19,7 +19,7 @@ public class ChatGPTScriptGenerator {
 
     @PostConstruct
     public void init(){
-        openAiService = new OpenAiService(SECRET_KEY, Duration.ofSeconds(5));
+        openAiService = new OpenAiService(SECRET_KEY, Duration.ofSeconds(30)); // 30초 내에 응답 안올 시 예외 던짐
     }
 
     /**
