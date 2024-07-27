@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.cast.service;
 
+import com.umc.owncast.domain.cast.dto.TTSDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -17,10 +18,9 @@ public class TTSService {
     @Value("${google.api.key}")
     private String apiKey;
 
-    public String createSpeech() {
-        String url = "https://texttospeech.googleapis.com/v1beta1/text:synthesize?key="+apiKey; // 실제 API URL로 변경하세요
+    public String createSpeech(TTSDTO ttsdto) {
+        String url = "https://texttospeech.googleapis.com/v1beta1/text:synthesize?key="+apiKey;
 
-        // 요청 본문 생성
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("enableTimePointing", new String[]{"SSML_MARK"});
 
@@ -29,25 +29,20 @@ public class TTSService {
         requestBody.put("input", input);
 
         Map<String, Object> voice = new HashMap<>();
-        voice.put("name", "en-US-Standard-A");
-        voice.put("languageCode", "en-US");
+        voice.put("name", ttsdto.getVoice());
+        voice.put("languageCode", ttsdto.getLanguage());
+        voice.put("ssmlGender",ttsdto.getGender());
         requestBody.put("voice", voice);
 
         Map<String, Object> audioConfig = new HashMap<>();
         audioConfig.put("audioEncoding", "MP3");
         requestBody.put("audioConfig", audioConfig);
 
-        // HTTP 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // 요청 엔티티 생성
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-
-        // API 요청
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
-        // 응답 본문 반환
         return response.getBody();
     }
 }

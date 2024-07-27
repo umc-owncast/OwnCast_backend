@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.cast.controller;
 
+import com.umc.owncast.domain.cast.dto.TTSDTO;
 import com.umc.owncast.domain.cast.service.TTSService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,7 @@ public class TTSController {
     private final TTSService ttsService;
 
     @PostMapping("/testtt")
-    public String test() {
-        return ttsService.createSpeech();
+    public String test(TTSDTO ttsdto) {
+        return ttsService.createSpeech(ttsdto);
     }
 }
