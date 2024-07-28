@@ -5,7 +5,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class ParsingService {
     public String[] parseSentences(String script) {
-        return script.split("@");
+        String[] sentences = script.split("@");
+
+        for (int i = 0; i < sentences.length; i++) {
+            sentences[i] = sentences[i].replace("\n", "");
+        }
+
+        return sentences;
     }
 
     public String addMarks(String[] sentences) {
@@ -16,6 +22,8 @@ public class ParsingService {
             i++;
         }
         processedScript += "</speak>";
+
+        System.out.println("!!!" + processedScript);
         return processedScript;
     }
 }

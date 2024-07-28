@@ -13,6 +13,6 @@ public class TTSDTO {
     @NotEmpty(message = "language type is null")
     private String language;
 
-    @NotEmpty(message = "gender of voice is null")
-    private String gender;
+    @NotEmpty(message = "script is null")
+    private String script;
 }
