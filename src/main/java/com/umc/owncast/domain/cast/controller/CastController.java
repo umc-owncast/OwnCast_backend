@@ -29,13 +29,6 @@ public class CastController {
         return scriptService.createScript(castRequest);
     }
 
-    /* TTS Service 테스트*//*
-    @PostMapping("/tts")
-    @Operation(summary = "tts & timepoint 생성 test api")
-    public String ttsTest(@Valid @RequestBody TTSDTO ttsdto) {
-        return ttsService.createSpeech(ttsdto);
-    }*/
-
     /*cast 저장 전 api*/
     @PostMapping("temporary")
     @Operation(summary = "스크립트 생성 api. 저장 버튼 전 화면 입니다.")

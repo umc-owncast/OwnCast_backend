@@ -22,8 +22,6 @@ public class ParsingService {
             i++;
         }
         processedScript += "</speak>";
-
-        System.out.println("!!!" + processedScript);
         return processedScript;
     }
 }

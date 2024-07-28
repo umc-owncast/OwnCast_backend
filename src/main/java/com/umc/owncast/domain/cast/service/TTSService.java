@@ -3,7 +3,6 @@ package com.umc.owncast.domain.cast.service;
 import com.umc.owncast.domain.cast.dto.CastCreationRequestDTO;
 import com.umc.owncast.domain.cast.dto.TTSDTO;
 import lombok.RequiredArgsConstructor;
-import okio.ByteString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;

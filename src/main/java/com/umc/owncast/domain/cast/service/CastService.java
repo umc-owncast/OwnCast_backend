@@ -5,14 +5,11 @@ import com.umc.owncast.domain.cast.dto.CastCreationRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class CastService {
     private final ScriptService scriptService;
     private final TTSService ttsService;
-    // private final StreamService streamService;
 
     public String createCast(CastCreationRequestDTO castRequest){
         String script = scriptService.createScript(castRequest);
