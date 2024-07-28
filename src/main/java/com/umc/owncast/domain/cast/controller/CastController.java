@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "캐스트 API", description = "캐스트 관련 API입니다")
 @RestController
 @RequiredArgsConstructor
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public class CastController {
     private final CastService castService;
     private final ScriptService scriptService;
-    private final TTSService ttsService;
     //private final StreamService streamService;
 
     /* ScriptService 테스트 */

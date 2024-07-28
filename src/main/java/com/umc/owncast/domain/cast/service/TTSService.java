@@ -3,13 +3,15 @@ package com.umc.owncast.domain.cast.service;
 import com.umc.owncast.domain.cast.dto.CastCreationRequestDTO;
 import com.umc.owncast.domain.cast.dto.TTSDTO;
 import lombok.RequiredArgsConstructor;
+import okio.ByteString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -55,8 +57,18 @@ public class TTSService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
+        String audioContent = (String) response.getBody().get("audioContent");
 
-        return response.getBody();
+        byte[] audioBytes = Base64.getDecoder().decode(audioContent);
+        //S3 설정 후 변경 예정
+        String rand= UUID.randomUUID().toString();
+        String outputFilePath = "src/main/resources/speech/" + rand + ".mp3";
+        try (OutputStream out = new FileOutputStream(outputFilePath)) {
+            out.write(audioBytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "success";
     }
 }
