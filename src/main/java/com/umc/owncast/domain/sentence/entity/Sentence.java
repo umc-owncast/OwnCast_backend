@@ -25,6 +25,9 @@ public class Sentence extends BaseTimeEntity {
     @Column(nullable = false)
     private String translatedSentence;
 
+    @Column(nullable = false)
+    private String timePoint;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cast_id")
     private Cast cast;

@@ -1,7 +1,6 @@
 package com.umc.owncast.domain.cast.service;
 
 
-import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.domain.cast.dto.CastCreationRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,10 +9,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CastService {
     private final ScriptService scriptService;
-    // private final TTSService ttsService;
-    // private final StreamService streamService;
+    private final TTSService ttsService;
 
-    public ApiResponse<Object> createCast(CastCreationRequestDTO request){
-        return null;
+    public String createCast(CastCreationRequestDTO castRequest){
+        String script = scriptService.createScript(castRequest);
+        //번역 추후 구현
+        return ttsService.createSpeech(script,castRequest);
     }
 }

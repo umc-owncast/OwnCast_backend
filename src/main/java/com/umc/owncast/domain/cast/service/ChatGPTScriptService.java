@@ -11,15 +11,17 @@ public class ChatGPTScriptService implements ScriptService{
 
     private final ChatGPTPromptGenerator promptGenerator;
     private final ChatGPTScriptGenerator scriptGenerator;
+    private final ParsingService parsingService;
 
     public String createScript(CastCreationRequestDTO castRequest) {
+        String script="";
         try {
             ChatCompletionRequest prompt = promptGenerator.generatePrompt(
                     castRequest.getKeyword(),
                     castRequest.getFormality(),
                     castRequest.getAudioTime()
             );
-            return scriptGenerator.generateScript(prompt);
+            script =  scriptGenerator.generateScript(prompt);
         } catch(Exception e){
             // 출력만 하고 전파 -> CastService에서 처리??
             System.out.println("CastServiceImpl: Exception on createScript - " + e.getMessage());
@@ -27,5 +29,7 @@ public class ChatGPTScriptService implements ScriptService{
             System.out.println("Exception cause : " + e.getCause());
             throw e;
         }
+        parsingService.parseSentences(script);
+        return script;
     }
 }
