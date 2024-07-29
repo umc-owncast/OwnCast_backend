@@ -12,4 +12,6 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END " +
             "FROM CastPlaylist c WHERE c.playlist.id = :playlistId AND c.cast.id = :castId")
     boolean existsByPlaylistIdAndCastId(@Param("playlistId") Long playlistId, @Param("castId") Long castId);
+
+    void deleteByPlaylistId(Long playlistId);
 }

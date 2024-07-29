@@ -21,8 +21,7 @@ public class PlaylistAddServiceImpl {
         //임시로 1L로 설정
 
         if(playlistRepository.existsByName(categoryName)) {
-            //에러
-            throw new UserHandler(ErrorCode.PLAYLIST_ALREADY_EXIST);
+            throw new UserHandler(ErrorCode.PLAYLIST_ALREADY_EXIST);  //에러
         } else {
             Playlist newPlaylist = Playlist.builder()
                     .name(categoryName)
@@ -31,7 +30,7 @@ public class PlaylistAddServiceImpl {
 
             playlistRepository.save(newPlaylist);
             return PlaylistDTO.AddPlaylistDTO.builder()
-                    .categoryId(newPlaylist.getId())
+                    .playlistId(newPlaylist.getId())
                     .build();
         }
     }

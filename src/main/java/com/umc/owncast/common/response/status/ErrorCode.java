@@ -30,6 +30,7 @@ public enum ErrorCode implements BaseErrorCode {
     CAST_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "CAST4002", "이미 존재하는 캐스트입니다."),
 
     //Playlist 관련 에러
+    PLAYLIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "PLAYLIST4001", "해당 플레이리스트가 없습니다."),
     PLAYLIST_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "PLAYLIST4002", "이미 존재하는 플레이리스트입니다.");
     // 기타 에러는 아래에 추가
     ;

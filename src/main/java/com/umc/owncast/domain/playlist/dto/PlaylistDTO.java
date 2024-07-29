@@ -10,6 +10,21 @@ public class PlaylistDTO {
     @Setter
     @Getter
     public static class AddPlaylistDTO {
-        Long categoryId;
+        Long playlistId;
+    }
+
+    @Builder
+    @Setter
+    @Getter
+    public static class ModifyPlaylistDTO {
+        Long playlistId;
+        String playlistName;
+    }
+
+    @Builder
+    @Setter
+    @Getter
+    public static class DeletePlaylistDTO {
+        Long playlistId;
     }
 }
