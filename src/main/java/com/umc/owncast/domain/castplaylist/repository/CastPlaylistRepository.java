@@ -3,6 +3,8 @@ package com.umc.owncast.domain.castplaylist.repository;
 
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,4 +16,6 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
     boolean existsByPlaylistIdAndCastId(@Param("playlistId") Long playlistId, @Param("castId") Long castId);
 
     void deleteByPlaylistId(Long playlistId);
+
+    Page<CastPlaylist> findByPlaylistId(Long playlistId, Pageable pageable);
 }

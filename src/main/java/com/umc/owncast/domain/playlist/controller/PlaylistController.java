@@ -4,6 +4,7 @@ import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.domain.playlist.dto.PlaylistDTO;
 import com.umc.owncast.domain.playlist.service.PlaylistAddServiceImpl;
 import com.umc.owncast.domain.playlist.service.PlaylistDeleteServiceImpl;
+import com.umc.owncast.domain.playlist.service.PlaylistGetServiceImpl;
 import com.umc.owncast.domain.playlist.service.PlaylistModifyServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class PlaylistController {
     private final PlaylistAddServiceImpl PlaylistAddService;
     private final PlaylistModifyServiceImpl PlaylistModifyService;
     private final PlaylistDeleteServiceImpl PlaylistDeleteService;
+    private final PlaylistGetServiceImpl PlaylistGetService;
 
     @CrossOrigin
     @Operation(summary = "카테고리 추가")
@@ -42,4 +44,12 @@ public class PlaylistController {
         return ApiResponse.onSuccess(PlaylistDeleteService.deletePlaylist(playlistId));
     }
 
+    @CrossOrigin
+    @Operation(summary = "카테고리 조회")
+    @GetMapping("/playlist/{playlistId}")
+    public ApiResponse<PlaylistDTO.GetPlaylistDTO> getPlaylist(@RequestParam("playlistId") Long playlistId,
+                                                               @RequestParam("page") Integer page,
+                                                               @RequestParam("size") Integer size) {
+        return ApiResponse.onSuccess(PlaylistGetService.getPlaylist(playlistId, page, size));
+    }
 }
