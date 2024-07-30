@@ -16,15 +16,15 @@ public class PlaylistAddServiceImpl {
 
     private final PlaylistRepository playlistRepository;
 
-    public PlaylistDTO.AddPlaylistDTO addPlaylist(String categoryName) {
+    public PlaylistDTO.AddPlaylistDTO addPlaylist(String playlistName) {
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
 
-        if(playlistRepository.existsByName(categoryName)) {
+        if(playlistRepository.existsByName(playlistName)) {
             throw new UserHandler(ErrorCode.PLAYLIST_ALREADY_EXIST);  //에러
         } else {
             Playlist newPlaylist = Playlist.builder()
-                    .name(categoryName)
+                    .name(playlistName)
 //                    .member()
                     .build();
 

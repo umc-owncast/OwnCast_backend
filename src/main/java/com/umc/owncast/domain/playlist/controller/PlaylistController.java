@@ -25,16 +25,16 @@ public class PlaylistController {
     @CrossOrigin
     @Operation(summary = "카테고리 추가")
     @PostMapping("/playlist")
-    public ApiResponse<PlaylistDTO.AddPlaylistDTO> addPlaylist(@RequestParam("categoryName") String categoryName) {
-        return ApiResponse.onSuccess(PlaylistAddService.addPlaylist(categoryName));
+    public ApiResponse<PlaylistDTO.AddPlaylistDTO> addPlaylist(@RequestParam("playlistName") String playlistName) {
+        return ApiResponse.onSuccess(PlaylistAddService.addPlaylist(playlistName));
     }
 
     @CrossOrigin
     @Operation(summary = "카테고리 수정")
     @PatchMapping("/playlist/{playlistId}")
-    public ApiResponse<PlaylistDTO.ModifyPlaylistDTO> modifyPlaylist(@RequestParam("categoryId") Long categoryId,
-                                                                     @RequestParam("categoryName") String categoryName) {
-        return ApiResponse.onSuccess(PlaylistModifyService.modifyPlaylist(categoryId, categoryName));
+    public ApiResponse<PlaylistDTO.ModifyPlaylistDTO> modifyPlaylist(@RequestParam("playlistId") Long playlistId,
+                                                                     @RequestParam("playlistName") String playlistName) {
+        return ApiResponse.onSuccess(PlaylistModifyService.modifyPlaylist(playlistId, playlistName));
     }
 
     @CrossOrigin
