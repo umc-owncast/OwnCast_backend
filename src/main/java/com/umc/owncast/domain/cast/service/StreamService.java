@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 public class StreamService {
-    private static final String AUDIO_FILES_PATH = "src/main/resources/";
+    private static final String AUDIO_FILES_PATH = "src/main/resources/stream-test/"; // 이후 수정
 
     public Object stream(String filename, HttpHeaders headers) throws IOException {
         Path filePath = Paths.get(AUDIO_FILES_PATH).resolve(filename).normalize();
