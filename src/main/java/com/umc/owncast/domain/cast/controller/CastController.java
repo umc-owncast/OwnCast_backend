@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "캐스트 API", description = "캐스트 관련 API입니다")
-@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/cast")
@@ -42,8 +41,18 @@ public class CastController {
 
 
     @GetMapping("stream-test")
+    @CrossOrigin(origins = "*") // TODO 프론트 url로 대체
     @Operation(summary = "스트리밍 테스트. 테스트용 음악 파일을 스트리밍 합니다")
     public Object streamTest(@RequestHeader HttpHeaders headers) throws IOException {
-        return streamService.stream("LastCarnival.mp3", headers);
+        System.out.println("Stream test");
+        return streamService.stream("test.mp3", headers);
+    }
+
+    @GetMapping("/stream/{filename}")
+    @CrossOrigin(origins = "*")
+    @Operation(summary = "filename을 스트리밍합니다")
+    public Object streamTest(@RequestHeader HttpHeaders headers,
+                             @PathVariable(name = "filename") String filename) throws IOException {
+        return streamService.stream(filename, headers);
     }
 }
