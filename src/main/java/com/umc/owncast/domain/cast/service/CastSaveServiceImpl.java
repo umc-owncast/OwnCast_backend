@@ -32,29 +32,31 @@ public class CastSaveServiceImpl {
     private final CastRepository castRepository;
 
     public Long saveCast(CastDTO.CastSaveRequestDTO castSaveRequestDTO) {
+
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
 
-        Optional<Playlist> optionalSavedPlaylist = playlistRepository.findSavedPlaylist(1L);
-        Optional<Playlist> optionalCastPlaylist = playlistRepository.findById(castSaveRequestDTO.getCategoryId());
+        Optional<Playlist> optionalCastPlaylist = playlistRepository.findById(castSaveRequestDTO.getPlaylistId());
         Optional<Cast> optionalCast = castRepository.findById(castSaveRequestDTO.getCastId());
 
-        Cast cast;
-        Playlist savedPlaylist;
         Playlist castPlaylist;
+        Cast cast;
 
 
-        if (optionalCast.isEmpty() || optionalSavedPlaylist.isEmpty() || optionalCastPlaylist.isEmpty()){
+        if (optionalCast.isEmpty() || optionalCastPlaylist.isEmpty()){
             throw new UserHandler(ErrorCode.CAST_NOT_FOUND);
         } else {
             cast = optionalCast.get();
-            savedPlaylist = optionalSavedPlaylist.get();
             castPlaylist = optionalCastPlaylist.get();
         }
 
-        if(castPlaylistRepository.existsByPlaylistIdAndCastId(castPlaylist.getId(), cast.getId())){
+        if(castPlaylistRepository.existsByMemberIdAndCastId(1L, cast.getId())){ // 해당 멤버 id로 이미 캐스트가 존재하는 경우
             throw new UserHandler(ErrorCode.CAST_ALREADY_EXIST);
         }; // 이미 존재하는 경우
+
+        if (!cast.isPublic()) {
+            throw new UserHandler(ErrorCode.CAST_PRIVATE);
+        }
 
         CastPlaylist newCastPlaylist = CastPlaylist.builder()
                 .cast(cast)
@@ -62,11 +64,6 @@ public class CastSaveServiceImpl {
                 .build();
 
         castPlaylistRepository.save(newCastPlaylist);
-
-        castPlaylistRepository.save(CastPlaylist.builder()
-                .cast(cast)
-                .playlist(savedPlaylist)
-                .build());
 
         return newCastPlaylist.getId();
     }

@@ -27,7 +27,8 @@ public enum ErrorCode implements BaseErrorCode {
 
     //Cast 관련 에러
     CAST_NOT_FOUND(HttpStatus.BAD_REQUEST, "CAST4001", "해당 캐스트가 없습니다"),
-    CAST_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "CAST4002", "이미 존재하는 캐스트입니다.");
+    CAST_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "CAST4002", "이미 존재하는 캐스트입니다."),
+    CAST_PRIVATE(HttpStatus.BAD_REQUEST, "CAST4003", "비공개 캐스트입니다.")
     // 기타 에러는 아래에 추가
     ;
 

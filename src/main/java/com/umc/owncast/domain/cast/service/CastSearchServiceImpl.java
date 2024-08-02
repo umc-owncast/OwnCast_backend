@@ -10,6 +10,7 @@ import com.umc.owncast.domain.castcategory.repository.CastMainCategoryRepository
 import com.umc.owncast.domain.category.entity.MainCategory;
 import com.umc.owncast.domain.memberprefer.Repository.MemberPreferRepository;
 import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
+import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 public class CastSearchServiceImpl {
     private final CastRepository castRepository;
     private final MemberPreferRepository memberPreferRepository;
+    private final PlaylistRepository playlistRepository;
 
     public List<CastDTO.CastHomeDTO> getHomeCast(Integer page) {
         // Long memberId = 토큰으로 정보 받아오기
@@ -40,13 +42,14 @@ public class CastSearchServiceImpl {
         } else {
             Long userCategoryId = userMainCategory.get().getMainCategory().getId();
 
-            List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategoryId, PageRequest.of(page - 1, 5));
+            List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategoryId, PageRequest.of(page - 1, 5)).getContent();
 
             castHomeDTOList = castMainCategories.stream().map(cast ->
                     CastDTO.CastHomeDTO.builder()
                             .id(cast.getId())
                             .title(cast.getTitle())
                             .memberName(cast.getMember().getUsername())
+                            .playlistName(playlistRepository.findUserCategoryName(cast.getId()).getName())
                             .build()
             ).toList();
         }
@@ -62,8 +65,8 @@ public class CastSearchServiceImpl {
                 CastDTO.CastHomeDTO.builder()
                         .id(cast.getId())
                         .title(cast.getTitle())
-                        //.memberName(cast.getMember().getUsername())
-                        //.mainCategoryName(castMainCategoryRepository.findByCastId(cast.getId()).getMainCategory().getName())
+                        .memberName(cast.getMember().getUsername())
+
                         .build()
         ).toList();
     }

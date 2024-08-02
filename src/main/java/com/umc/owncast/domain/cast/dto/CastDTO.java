@@ -11,7 +11,7 @@ public class CastDTO {
         Long id;
         String title;
         String memberName;
-        String mainCategoryName;
+        String playlistName;
     }
 
     @Builder
@@ -29,6 +29,6 @@ public class CastDTO {
     @AllArgsConstructor
     public static class CastSaveRequestDTO {
         Long castId;
-        Long categoryId;
+        Long playlistId;
     }
 }

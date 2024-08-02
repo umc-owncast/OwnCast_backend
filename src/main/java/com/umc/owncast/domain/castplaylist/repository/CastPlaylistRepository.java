@@ -10,6 +10,6 @@ import org.springframework.data.repository.query.Param;
 public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long> {
 
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END " +
-            "FROM CastPlaylist c WHERE c.playlist.id = :playlistId AND c.cast.id = :castId")
-    boolean existsByPlaylistIdAndCastId(@Param("playlistId") Long playlistId, @Param("castId") Long castId);
+            "FROM CastPlaylist c WHERE c.cast.id = :castId AND c.cast.member.id = :memberId ")
+    boolean existsByMemberIdAndCastId(@Param("memberId") Long memberId, @Param("castId") Long castId);
 }
