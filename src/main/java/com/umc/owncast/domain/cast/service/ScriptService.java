@@ -1,6 +1,5 @@
 package com.umc.owncast.domain.cast.service;
 
-import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.domain.cast.dto.CastCreationRequestDTO;
 import org.springframework.stereotype.Service;
 

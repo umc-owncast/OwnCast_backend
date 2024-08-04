@@ -22,7 +22,7 @@ public class TTSService {
     private String apiKey;
 
     public String createSpeech(String script, CastCreationRequestDTO castCreationRequestDTO) {
-        return requestSpeech(setSpeech(script,castCreationRequestDTO));
+        return requestSpeech(setSpeech(script, castCreationRequestDTO));
     }
 
     private TTSDTO setSpeech(String script, CastCreationRequestDTO castCreationRequestDTO) {
@@ -30,7 +30,7 @@ public class TTSService {
         String processedScript = parsingService.addMarks(seperatedSentences);
         return TTSDTO.builder()
                 .voice(castCreationRequestDTO.getVoice())   //ex: "en-US-Standard-A"
-                .language("en-US")                          //todo 수정 작업(user에서 바로 받아오도록)
+                .language(castCreationRequestDTO.getVoice().substring(0, 5))
                 .script(processedScript)
                 .build();
     }

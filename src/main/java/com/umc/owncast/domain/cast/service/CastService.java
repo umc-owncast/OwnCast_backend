@@ -9,11 +9,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CastService {
     private final ScriptService scriptService;
+    private final TranslateService translateService;
     private final TTSService ttsService;
 
     public String createCast(CastCreationRequestDTO castRequest){
         String script = scriptService.createScript(castRequest);
-        //번역 추후 구현
-        return ttsService.createSpeech(script,castRequest);
+        translateService.translate(script);
+        return ttsService.createSpeech(script, castRequest);
     }
 }
