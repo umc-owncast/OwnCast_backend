@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -17,6 +19,7 @@ import java.util.*;
 public class TTSService {
     private final RestTemplate restTemplate;
     private final ParsingService parsingService;
+    private final FileService fileService;
 
     @Value("${google.api.key}")
     private String apiKey;
@@ -60,14 +63,12 @@ public class TTSService {
         String audioContent = (String) response.getBody().get("audioContent");
 
         byte[] audioBytes = Base64.getDecoder().decode(audioContent);
-        //S3 설정 후 변경 예정
-        String rand= UUID.randomUUID().toString();
-        String outputFilePath = "src/main/resources/speech/" + rand + ".mp3";
-        try (OutputStream out = new FileOutputStream(outputFilePath)) {
-            out.write(audioBytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return rand + ".mp3 has been created.";
+
+        MultipartFile multipartFile = new MockMultipartFile(
+                UUID.randomUUID().toString() + ".mp3",
+                UUID.randomUUID().toString() + ".mp3",
+                "audio/mpeg",
+                audioBytes);
+        return fileService.uploadImage(multipartFile);
     }
 }
