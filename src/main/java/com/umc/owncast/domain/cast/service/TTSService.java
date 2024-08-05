@@ -10,8 +10,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.mock.web.MockMultipartFile;
 
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.*;
 
 @Service
@@ -65,8 +63,8 @@ public class TTSService {
         byte[] audioBytes = Base64.getDecoder().decode(audioContent);
 
         MultipartFile multipartFile = new MockMultipartFile(
-                UUID.randomUUID().toString() + ".mp3",
-                UUID.randomUUID().toString() + ".mp3",
+                UUID.randomUUID() + ".mp3",
+                UUID.randomUUID() + ".mp3",
                 "audio/mpeg",
                 audioBytes);
         return fileService.uploadImage(multipartFile);
