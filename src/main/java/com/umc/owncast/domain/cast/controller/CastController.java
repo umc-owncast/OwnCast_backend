@@ -4,7 +4,6 @@ import com.umc.owncast.domain.cast.dto.CastCreationRequestDTO;
 import com.umc.owncast.domain.cast.service.CastService;
 import com.umc.owncast.domain.cast.service.ScriptService;
 import com.umc.owncast.domain.cast.service.StreamService;
-import com.umc.owncast.domain.cast.service.TTSService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
 
 @Tag(name = "캐스트 API", description = "캐스트 관련 API입니다")
 @RestController
@@ -33,7 +31,7 @@ public class CastController {
     }
 
     /*cast 저장 전 api*/
-    @PostMapping("temporary")
+    @PostMapping("/temporary")
     @Operation(summary = "스크립트 생성 api. 저장 버튼 전 화면 입니다.")
     public String createCast(@Valid @RequestBody CastCreationRequestDTO castRequest){
         return castService.createCast(castRequest);
