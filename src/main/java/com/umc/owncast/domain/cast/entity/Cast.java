@@ -42,7 +42,7 @@ public class Cast extends BaseTimeEntity {
     private Long hits;
 
     @Column(name = "file_path")
-    private Long filePath;
+    private String filePath;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
