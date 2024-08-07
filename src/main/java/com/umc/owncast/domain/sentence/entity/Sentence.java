@@ -17,16 +17,13 @@ public class Sentence extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Integer sentenceIndex;
-
-    @Column(nullable = false)
     private String originalSentence;
 
     @Column(nullable = false)
     private String translatedSentence;
 
     @Column(nullable = false)
-    private String timePoint;
+    private Double timePoint;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cast_id")

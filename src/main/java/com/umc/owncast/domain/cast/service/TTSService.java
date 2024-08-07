@@ -2,6 +2,7 @@ package com.umc.owncast.domain.cast.service;
 
 import com.umc.owncast.domain.cast.dto.CastCreationRequestDTO;
 import com.umc.owncast.domain.cast.dto.TTSDTO;
+import com.umc.owncast.domain.cast.dto.TTSResultDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -22,7 +23,7 @@ public class TTSService {
     @Value("${google.api.key}")
     private String apiKey;
 
-    public String createSpeech(String script, CastCreationRequestDTO castCreationRequestDTO) {
+    public TTSResultDTO createSpeech(String script, CastCreationRequestDTO castCreationRequestDTO) {
         return requestSpeech(setSpeech(script, castCreationRequestDTO));
     }
 
@@ -35,7 +36,7 @@ public class TTSService {
                 .script(processedScript)
                 .build();
     }
-    private String requestSpeech(TTSDTO ttsdto) {
+    private TTSResultDTO requestSpeech(TTSDTO ttsdto) {
         String url = "https://texttospeech.googleapis.com/v1beta1/text:synthesize?key="+apiKey;
 
         Map<String, Object> requestBody = new HashMap<>();
@@ -60,6 +61,15 @@ public class TTSService {
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
         String audioContent = (String) response.getBody().get("audioContent");
 
+        List<Map<String, Object>> timepoints = (List<Map<String, Object>>) response.getBody().get("timepoints");
+
+        List<Double> timepointList = new ArrayList<>();
+        for (Map<String, Object> timepoint : timepoints) {
+            if(timepoint.containsKey("timeSeconds")) {
+                timepointList.add(((Number) timepoint.get("timeSeconds")).doubleValue());
+            }
+        }
+
         byte[] audioBytes = Base64.getDecoder().decode(audioContent);
 
         MultipartFile multipartFile = new MockMultipartFile(
@@ -67,6 +77,11 @@ public class TTSService {
                 UUID.randomUUID() + ".mp3",
                 "audio/mpeg",
                 audioBytes);
-        return fileService.uploadImage(multipartFile);
+        String path = fileService.uploadFile(multipartFile);
+
+        return TTSResultDTO.builder()
+                .mp3Path(path)
+                .timePointList(timepointList)
+                .build();
     }
 }
