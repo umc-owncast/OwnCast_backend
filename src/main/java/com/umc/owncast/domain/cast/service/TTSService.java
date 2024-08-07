@@ -3,6 +3,7 @@ package com.umc.owncast.domain.cast.service;
 import com.umc.owncast.domain.cast.dto.CastCreationRequestDTO;
 import com.umc.owncast.domain.cast.dto.TTSDTO;
 import com.umc.owncast.domain.cast.dto.TTSResultDTO;
+import com.umc.owncast.domain.cast.enums.VoiceCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -30,9 +31,10 @@ public class TTSService {
     private TTSDTO setSpeech(String script, CastCreationRequestDTO castCreationRequestDTO) {
         String[] seperatedSentences = parsingService.parseSentences(script);
         String processedScript = parsingService.addMarks(seperatedSentences);
+        String voice = VoiceCode.fromValue(castCreationRequestDTO.getVoice()).getValue();
         return TTSDTO.builder()
-                .voice(castCreationRequestDTO.getVoice())   //ex: "en-US-Standard-A"
-                .language(castCreationRequestDTO.getVoice().substring(0, 5))
+                .voice(voice)   //ex: "en-US-Standard-A"
+                .language(voice.substring(0, 5))
                 .script(processedScript)
                 .build();
     }
