@@ -9,6 +9,8 @@ public class PlaylistDTO {
     @Builder
     public static class PlaylistResultDTO {
         String name;
+        String imagePath;
         Long playlistId;
+        Long totalCast;
     }
 }

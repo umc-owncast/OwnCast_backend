@@ -22,15 +22,22 @@ public class BookmarkController {
 
     @CrossOrigin
     @Operation(summary = "북마크된 문장 불러오기")
-    @GetMapping("/study/{categoryId}")
-    public ApiResponse<List<BookMarkDTO.BookMarkResultDTO>> getBookmarks(@PathVariable("categoryId") Long categoryId) {
-        return ApiResponse.onSuccess(bookmarkService.getBookmarks(categoryId));
+    @GetMapping("/study/{playlistId}")
+    public ApiResponse<List<BookMarkDTO.BookMarkResultDTO>> getBookmarks(@PathVariable("playlistId") Long playlistId) {
+        return ApiResponse.onSuccess(bookmarkService.getBookmarks(playlistId));
     }
 
     @CrossOrigin
     @Operation(summary = "문장 북마크 하기")
     @PostMapping("/bookmark")
-    public ApiResponse<List<BookMarkDTO.BookMarkSaveResultDTO>> saveBookmark(@RequestParam("sentenceId") Long sentenceId) {
+    public ApiResponse<BookMarkDTO.BookMarkSaveResultDTO> saveBookmark(@RequestParam("sentenceId") Long sentenceId) {
         return ApiResponse.onSuccess(bookmarkService.saveBookmark(sentenceId));
+    }
+
+    @CrossOrigin
+    @Operation(summary = "문장 북마크 취소하기")
+    @DeleteMapping("/bookmark")
+    public ApiResponse<BookMarkDTO.BookMarkSaveResultDTO> deleteBookmark(@RequestParam("sentenceId") Long sentenceId) {
+        return ApiResponse.onSuccess(bookmarkService.deleteBookmark(sentenceId));
     }
 }
