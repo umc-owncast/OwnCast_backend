@@ -5,26 +5,27 @@ import com.umc.owncast.domain.enums.Status;
 import com.umc.owncast.domain.language.entity.Language;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Getter
 @Builder
 @NoArgsConstructor
 @Entity
-@Table(name = "member")
+@Table(
+        uniqueConstraints = @UniqueConstraint(name = "member", columnNames = {"userId"})
+)
 @AllArgsConstructor
-public class Member extends BaseTimeEntity implements UserDetails {
+public class Member extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column( nullable = false, length = 30, updatable = false)
+    private String loginId;
 
     @Column(nullable = false, length = 50)
     private String username;
@@ -32,44 +33,35 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Column(nullable = false, length = 50)
     private String password;
 
-    private LocalDate inactiveDate;
+    @Column(nullable = false, length = 50)
+    private String nickname;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(255) DEFAULT 'ACTIVE'")
-    private Status status;
+    private Status status = Status.ACTIVE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id")
     private Language language;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Builder.Default
-    private List<String> roles = new ArrayList<>();
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+    public void updatePassword(String password) {
+        this.password = password;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
+    public void updateLoginId(String loginId) {
+        this.loginId = loginId;
     }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
     }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
+    public void withdraw() {
+        this.status = Status.INACTIVE;
     }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
+    public void reactivate() {
+        this.status = Status.ACTIVE;
     }
 
     /*@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)

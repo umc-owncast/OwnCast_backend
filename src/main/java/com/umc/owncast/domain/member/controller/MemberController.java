@@ -1,18 +1,17 @@
 package com.umc.owncast.domain.member.controller;
 
-import com.umc.owncast.common.jwt.JwtTokenDTO;
 import com.umc.owncast.common.response.ApiResponse;
-import com.umc.owncast.domain.member.dto.MemberLoginRequestDTO;
-import com.umc.owncast.domain.member.dto.MemberResponseDTO;
-import com.umc.owncast.domain.member.dto.MemberSignUpRequestDTO;
-import com.umc.owncast.domain.member.service.MemberLoginServiceImpl;
+import com.umc.owncast.common.response.status.SuccessCode;
+import com.umc.owncast.domain.member.dto.MemberRequest;
+import com.umc.owncast.domain.member.dto.MemberResponse;
+import com.umc.owncast.domain.member.entity.Member;
+import com.umc.owncast.domain.member.service.MemberMapper;
+import com.umc.owncast.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -21,25 +20,27 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class MemberController {
 
-    private final MemberLoginServiceImpl memberLoginServiceImpl;
 
-    @CrossOrigin
+    private final MemberService memberService;
+
     @Operation(summary = "회원가입 API")
     @PostMapping("/signup")
-    public ApiResponse<String> signUp(@Valid @RequestBody MemberSignUpRequestDTO memberSignUpRequestDto) {
+    public ApiResponse<MemberResponse.refreshTokenDto> signup(HttpServletResponse response,
+                                                              @Valid @RequestBody MemberRequest.joinLoginIdDto requestDto) {
+        String refreshToken = memberService.insertMember(response, requestDto);
+        return ApiResponse.of(SuccessCode._SIGNUP_SUCCESS, MemberMapper.toRefreshToken(refreshToken));
+    }
+
+    @Operation(summary = "회원가입 언어 관심분야 API")
+    @PostMapping("/signup/{memberId}")
+    public ApiResponse<String> signUp() {
         return null;
     }
 
-    @CrossOrigin
+
     @Operation(summary = "로그인 API")
     @PostMapping("/login")
-    public JwtTokenDTO signIn(@RequestBody MemberLoginRequestDTO signInDto) {
-        String id = signInDto.getId();
-        String password = signInDto.getPassword();
-        JwtTokenDTO jwtToken = memberLoginServiceImpl.login(id, password);
-        log.info("request id = {}, password = {}", id, password);
-        log.info("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
-        return jwtToken;
+    public ApiResponse<?> login(@Valid @RequestBody MemberRequest.loginDto request) {
+        return ApiResponse.onSuccess(SuccessCode._LOGIN_SUCCESS);
     }
-
 }
