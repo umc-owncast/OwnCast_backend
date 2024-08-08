@@ -22,7 +22,7 @@ public class FileService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public String uploadImage(MultipartFile file) {
+    public String uploadFile(MultipartFile file) {
         if (file == null) {
             return null;
         }

@@ -33,8 +33,8 @@ public class CastController {
     /*cast 저장 전 api*/
     @PostMapping("/temporary")
     @Operation(summary = "스크립트 생성 api. 저장 버튼 전 화면 입니다.")
-    public String createCast(@Valid @RequestBody CastCreationRequestDTO castRequest){
-        return castService.createCast(castRequest);
+    public void createCast(@Valid @RequestBody CastCreationRequestDTO castRequest){
+        castService.createCast(castRequest);
     }
 
 
