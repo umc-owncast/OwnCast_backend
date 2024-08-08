@@ -69,7 +69,7 @@ public class BookMarkServiceImpl {
 
     public BookMarkDTO.BookMarkSaveResultDTO deleteBookmark(Long sentenceId) {
 
-        Optional<Bookmark> optionalBookmark = bookmarkRepository.findBySentenceId(sentenceId);
+        Optional<Bookmark> optionalBookmark = bookmarkRepository.findBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, 1L);
 
         if(optionalBookmark.isPresent()){
             bookmarkRepository.delete(optionalBookmark.get());

@@ -16,5 +16,5 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
     Optional<Bookmark> findByCastPlaylist(@Param("castPlaylist") CastPlaylist castPlaylist);
 
-    Optional<Bookmark> findBySentenceId(@Param("sentenceId") Long sentenceId);
+    Optional<Bookmark> findBySentenceIdAndCastPlaylist_Playlist_Member_id(@Param("sentenceId") Long sentenceId, @Param("memberId") Long memberId);
 }
