@@ -1,10 +1,7 @@
 package com.umc.owncast.domain.member.controller;
 
 import com.umc.owncast.common.response.ApiResponse;
-import com.umc.owncast.domain.member.dto.MemberLoginRequestDTO;
-import com.umc.owncast.domain.member.dto.MemberProfileRequestDTO;
-import com.umc.owncast.domain.member.dto.MemberResponseDTO;
-import com.umc.owncast.domain.member.dto.MemberSignUpRequestDTO;
+import com.umc.owncast.domain.member.dto.*;
 import com.umc.owncast.domain.member.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -43,15 +40,15 @@ public class MemberController {
 
     @CrossOrigin
     @Operation(summary = "관심사 설정 바꾸기")
-    @PostMapping("/setting/language")
-    public ApiResponse<Long> category(@RequestBody Long languageId) {
-        return ApiResponse.onSuccess(userService.languageSetting(languageId));
+    @PostMapping("/setting/prefer")
+    public ApiResponse<Long> category(@Valid @RequestBody MemberPreferRequestDTO memberPreferRequestDTO) {
+        return ApiResponse.onSuccess(userService.preferSetting(memberPreferRequestDTO));
     }
 
     @CrossOrigin
     @Operation(summary = "닉네임, 이름, 아이디 바꾸기")
     @PostMapping("/setting")
-    public ApiResponse<Long> language(@Valid @RequestBody MemberProfileRequestDTO memberProfileRequestDTO) {
+    public ApiResponse<Long> language(@RequestBody MemberProfileRequestDTO memberProfileRequestDTO) {
         //
         return ApiResponse.onSuccess(123L);
     }

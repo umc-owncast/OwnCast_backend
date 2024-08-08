@@ -22,7 +22,9 @@ public class SubPrefer extends BaseTimeEntity{
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_category_id")
     private SubCategory subCategory;
 }
+
