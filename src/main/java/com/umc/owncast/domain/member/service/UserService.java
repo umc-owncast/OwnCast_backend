@@ -81,6 +81,7 @@ public class UserService {
 
         MainPrefer mainPrefer = optionalMainPrefer.get();
         SubPrefer subPrefer = optionalSubPrefer.get();
+        SubCategory oldSubCategory = optionalSubPrefer.get().getSubCategory();
 
         mainPrefer.setMainCategory(mainCategory);
 
@@ -89,10 +90,15 @@ public class UserService {
         subCategory = optionalSubCategory.orElseGet(() -> SubCategory.builder()
                 .name(memberPreferRequestDTO.getEtc())
                 .mainCategory(mainCategory)
+                .isUserCreated(true)
                 .build());
 
         subPrefer.setSubCategory(subCategory);
         subCategoryRepository.save(subCategory);
+
+        if(oldSubCategory.isUserCreated()) {
+            subCategoryRepository.delete(oldSubCategory);
+        }
 
         return member.getId();
     }
