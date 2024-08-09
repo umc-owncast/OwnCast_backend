@@ -49,6 +49,7 @@ public class CastSearchServiceImpl {
                             .id(cast.getId())
                             .title(cast.getTitle())
                             .memberName(cast.getMember().getUsername())
+                            .audioLength(cast.getAudioLength())
                             .playlistName(playlistRepository.findUserCategoryName(cast.getId()).getName())
                             .build()
             ).toList();
@@ -66,6 +67,7 @@ public class CastSearchServiceImpl {
                         .id(cast.getId())
                         .title(cast.getTitle())
                         .memberName(cast.getMember().getUsername())
+                        .audioLength(cast.getAudioLength())
                         .playlistName(playlistRepository.findUserCategoryName(cast.getId()).getName())
                         .build()
         ).toList();

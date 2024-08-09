@@ -9,6 +9,7 @@ public class CastDTO {
     @Getter
     public static class CastHomeDTO {
         Long id;
+        Integer audioLength;
         String title;
         String memberName;
         String playlistName;

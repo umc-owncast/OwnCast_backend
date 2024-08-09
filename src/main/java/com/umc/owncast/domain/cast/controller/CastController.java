@@ -41,7 +41,7 @@ public class CastController {
 
     @CrossOrigin
     @Operation(summary = "검색 API")
-    @PostMapping("/search")
+    @PostMapping("/search") // 수정 필요
     public ApiResponse<List<CastDTO.CastHomeDTO>> saveCast(@RequestParam("keyword") String keyword) {
         return ApiResponse.onSuccess(castSearchService.getCast(keyword));
     }
