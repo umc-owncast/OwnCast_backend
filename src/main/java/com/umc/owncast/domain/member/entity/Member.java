@@ -6,18 +6,13 @@ import com.umc.owncast.domain.language.entity.Language;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(
-        uniqueConstraints = @UniqueConstraint(name = "member", columnNames = {"userId"})
-)
+@Table(name = "member")
 @AllArgsConstructor
 public class Member extends BaseTimeEntity {
     @Id
@@ -30,7 +25,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, length = 50)
     private String username;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 255)
     private String password;
 
     @Column(nullable = false, length = 50)
@@ -40,29 +35,24 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id")
     private Language language;
 
-    public void updatePassword(String password) {
-        this.password = password;
-    }
-
-    public void updateLoginId(String loginId) {
-        this.loginId = loginId;
-    }
-
-    public void updateNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public void withdraw() {
-        this.status = Status.INACTIVE;
-    }
-
     public void reactivate() {
         this.status = Status.ACTIVE;
     }
+
+    public Member(String loginId, String username, String password, String nickname, Status status, Language language) {
+        this.loginId = loginId;
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.status = (status != null) ? status : Status.ACTIVE;
+        this.language = language;
+    }
+
 
     /*@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberPrefer> memberPreferList = new ArrayList<>();

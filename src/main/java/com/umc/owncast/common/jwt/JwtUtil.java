@@ -1,7 +1,9 @@
 package com.umc.owncast.common.jwt;
 
+
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -12,10 +14,10 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final SecretKey secretKey;
+    private SecretKey secretKey;
 
     public JwtUtil(@Value("${jwt.secret.key}") String secret) {
-        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
     }
 
     public String getCategory(String token) {
