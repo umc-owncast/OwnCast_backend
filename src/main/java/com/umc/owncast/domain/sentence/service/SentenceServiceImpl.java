@@ -7,6 +7,9 @@ import com.umc.owncast.domain.sentence.repository.SentenceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class SentenceServiceImpl implements SentenceService {
@@ -28,5 +31,24 @@ public class SentenceServiceImpl implements SentenceService {
             i++;
             sentenceRepository.save(sentence);
         }
+    }
+
+    @Override
+    public List<Sentence> mapToSentence(String original, String korean, TTSResultDTO ttsResultDTO){
+        // TODO 테스트 필요
+        int i = 0;
+        List<Sentence> sentences = new ArrayList<>();
+        String[] originalList = parsingService.parseSentences(original);
+        String[] koreanList = parsingService.parseSentences(korean);
+        for(Double timepoint : ttsResultDTO.getTimePointList()) {
+            sentences.add(Sentence.builder()
+                    .originalSentence(originalList[i])
+                    .translatedSentence(koreanList[i])
+                    .timePoint(timepoint)
+                    .build()
+            );
+            i++;
+        }
+        return sentences;
     }
 }
