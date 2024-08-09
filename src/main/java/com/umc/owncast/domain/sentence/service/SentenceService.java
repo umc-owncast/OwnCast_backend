@@ -1,6 +1,7 @@
 package com.umc.owncast.domain.sentence.service;
 
 import com.umc.owncast.domain.cast.dto.TTSResultDTO;
+import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 
 import java.util.List;
@@ -11,5 +12,5 @@ public interface SentenceService {
     public void save(String original, String korean, TTSResultDTO ttsResultDTO);
 
     /** 매개변수를 묶어 List<Sentence>로 반환 */
-    public List<Sentence> mapToSentence(String original, String korean, TTSResultDTO ttsResultDTO);
+    public List<Sentence> mapToSentence(String original, String korean, TTSResultDTO ttsResultDTO, Cast cast);
 }

@@ -3,19 +3,16 @@ package com.umc.owncast.domain.cast.service;
 
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.SuccessCode;
-import com.umc.owncast.domain.cast.dto.CastSaveDTO;
-import com.umc.owncast.domain.cast.dto.CastUpdateDTO;
-import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
-import com.umc.owncast.domain.cast.dto.ScriptCastCreationDTO;
+import com.umc.owncast.domain.cast.dto.*;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
+import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import com.umc.owncast.domain.sentence.repository.SentenceRepository;
-import com.umc.owncast.domain.cast.dto.TTSResultDTO;
 import com.umc.owncast.domain.sentence.service.SentenceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.UrlResource;
@@ -24,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -50,12 +48,6 @@ public class CastService {
     public ApiResponse<Object> createCast(KeywordCastCreationDTO castRequest){
         String script = scriptService.createScript(castRequest);
         TTSResultDTO ttsResult = ttsService.createSpeech(script, castRequest);
-        List<Sentence> sentences = sentenceService.mapToSentence(
-                script,
-                translateService.translate(script),
-                ttsResult
-        );
-
         Cast cast = Cast.builder()
                 .voice(castRequest.getVoice())
                 .audioLength(castRequest.getAudioTime()) // TODO mp3 파일 길이 가져오기
@@ -66,9 +58,18 @@ public class CastService {
                 .isPublic(false)
                 .hits(0L)
                 .build();
+        List<Sentence> sentences = sentenceService.mapToSentence(
+                script,
+                translateService.translate(script),
+                ttsResult,
+                cast
+        );
+        cast.addSentences(sentences);
         castRepository.save(cast);
         sentenceRepository.saveAll(sentences);
-        return ApiResponse.of(SuccessCode._OK, sentences);
+
+        SimpleCastResponseDTO response = new SimpleCastResponseDTO(cast);
+        return ApiResponse.of(SuccessCode._OK, response);
     }
 
     /**
@@ -82,12 +83,6 @@ public class CastService {
                         .voice(castRequest.getVoice())
                         .formality(castRequest.getFormality())
                         .build());
-        List<Sentence> sentences = sentenceService.mapToSentence(
-                script,
-                translateService.translate(script),
-                ttsResult
-        );
-
         Cast cast = Cast.builder()
                 .voice(castRequest.getVoice())
                 .audioLength(0) // TODO mp3 파일 길이 가져오기
@@ -98,9 +93,18 @@ public class CastService {
                 .isPublic(false)
                 .hits(0L)
                 .build();
+        List<Sentence> sentences = sentenceService.mapToSentence(
+                script,
+                translateService.translate(script),
+                ttsResult,
+                cast
+        );
+        cast.addSentences(sentences);
         castRepository.save(cast);
         sentenceRepository.saveAll(sentences);
-        return ApiResponse.of(SuccessCode._OK, sentences);
+
+        SimpleCastResponseDTO response = new SimpleCastResponseDTO(cast);
+        return ApiResponse.of(SuccessCode._OK, response);
     }
 
     public ApiResponse<Object> saveCast(Long castId, CastSaveDTO saveRequest){

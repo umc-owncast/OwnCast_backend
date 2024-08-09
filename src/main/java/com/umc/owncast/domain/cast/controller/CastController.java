@@ -96,6 +96,8 @@ public class CastController {
         return castService.streamCast(castId, headers);
     }
 
+    /* Cast 스크립트 가져오는 API */
+
     /* Cast 수정 API */
 
     /* Cast 삭제 API */
