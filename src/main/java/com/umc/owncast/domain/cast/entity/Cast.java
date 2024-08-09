@@ -59,6 +59,7 @@ public class Cast extends BaseTimeEntity {
     @JoinColumn(name = "language_id")
     private Language language;
 
+    @Builder.Default
     @OneToMany(mappedBy = "cast", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sentence> sentences = new ArrayList<>();
 
