@@ -4,10 +4,12 @@ import com.umc.owncast.domain.member.dto.MemberResponse;
 import com.umc.owncast.domain.member.entity.Member;
 
 public class MemberMapper {
-    public static Member toLoginIdMember(String loginId, String encodedPassword) {
+    public static Member toLoginIdMember(String loginId, String encodedPassword, String nickname, String username) {
         return Member.builder()
                 .loginId(loginId)
                 .password(encodedPassword)
+                .nickname(nickname)
+                .username(username)
                 .build();
     }
 

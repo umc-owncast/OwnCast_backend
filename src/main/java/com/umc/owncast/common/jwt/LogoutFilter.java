@@ -23,7 +23,7 @@ public class LogoutFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if (!(request.getMethod().equals("POST") && request.getRequestURI().matches("/v1/meembers/logout"))) {
+        if (!(request.getMethod().equals("POST") && request.getRequestURI().matches("/api/users/logout"))) {
             filterChain.doFilter(request, response);
             return;
         }

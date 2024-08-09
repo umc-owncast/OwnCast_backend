@@ -26,7 +26,7 @@ public class MemberService {
 
     @Transactional
     public String insertMember(HttpServletResponse response, MemberRequest.joinLoginIdDto requestDto) {
-        Member newMember = MemberMapper.toLoginIdMember(requestDto.getLoginId(), encoder.encode(requestDto.getPassword()));
+        Member newMember = MemberMapper.toLoginIdMember(requestDto.getLoginId(), encoder.encode(requestDto.getPassword()), requestDto.getNickname(), requestDto.getUsername());
         Member savedMember = memberRepository.save(newMember);
 
         return issueToken(savedMember.getId(), response);
@@ -47,8 +47,15 @@ public class MemberService {
 
     private String issueToken(Long memberId, HttpServletResponse response) {
         String newAccessToken = loginService.issueAccessToken(memberId);
-        String newRefreshToken = loginService.reissueRefreshToken(memberId, newAccessToken);
+        String newRefreshToken = loginService.issueRefreshToken(memberId);
         response.addHeader("Authorization", newAccessToken);
         return newRefreshToken;
+    }
+
+    @Transactional
+    public void reactivate(MemberRequest.loginDto request) {
+        Member selectedMember = memberRepository.findByLoginId(request.getLoginId())
+                .orElseThrow(() -> new GeneralException(ErrorCode.MEMBER_NOT_FOUND));
+        selectedMember.reactivate();
     }
 }

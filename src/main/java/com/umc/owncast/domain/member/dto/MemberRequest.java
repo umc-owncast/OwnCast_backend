@@ -1,6 +1,7 @@
 package com.umc.owncast.domain.member.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 public class MemberRequest {
@@ -10,11 +11,12 @@ public class MemberRequest {
 
         @NotBlank
         String nickname;
-
+        @NotBlank
+        String username;
         @NotBlank
         String loginId;
-
         @NotBlank
+        @Size(min = 8, max = 255)
         String password;
     }
 
