@@ -53,4 +53,9 @@ public class SentenceServiceImpl implements SentenceService {
         }
         return sentences;
     }
+
+    @Override
+    public List<Sentence> findCastSentence(Long castId) {
+        return sentenceRepository.findAllByCastIdOrderByTimePointAsc(castId);
+    }
 }

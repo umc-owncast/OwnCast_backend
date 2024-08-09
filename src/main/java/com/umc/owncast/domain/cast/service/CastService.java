@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -33,7 +32,7 @@ public class CastService {
     private final TTSService ttsService;
     private final StreamService streamService;
     private final FileService fileService;
-    private final SentenceService sentenceService; // 가칭
+    private final SentenceService sentenceService;
 
     private final CastRepository castRepository;
     private final SentenceRepository sentenceRepository;
@@ -48,6 +47,7 @@ public class CastService {
     public ApiResponse<Object> createCast(KeywordCastCreationDTO castRequest){
         String script = scriptService.createScript(castRequest);
         TTSResultDTO ttsResult = ttsService.createSpeech(script, castRequest);
+        // TODO 아랫부분 리팩토링 (다른 createCast()와 중복됨)
         Cast cast = Cast.builder()
                 .voice(castRequest.getVoice())
                 .audioLength(castRequest.getAudioTime()) // TODO mp3 파일 길이 가져오기
@@ -68,7 +68,7 @@ public class CastService {
         castRepository.save(cast);
         sentenceRepository.saveAll(sentences);
 
-        SimpleCastResponseDTO response = new SimpleCastResponseDTO(cast);
+        CastScriptDTO response = new CastScriptDTO(cast);
         return ApiResponse.of(SuccessCode._OK, response);
     }
 
@@ -103,7 +103,7 @@ public class CastService {
         castRepository.save(cast);
         sentenceRepository.saveAll(sentences);
 
-        SimpleCastResponseDTO response = new SimpleCastResponseDTO(cast);
+        CastScriptDTO response = new CastScriptDTO(cast);
         return ApiResponse.of(SuccessCode._OK, response);
     }
 
@@ -128,17 +128,14 @@ public class CastService {
     }
 
     public ApiResponse<Object> updateCast(Long castId, CastUpdateDTO updateRequest) {
-        Cast target = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
-        // TODO 이미지
-        // - 원래 이미지 삭제
-        // - 현재 이미지명 난수화 -> 필요?
-        // - 현재 이미지 저장 O
+        Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
         String imagePath = fileService.uploadFile(updateRequest.getCastImage());
+        // TODO 원래 이미지 삭제 (FileService.removeFile()?)
         updateRequest.setImagePath(imagePath);
-        target.update(updateRequest);
-        castRepository.save(target);
+        cast.update(updateRequest);
+        castRepository.save(cast);
 
-        return ApiResponse.of(SuccessCode._OK, target);
+        return ApiResponse.of(SuccessCode._OK, cast);
     }
 
     public ResponseEntity<UrlResource> streamCast(Long castId, HttpHeaders headers) {
@@ -151,5 +148,13 @@ public class CastService {
             e.printStackTrace();
             throw new RuntimeException("캐스트 스트리밍에 실패하였습니다.");
         }
+    }
+
+    public ApiResponse<Object> getSentenceList(Long castId) {
+        List<Sentence> sentences = sentenceService.findCastSentence(castId);
+        List<SentenceResponseDTO> response = sentences.stream()
+                .map(SentenceResponseDTO::new)
+                .toList();
+        return ApiResponse.of(SuccessCode._OK, response);
     }
 }

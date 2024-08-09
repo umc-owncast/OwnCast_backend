@@ -89,7 +89,7 @@ public class CastController {
     }
 
     /* Cast 재생 API */
-    @GetMapping("/{castId}")
+    @GetMapping("/{castId}/audio")
     @Operation(summary = "캐스트 재생 API")
     public ResponseEntity<UrlResource> streamCast(@PathVariable("castId") Long castId,
                                                   @RequestHeader HttpHeaders headers){
@@ -97,6 +97,11 @@ public class CastController {
     }
 
     /* Cast 스크립트 가져오는 API */
+    @GetMapping("/{castId}/scripts")
+    @Operation(summary = "캐스트 스크립트 가져오기 API")
+    public ApiResponse<Object> findCastScripts(@PathVariable("castId") Long castId){
+        return castService.getSentenceList(castId);
+    }
 
     /* Cast 수정 API */
 
