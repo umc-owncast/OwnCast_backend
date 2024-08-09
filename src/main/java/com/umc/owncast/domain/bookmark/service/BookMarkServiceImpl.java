@@ -27,9 +27,9 @@ public class BookMarkServiceImpl {
     private final CastPlaylistRepository castPlaylistRepository;
     private final SentenceRepository sentenceRepository;
 
-    public List<BookMarkDTO.BookMarkResultDTO> getBookmarks(Long categoryId){
+    public List<BookMarkDTO.BookMarkResultDTO> getBookmarks(Long playlistId){
 
-        List<Sentence> sentenceList = bookmarkRepository.findSentencesByPlaylistId(categoryId);
+        List<Sentence> sentenceList = bookmarkRepository.findSentencesByPlaylistId(playlistId);
 
         return sentenceList.stream().map(sentence ->
                 BookMarkDTO.BookMarkResultDTO.builder()
