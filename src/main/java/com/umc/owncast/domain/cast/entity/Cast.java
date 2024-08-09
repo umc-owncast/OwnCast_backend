@@ -5,9 +5,13 @@ import com.umc.owncast.domain.cast.dto.CastUpdateDTO;
 import com.umc.owncast.domain.enums.Formality;
 import com.umc.owncast.domain.language.entity.Language;
 import com.umc.owncast.domain.member.entity.Member;
+import com.umc.owncast.domain.sentence.entity.Sentence;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -55,6 +59,20 @@ public class Cast extends BaseTimeEntity {
     @JoinColumn(name = "language_id")
     private Language language;
 
+    @OneToMany(mappedBy = "cast", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Sentence> sentences = new ArrayList<>();
+
+    public void addSentence(Sentence s){
+        sentences.add(s);
+        s.setCast(this);
+        // TODO timestamp 순으로 정렬해두거나 sentences를 timestamp 기준으로 PriorityQueue 등에 저장?
+    }
+
+    public void addSentences(Collection<Sentence> s){
+        sentences.addAll(s);
+        for(Sentence sentence: s) sentence.setCast(this);
+    }
+
     public void update(CastUpdateDTO updateRequest) {
         if(Objects.nonNull(updateRequest.getTitle()) && !updateRequest.getTitle().isBlank())
             this.title = updateRequest.getTitle();
@@ -79,7 +97,5 @@ public class Cast extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "cast", cascade = CascadeType.ALL)
     private List<CastLike> castLikeList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "cast", cascade = CascadeType.ALL)
-    private List<Sentence> sentenceList = new ArrayList<>();*/
+    */
 }
