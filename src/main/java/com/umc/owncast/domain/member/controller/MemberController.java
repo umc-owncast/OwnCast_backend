@@ -61,12 +61,5 @@ public class MemberController {
         return ApiResponse.onSuccess(SuccessCode._OK);
     }
 
-    @Operation(summary = "회원 재활성 api")
-    @PatchMapping("/reactivate")
-    public ApiResponse<?> reactivate(@AuthenticationPrincipal CustomUserDetails authentication,
-                                    @RequestBody @Valid MemberRequest.loginDto request) {
-        memberService.reactivate(request);
-        return ApiResponse.onSuccess(SuccessCode._OK);
-    }
 
 }

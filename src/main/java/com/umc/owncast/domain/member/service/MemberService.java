@@ -52,10 +52,4 @@ public class MemberService {
         return newRefreshToken;
     }
 
-    @Transactional
-    public void reactivate(MemberRequest.loginDto request) {
-        Member selectedMember = memberRepository.findByLoginId(request.getLoginId())
-                .orElseThrow(() -> new GeneralException(ErrorCode.MEMBER_NOT_FOUND));
-        selectedMember.reactivate();
-    }
 }

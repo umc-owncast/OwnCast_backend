@@ -40,9 +40,6 @@ public class Member extends BaseTimeEntity {
     @JoinColumn(name = "language_id")
     private Language language;
 
-    public void reactivate() {
-        this.status = Status.ACTIVE;
-    }
 
     public Member(String loginId, String username, String password, String nickname, Status status, Language language) {
         this.loginId = loginId;
