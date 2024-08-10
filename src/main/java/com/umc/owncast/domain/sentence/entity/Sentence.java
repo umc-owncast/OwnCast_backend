@@ -28,6 +28,9 @@ public class Sentence extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cast_id")
     private Cast cast;
+    public void setCast(Cast cast){
+        this.cast = cast;
+    }
 
     /*@OneToOne(mappedBy = "sentence", cascade = CascadeType.ALL)
     private List<Bookmark> bookmarkList = new ArrayList<>();*/

@@ -1,6 +1,7 @@
 package com.umc.owncast.domain.cast.service;
 
-import com.umc.owncast.domain.cast.dto.CastCreationRequestDTO;
+import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
+import com.umc.owncast.domain.cast.dto.ScriptCastCreationDTO;
 import com.umc.owncast.domain.cast.dto.TTSDTO;
 import com.umc.owncast.domain.cast.dto.TTSResultDTO;
 import com.umc.owncast.domain.cast.enums.VoiceCode;
@@ -24,20 +25,21 @@ public class TTSService {
     @Value("${google.api.key}")
     private String apiKey;
 
-    public TTSResultDTO createSpeech(String script, CastCreationRequestDTO castCreationRequestDTO) {
-        return requestSpeech(setSpeech(script, castCreationRequestDTO));
+    public TTSResultDTO createSpeech(String script, KeywordCastCreationDTO keywordCastCreationDTO) {
+        return requestSpeech(setSpeech(script, keywordCastCreationDTO));
     }
 
-    private TTSDTO setSpeech(String script, CastCreationRequestDTO castCreationRequestDTO) {
+    private TTSDTO setSpeech(String script, KeywordCastCreationDTO keywordCastCreationDTO) {
         String[] seperatedSentences = parsingService.parseSentences(script);
         String processedScript = parsingService.addMarks(seperatedSentences);
-        String voice = VoiceCode.fromValue(castCreationRequestDTO.getVoice()).getValue();
+        String voice = VoiceCode.fromValue(keywordCastCreationDTO.getVoice()).getValue();
         return TTSDTO.builder()
                 .voice(voice)   //ex: "en-US-Standard-A"
                 .language(voice.substring(0, 5))
                 .script(processedScript)
                 .build();
     }
+
     private TTSResultDTO requestSpeech(TTSDTO ttsdto) {
         String url = "https://texttospeech.googleapis.com/v1beta1/text:synthesize?key="+apiKey;
 

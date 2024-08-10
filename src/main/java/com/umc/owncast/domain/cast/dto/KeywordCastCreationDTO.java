@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class CastCreationRequestDTO {
+public class KeywordCastCreationDTO {
     @NotEmpty(message = "키워드는 필수 입력 항목입니다.")
     private String keyword;
 
