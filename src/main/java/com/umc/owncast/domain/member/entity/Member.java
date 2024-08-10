@@ -6,38 +6,61 @@ import com.umc.owncast.domain.language.entity.Language;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "member")
 @AllArgsConstructor
 public class Member extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column( nullable = false, length = 30, updatable = false)
+    private String loginId;
 
     @Column(nullable = false, length = 50)
     private String username;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 255)
     private String password;
 
-    private LocalDate inactiveDate;
+    @Column(nullable = false, length = 50)
+    private String nickname;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(255) DEFAULT 'ACTIVE'")
-    private Status status;
+    private Status status = Status.ACTIVE;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id")
     private Language language;
 
-    public void changeLanguage(Language language) {
+
+    public Member(String loginId, String username, String password, String nickname, Status status, Language language) {
+        this.loginId = loginId;
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.status = (status != null) ? status : Status.ACTIVE;
         this.language = language;
     }
+
+    public void setMember(String loginId, String username, String password, String nickname) {
+        this.loginId = loginId;
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
+
 
     /*@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberPrefer> memberPreferList = new ArrayList<>();

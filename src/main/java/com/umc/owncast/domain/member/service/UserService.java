@@ -45,7 +45,7 @@ public class UserService {
             throw new UserHandler(ErrorCode.MEMBER_NOT_FOUND);
         } else {
             member = optionalMember.get();
-            member.changeLanguage(languageRepository.findById(languageId).get());
+            member.setLanguage(languageRepository.findById(languageId).get());
             memberRepository.save(member);
         }
 
@@ -100,6 +100,30 @@ public class UserService {
             subCategoryRepository.delete(oldSubCategory);
         }
 
+        return member.getId();
+    }
+
+    public Long idPasswordSetting(MemberProfileRequestDTO memberProfileRequestDTO){
+
+        // 토큰을 이용해서 사용자 정보 받기
+        // 일단은 1L로 설정
+
+        Optional<Member> optionalMember = memberRepository.findById(1L);
+        Member member;
+
+        if(optionalMember.isEmpty()){
+            throw new UserHandler(ErrorCode.MEMBER_NOT_FOUND);
+        } else {
+            member = optionalMember.get();
+            member.setMember(
+                    memberProfileRequestDTO.getLoginId(),
+                    memberProfileRequestDTO.getUsername(),
+                    memberProfileRequestDTO.getPassword(),
+                    memberProfileRequestDTO.getNickname());
+
+            memberRepository.save(member);
+
+        }
         return member.getId();
     }
 

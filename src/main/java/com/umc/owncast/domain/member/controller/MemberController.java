@@ -48,8 +48,8 @@ public class MemberController {
     @CrossOrigin
     @Operation(summary = "닉네임, 이름, 아이디 바꾸기")
     @PostMapping("/setting")
-    public ApiResponse<Long> language(@RequestBody MemberProfileRequestDTO memberProfileRequestDTO) {
+    public ApiResponse<Long> language(@Valid @RequestBody MemberProfileRequestDTO memberProfileRequestDTO) {
         //
-        return ApiResponse.onSuccess(123L);
+        return ApiResponse.onSuccess(userService.idPasswordSetting(memberProfileRequestDTO));
     }
 }
