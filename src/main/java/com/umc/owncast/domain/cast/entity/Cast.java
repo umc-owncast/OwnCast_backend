@@ -34,7 +34,7 @@ public class Cast extends BaseTimeEntity {
     private String imagePath;
 
     @Column(nullable = false)
-    private Integer audioLength;
+    private String audioLength;
 
     @Column
     private String voice;

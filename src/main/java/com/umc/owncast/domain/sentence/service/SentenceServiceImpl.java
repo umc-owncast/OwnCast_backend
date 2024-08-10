@@ -15,14 +15,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SentenceServiceImpl implements SentenceService {
 
+    private final TranslateService translateService;
     private final SentenceRepository sentenceRepository;
     private final ParsingService parsingService;
 
     @Override
-    public void save(String original, String korean, TTSResultDTO ttsResultDTO, Cast cast) {
+    public void save(String original, TTSResultDTO ttsResultDTO, Cast cast) {
         int i = 0;
+        String koreanScript = translateService.translate(original);
         String[] originalList = parsingService.parseSentences(original);
-        String[] koreanList = parsingService.parseSentences(korean);
+        String[] koreanList = parsingService.parseSentences(koreanScript);
         for(Double timepoint : ttsResultDTO.getTimePointList()) {
             Sentence sentence = Sentence.builder()
                     .cast(cast)

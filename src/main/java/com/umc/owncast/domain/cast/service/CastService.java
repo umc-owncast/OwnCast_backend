@@ -27,7 +27,6 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class CastService {
     private final ScriptService scriptService;
-    private final TranslateService translateService;
     private final TTSService ttsService;
     private final StreamService streamService;
     private final FileService fileService;
@@ -63,9 +62,13 @@ public class CastService {
 
     private @NotNull ApiResponse<Object> getObjectApiResponse(KeywordCastCreationDTO castRequest, String script) {
         TTSResultDTO ttsResult = ttsService.createSpeech(script, castRequest);
+        Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
+        int minutes = (int) (audioLength / 60);
+        int seconds = (int) Math.round(audioLength % 60);
+
         Cast cast = Cast.builder()
                 .voice(castRequest.getVoice())
-                .audioLength(castRequest.getAudioTime()) // TODO mp3 파일 길이 가져오기
+                .audioLength(String.format("%02d:%02d", minutes, seconds))
                 .filePath(ttsResult.getMp3Path())
                 .formality(castRequest.getFormality())
                 .member(null) // TODO 회원 기능 만들어지면 자기자신 넣기
@@ -74,8 +77,7 @@ public class CastService {
                 .hits(0L)
                 .build();
         cast = castRepository.save(cast);
-        String korean = translateService.translate(script);
-        sentenceService.save(script, korean, ttsResult, cast);
+        sentenceService.save(script, ttsResult, cast);
 
         CastScriptDTO response = new CastScriptDTO(cast);
         return ApiResponse.of(SuccessCode._OK, response);
