@@ -2,6 +2,7 @@ package com.umc.owncast.domain.cast.service;
 
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.SuccessCode;
+import com.umc.owncast.common.util.StringUtil;
 import com.umc.owncast.domain.cast.dto.*;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
@@ -89,11 +90,12 @@ public class CastService {
 
     public ApiResponse<Object> saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image){
         // 제목, 커버이미지, 공개여부 등 저장
-        updateCast(castId, CastUpdateDTO.builder()
+        updateCast(castId,
+                CastUpdateDTO.builder()
                 .title(saveRequest.getTitle())
                 .isPublic(saveRequest.getIsPublic())
-                .imagePath(fileService.uploadFile(image))
-                .build()
+                .build(),
+                image
         );
         // 플레이리스트 저장
         Playlist playlist = playlistRepository.findById(saveRequest.getPlaylistId()).orElseThrow(() -> new NoSuchElementException("플레이리스트가 존재하지 않습니다."));
@@ -106,10 +108,16 @@ public class CastService {
         return ApiResponse.of(SuccessCode._OK, "저장되었습니다.");
     }
 
-    public ApiResponse<Object> updateCast(Long castId, CastUpdateDTO updateRequest) {
-        Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
+    private void setCastImage(Cast cast, CastUpdateDTO updateRequest, MultipartFile image){
+        if(image == null) return;
+        String imagePath = fileService.uploadFile(image);
         fileService.deleteFile(cast.getImagePath());
-        updateRequest.setImagePath(updateRequest.getImagePath());
+        updateRequest.setImagePath(imagePath);
+    }
+
+    public ApiResponse<Object> updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image) {
+        Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
+        setCastImage(cast, updateRequest, image);
         cast.update(updateRequest);
         castRepository.save(cast);
 
@@ -128,11 +136,17 @@ public class CastService {
         }
     }
 
-    public ApiResponse<Object> getSentenceList(Long castId) {
+    public ApiResponse<Object> fetchCastScript(Long castId) {
         List<Sentence> sentences = sentenceService.findCastSentence(castId);
         List<SentenceResponseDTO> response = sentences.stream()
                 .map(SentenceResponseDTO::new)
                 .toList();
         return ApiResponse.of(SuccessCode._OK, response);
+    }
+
+    public ApiResponse<Object> deleteCast(Long castId) {
+        Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
+        castRepository.delete(cast);
+        return ApiResponse.of(SuccessCode._OK, cast);
     }
 }
