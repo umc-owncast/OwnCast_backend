@@ -17,10 +17,10 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column( nullable = false, length = 30, updatable = false)
+    @Column( nullable = false, length = 30, updatable = false, unique = true )
     private String loginId;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     private String username;
 
     @Column(nullable = false, length = 255)

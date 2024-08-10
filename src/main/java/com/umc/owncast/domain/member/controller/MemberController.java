@@ -40,12 +40,12 @@ public class MemberController {
                                          @RequestParam("language_id") Long languageId,
                                          @Valid @RequestBody MemberRequest.memberPreferDto request) {
 
-        memberService.addLanguageSetting(memberId, languageId);
+       memberService.addLanguageSetting(memberId, languageId);
 
         // 관심분야 설정 추가
-        memberService.addPreferSetting(memberId, request);
+        Long updatedMemberId = memberService.addPreferSetting(memberId, request);
 
-        return ApiResponse.of(SuccessCode._OK, memberId);
+        return ApiResponse.of(SuccessCode._OK, updatedMemberId);
     }
 
 

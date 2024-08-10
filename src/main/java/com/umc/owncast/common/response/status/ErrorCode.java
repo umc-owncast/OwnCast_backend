@@ -28,7 +28,9 @@ public enum ErrorCode implements BaseErrorCode {
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "MEMBER_4010", "비밀번호가 일치하지 않습니다"),
     INACTIVATE_FORBIDDEN(HttpStatus.FORBIDDEN, "MEMBER_4030", "비활성된 회원입니다"),
     LANGUAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4011", "언어가 없습니다."),
-    CATEGORY_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4012", "카테고리가 없습니다."),
+    CATEGORY_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4012", "메인카테고리가 없습니다."),
+    SUBCATEGORY_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4013", "서브카테고리가 없습니다."),
+    SUBCATEGORY_ETC_REQUIRED(HttpStatus.BAD_REQUEST, "MEMBER4014", "서브카테고리 기타는 필수입니다"),
 
     // 로그인 관련 에러
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "AUTH_4000", "잘못된 파라미터 형식입니다"),

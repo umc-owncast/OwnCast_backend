@@ -44,6 +44,13 @@ public class MemberService {
 
     @Transactional
     public String insertMember(HttpServletResponse response, MemberRequest.joinLoginIdDto requestDto) {
+        if (memberRepository.existsByNickname(requestDto.getNickname())) {
+            throw new UserHandler(ErrorCode.NICKNAME_ALREADY_EXIST); // 사용자 정의 예외
+        }
+        if (memberRepository.existsByNickname(requestDto.getLoginId())) {
+            throw new UserHandler(ErrorCode.ID_ALREADY_EXIST); // 사용자 정의 예외
+        }
+
         Member newMember = MemberMapper.toLoginIdMember(requestDto.getLoginId(), encoder.encode(requestDto.getPassword()), requestDto.getNickname(), requestDto.getUsername());
         Member savedMember = memberRepository.save(newMember);
 
@@ -90,38 +97,43 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
 
-        // MainCategory 조회
-        MainCategory mainCategory = mainCategoryRepository.findById(request.getMainCategoryId())
+        MainPrefer mainPrefer = mainPreferRepository.findById(request.getMainCategoryId())
                 .orElseThrow(() -> new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
 
-        // SubCategory 조회 또는 새로 생성
-        SubCategory subCategory = subCategoryRepository.findById(request.getSubCategoryId())
-                .orElseGet(() -> SubCategory.builder()
-                        .name(request.getEtc()) // 사용자가 입력한 이름으로 SubCategory 생성
-                        .mainCategory(mainCategory) // 관련된 MainCategory 설정
-                        .isUserCreated(true) // 사용자가 만든 SubCategory임을 표시
-                        .build());
+        SubPrefer subPrefer;
 
-        // 새로운 MainPrefer 생성 및 저장
+        if (request.getSubCategoryId() != null) {
+            subPrefer = subPreferRepository.findById(request.getSubCategoryId())
+                    .orElseThrow(() -> new UserHandler(ErrorCode.SUBCATEGORY_NOT_EXIST));
+        } else {
+            if (request.getEtc() == null || request.getEtc().isEmpty()) {
+                throw new UserHandler(ErrorCode.SUBCATEGORY_ETC_REQUIRED);
+            }
+            // Create a new SubCategory based on 'etc'
+            SubCategory newSubCategory = SubCategory.builder()
+                    .name(request.getEtc())
+                    .mainCategory(mainPrefer.getMainCategory())
+                    .isUserCreated(true)
+                    .build();
+            subCategoryRepository.save(newSubCategory);
+
+            subPrefer = SubPrefer.builder()
+                    .member(member)
+                    .subCategory(newSubCategory)
+                    .build();
+        }
+
+        // Save new MainPrefer if needed
         MainPrefer newMainPrefer = MainPrefer.builder()
                 .member(member)
-                .mainCategory(mainCategory)
+                .mainCategory(mainPrefer.getMainCategory())
                 .build();
         mainPreferRepository.save(newMainPrefer);
 
-        // 새로운 SubPrefer 생성 및 저장
-        SubPrefer newSubPrefer = SubPrefer.builder()
-                .member(member)
-                .subCategory(subCategory)
-                .build();
-        subPreferRepository.save(newSubPrefer);
-
-        // 사용자가 만든 새로운 SubCategory 저장
-        if (subCategory.isUserCreated()) {
-            subCategoryRepository.save(subCategory);
-        }
+        subPreferRepository.save(subPrefer);
 
         return member.getId();
     }
+
 
 }
