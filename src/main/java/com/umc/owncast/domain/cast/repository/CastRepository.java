@@ -18,7 +18,7 @@ public interface CastRepository extends JpaRepository<Cast, Long> {
 
     @Query("SELECT c FROM Cast c " +
             "JOIN MainPrefer m ON m.member.id = c.member.id " +
-            "WHERE m.mainCategory.id = :mainCategoryId AND c.isPublic = true " +
+            "WHERE m.mainCategory.id = :mainCategoryId AND c.isPublic = true AND c.id != :memberId " +
             "ORDER BY c.hits DESC")
-    Page<Cast> findTop5ByMainCategoryIdOrderByHitsDesc(@Param("mainCategoryId") Long mainCategoryId, @Param("pageable") Pageable pageable);
+    Page<Cast> findTop5ByMainCategoryIdOrderByHitsDesc(@Param("mainCategoryId") Long mainCategoryId, @Param("pageable") Pageable pageable, @Param("memberId") long memberId);
 }

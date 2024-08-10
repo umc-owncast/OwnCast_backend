@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -41,8 +42,8 @@ public class CastSearchServiceImpl {
             throw new UserHandler(ErrorCode.CAST_NOT_FOUND);
         } else {
             Long userCategoryId = userMainCategory.get().getMainCategory().getId();
-
-            List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategoryId, PageRequest.of(page - 1, 5)).getContent();
+            Pageable pageable = PageRequest.of(page - 1, 5);
+            List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategoryId, pageable , 1L).getContent();
 
             castHomeDTOList = castMainCategories.stream().map(cast ->
                     CastDTO.CastHomeDTO.builder()
