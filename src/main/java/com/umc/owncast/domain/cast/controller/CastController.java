@@ -38,12 +38,12 @@ public class CastController {
         return scriptService.createScript(castRequest);
     }
 
-    /*cast 저장 전 api*/
+    /*cast 저장 전 api
     @PostMapping("/temporary")
     @Operation(summary = "스크립트 생성 api. 저장 버튼 전 화면 입니다.")
     public void createCast(@Valid @RequestBody KeywordCastCreationDTO castRequest){
         castService.createCast(castRequest);
-    }
+    }*/
 
     @GetMapping("/stream-test")
     @CrossOrigin(origins = "*") // TODO 프론트 url로 대체
@@ -70,14 +70,14 @@ public class CastController {
     @PostMapping("/keyword")
     @Operation(summary = "키워드로 캐스트를 생성하는 API")
     public ApiResponse<Object> createCastByKeyword(@Valid @RequestBody KeywordCastCreationDTO castRequest){
-        return castService.createCast(castRequest);
+        return castService.createCastByKeyword(castRequest);
     }
 
     /* Cast 생성 API (script) */
     @PostMapping("/script")
     @Operation(summary = "스크립트로 캐스트를 생성하는 API.")
     public ApiResponse<Object> createCastByScript(@Valid @RequestBody ScriptCastCreationDTO castRequest){
-        return castService.createCast(castRequest);
+        return castService.createCastByScript(castRequest);
     }
 
     /* Cast 저장 API */

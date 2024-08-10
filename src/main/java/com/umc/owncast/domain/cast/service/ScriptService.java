@@ -6,5 +6,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface
 ScriptService {
-    public String createScript(KeywordCastCreationDTO request);
+    String createScript(KeywordCastCreationDTO request);
 }

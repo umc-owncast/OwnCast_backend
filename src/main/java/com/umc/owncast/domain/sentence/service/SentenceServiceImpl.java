@@ -19,12 +19,13 @@ public class SentenceServiceImpl implements SentenceService {
     private final ParsingService parsingService;
 
     @Override
-    public void save(String original, String korean, TTSResultDTO ttsResultDTO) {
+    public void save(String original, String korean, TTSResultDTO ttsResultDTO, Cast cast) {
         int i = 0;
         String[] originalList = parsingService.parseSentences(original);
         String[] koreanList = parsingService.parseSentences(korean);
         for(Double timepoint : ttsResultDTO.getTimePointList()) {
             Sentence sentence = Sentence.builder()
+                    .cast(cast)
                     .originalSentence(originalList[i])
                     .translatedSentence(koreanList[i])
                     .timePoint(timepoint)

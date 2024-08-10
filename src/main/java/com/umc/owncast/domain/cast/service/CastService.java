@@ -1,6 +1,5 @@
 package com.umc.owncast.domain.cast.service;
 
-
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.cast.dto.*;
@@ -12,9 +11,9 @@ import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
 import com.umc.owncast.domain.sentence.entity.Sentence;
-import com.umc.owncast.domain.sentence.repository.SentenceRepository;
 import com.umc.owncast.domain.sentence.service.SentenceService;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +34,6 @@ public class CastService {
     private final SentenceService sentenceService;
 
     private final CastRepository castRepository;
-    private final SentenceRepository sentenceRepository;
     private final PlaylistRepository playlistRepository;
     private final CastPlaylistRepository castPlaylistRepository;
 
@@ -44,10 +42,27 @@ public class CastService {
      * @param castRequest cast 관련 정보
      * @return cast를 List&lt;Sentence>에 담아 반환
      */
-    public ApiResponse<Object> createCast(KeywordCastCreationDTO castRequest){
+    public ApiResponse<Object> createCastByKeyword(KeywordCastCreationDTO castRequest){
         String script = scriptService.createScript(castRequest);
+        return getObjectApiResponse(castRequest, script);
+    }
+
+    /**
+     * script로 cast 생성
+     * @param castRequest cast 관련 정보
+     * @return cast를 List&lt;Sentence>에 담아 반환
+     */
+    public ApiResponse<Object> createCastByScript(ScriptCastCreationDTO castRequest) {
+        String script = castRequest.getScript();
+        KeywordCastCreationDTO request = KeywordCastCreationDTO.builder()
+                .voice(castRequest.getVoice())
+                .formality(castRequest.getFormality())
+                .build();
+        return getObjectApiResponse(request, script);
+    }
+
+    private @NotNull ApiResponse<Object> getObjectApiResponse(KeywordCastCreationDTO castRequest, String script) {
         TTSResultDTO ttsResult = ttsService.createSpeech(script, castRequest);
-        // TODO 아랫부분 리팩토링 (다른 createCast()와 중복됨)
         Cast cast = Cast.builder()
                 .voice(castRequest.getVoice())
                 .audioLength(castRequest.getAudioTime()) // TODO mp3 파일 길이 가져오기
@@ -58,50 +73,9 @@ public class CastService {
                 .isPublic(false)
                 .hits(0L)
                 .build();
-        List<Sentence> sentences = sentenceService.mapToSentence(
-                script,
-                translateService.translate(script),
-                ttsResult,
-                cast
-        );
-        cast.addSentences(sentences);
-        castRepository.save(cast);
-        sentenceRepository.saveAll(sentences);
-
-        CastScriptDTO response = new CastScriptDTO(cast);
-        return ApiResponse.of(SuccessCode._OK, response);
-    }
-
-    /**
-     * script로 cast 생성
-     * @param castRequest cast 관련 정보
-     * @return cast를 List&lt;Sentence>에 담아 반환
-     */
-    public ApiResponse<Object> createCast(ScriptCastCreationDTO castRequest){
-        String script = castRequest.getScript();
-        TTSResultDTO ttsResult = ttsService.createSpeech(script, KeywordCastCreationDTO.builder()
-                        .voice(castRequest.getVoice())
-                        .formality(castRequest.getFormality())
-                        .build());
-        Cast cast = Cast.builder()
-                .voice(castRequest.getVoice())
-                .audioLength(0) // TODO mp3 파일 길이 가져오기
-                .filePath(ttsResult.getMp3Path())
-                .formality(castRequest.getFormality())
-                .member(null) // TODO 회원 기능 만들어지면 자기자신 넣기
-                .language(null) // TODO 회원 기능 만들어지면 언어 설정 넣기
-                .isPublic(false)
-                .hits(0L)
-                .build();
-        List<Sentence> sentences = sentenceService.mapToSentence(
-                script,
-                translateService.translate(script),
-                ttsResult,
-                cast
-        );
-        cast.addSentences(sentences);
-        castRepository.save(cast);
-        sentenceRepository.saveAll(sentences);
+        cast = castRepository.save(cast);
+        String korean = translateService.translate(script);
+        sentenceService.save(script, korean, ttsResult, cast);
 
         CastScriptDTO response = new CastScriptDTO(cast);
         return ApiResponse.of(SuccessCode._OK, response);

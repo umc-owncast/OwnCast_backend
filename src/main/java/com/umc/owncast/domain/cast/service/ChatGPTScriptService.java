@@ -11,7 +11,6 @@ public class ChatGPTScriptService implements ScriptService{
 
     private final ChatGPTPromptGenerator promptGenerator;
     private final ChatGPTScriptGenerator scriptGenerator;
-    private final ParsingService parsingService;
 
     public String createScript(KeywordCastCreationDTO castRequest) {
         String script="";
@@ -29,7 +28,6 @@ public class ChatGPTScriptService implements ScriptService{
             System.out.println("Exception cause : " + e.getCause());
             throw e;
         }
-        parsingService.parseSentences(script);
         return script;
     }
 }
