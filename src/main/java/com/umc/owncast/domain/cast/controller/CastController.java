@@ -5,7 +5,6 @@ import com.umc.owncast.domain.cast.dto.CastSaveDTO;
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
 import com.umc.owncast.domain.cast.dto.ScriptCastCreationDTO;
 import com.umc.owncast.domain.cast.service.CastService;
-import com.umc.owncast.domain.cast.service.FileService;
 import com.umc.owncast.domain.cast.service.ScriptService;
 import com.umc.owncast.domain.cast.service.StreamService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 
 @Tag(name = "캐스트 API", description = "캐스트 관련 API입니다")
@@ -30,7 +28,6 @@ public class CastController {
     private final CastService castService;
     private final ScriptService scriptService;
     private final StreamService streamService;
-    private final FileService fileService;
 
     /* * * * * * * * * * * * * *
     * 테스트용 메소드 (나중에 삭제) *
