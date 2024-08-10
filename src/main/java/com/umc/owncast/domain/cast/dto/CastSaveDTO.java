@@ -1,6 +1,7 @@
 package com.umc.owncast.domain.cast.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Data
@@ -13,7 +14,7 @@ public class CastSaveDTO {
     @NotEmpty
     private String title;
 
-    @NotEmpty
+    @NotNull
     private Long playlistId;
 
     private Boolean isPublic;
