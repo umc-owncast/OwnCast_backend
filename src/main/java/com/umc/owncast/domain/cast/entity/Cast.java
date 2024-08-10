@@ -76,11 +76,11 @@ public class Cast extends BaseTimeEntity {
     }
 
     public void update(CastUpdateDTO updateRequest) {
-        if(StringUtil.isBlank(updateRequest.getTitle()))
+        if(!StringUtil.isBlank(updateRequest.getTitle()))
             this.title = updateRequest.getTitle();
         if(Objects.nonNull(updateRequest.getIsPublic()))
             this.isPublic = updateRequest.getIsPublic();
-        if(StringUtil.isBlank(updateRequest.getImagePath()))
+        if(!StringUtil.isBlank(updateRequest.getImagePath()))
             this.imagePath = updateRequest.getImagePath();
     }
 
