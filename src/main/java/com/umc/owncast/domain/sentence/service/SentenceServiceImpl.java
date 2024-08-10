@@ -34,7 +34,6 @@ public class SentenceServiceImpl implements SentenceService {
                     .timePoint(timepoint)
                     .build();
             i++;
-            // sentenceRepository.save(sentence);
             sentences.add(sentence);
         }
         return sentenceRepository.saveAll(sentences);
