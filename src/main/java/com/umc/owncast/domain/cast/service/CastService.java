@@ -104,6 +104,11 @@ public class CastService {
                 .cast(cast)
                 .playlist(playlist)
                 .build();
+        castPlaylistRepository.findByCastIdAndPlaylistId(castId, playlist.getId())
+                .ifPresent(cp -> {
+                    throw new RuntimeException("캐스트가 이미 해당 플레이리스트에 저장되어 있습니다.");
+                });
+
         castPlaylistRepository.save(castPlaylist);
         return ApiResponse.of(SuccessCode._OK, "저장되었습니다.");
     }
