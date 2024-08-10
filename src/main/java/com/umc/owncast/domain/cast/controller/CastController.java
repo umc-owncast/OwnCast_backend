@@ -5,6 +5,7 @@ import com.umc.owncast.domain.cast.dto.CastSaveDTO;
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
 import com.umc.owncast.domain.cast.dto.ScriptCastCreationDTO;
 import com.umc.owncast.domain.cast.service.CastService;
+import com.umc.owncast.domain.cast.service.FileService;
 import com.umc.owncast.domain.cast.service.ScriptService;
 import com.umc.owncast.domain.cast.service.StreamService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,9 +14,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 
 @Tag(name = "캐스트 API", description = "캐스트 관련 API입니다")
@@ -26,6 +30,7 @@ public class CastController {
     private final CastService castService;
     private final ScriptService scriptService;
     private final StreamService streamService;
+    private final FileService fileService;
 
     /* * * * * * * * * * * * * *
     * 테스트용 메소드 (나중에 삭제) *
@@ -81,11 +86,12 @@ public class CastController {
     }
 
     /* Cast 저장 API */
-    @PostMapping("/{castId}")
+    @PostMapping(value = "/{castId}", consumes = {MediaType.APPLICATION_JSON_VALUE , MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "캐스트 저장 API (저장 화면에서 호출)")
     public ApiResponse<Object> saveCast(@PathVariable("castId") Long castId,
-                                        @Valid @RequestBody CastSaveDTO saveRequest){
-        return castService.saveCast(castId, saveRequest);
+                                        @Valid @RequestPart CastSaveDTO saveRequest,
+                                        @RequestPart MultipartFile image){
+        return castService.saveCast(castId, saveRequest, image);
     }
 
     /* Cast 재생 API */
@@ -106,5 +112,4 @@ public class CastController {
     /* Cast 수정 API */
 
     /* Cast 삭제 API */
-
 }

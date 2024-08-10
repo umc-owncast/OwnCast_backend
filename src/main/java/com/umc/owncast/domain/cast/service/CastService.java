@@ -18,6 +18,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -83,13 +84,12 @@ public class CastService {
         return ApiResponse.of(SuccessCode._OK, response);
     }
 
-    public ApiResponse<Object> saveCast(Long castId, CastSaveDTO saveRequest){
+    public ApiResponse<Object> saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image){
         // 제목, 커버이미지, 공개여부 등 저장
         updateCast(castId, CastUpdateDTO.builder()
                 .title(saveRequest.getTitle())
-                .castImage(saveRequest.getCastImage())
                 .isPublic(saveRequest.getIsPublic())
-                .imagePath(saveRequest.getImagePath())
+                .imagePath(fileService.uploadFile(image))
                 .build()
         );
         // 플레이리스트 저장
@@ -105,9 +105,8 @@ public class CastService {
 
     public ApiResponse<Object> updateCast(Long castId, CastUpdateDTO updateRequest) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
-        String imagePath = fileService.uploadFile(updateRequest.getCastImage());
-        // TODO 원래 이미지 삭제 (FileService.removeFile()?)
-        updateRequest.setImagePath(imagePath);
+        fileService.deleteFile(cast.getImagePath());
+        updateRequest.setImagePath(updateRequest.getImagePath());
         cast.update(updateRequest);
         castRepository.save(cast);
 

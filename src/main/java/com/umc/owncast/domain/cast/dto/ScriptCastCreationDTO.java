@@ -13,7 +13,7 @@ public class ScriptCastCreationDTO {
     @NotEmpty(message = "스크립트는 필수 입력 항목입니다.")
     private String script;
 
-    private Formality formality = Formality.CASUAL;
+    private Formality formality;
 
-    private String voice = "DEFAULT_VOICE";
+    private String voice;
 }
