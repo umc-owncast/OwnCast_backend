@@ -22,11 +22,13 @@ public enum ErrorCode implements BaseErrorCode {
     MEMBER_LOGIN_FAILURE(HttpStatus.BAD_REQUEST, "MEMBER4003", "아이디 혹은 비밀번호를 잘못 입력하였습니다."),
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
     NICKNAME_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "SIGNUP4004", "이미 존재하는 닉네임입니다."),
-    ID_ALREADY_EXIST(HttpStatus.CONFLICT, "SIGNUP4003", "이미 존재하는 ID입니다."),
+    ID_ALREADY_EXIST(HttpStatus.CONFLICT, "SIGNUP4003", "이미 존재하는 아이디입니다."),
     MEMBER_SIGNUP_ERROR(HttpStatus.BAD_REQUEST, "SIGNUP4001", "회원가입 유효성 검사 실패"),
     EXIST_NICKNAME(HttpStatus.CONFLICT, "MEMBER_4091", "이미 존재하는 닉네임입니다"),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "MEMBER_4010", "비밀번호가 일치하지 않습니다"),
     INACTIVATE_FORBIDDEN(HttpStatus.FORBIDDEN, "MEMBER_4030", "비활성된 회원입니다"),
+    LANGUAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4011", "언어가 없습니다."),
+    CATEGORY_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4012", "카테고리가 없습니다."),
 
     // 로그인 관련 에러
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "AUTH_4000", "잘못된 파라미터 형식입니다"),

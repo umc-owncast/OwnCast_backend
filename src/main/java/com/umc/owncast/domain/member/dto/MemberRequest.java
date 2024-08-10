@@ -26,5 +26,11 @@ public class MemberRequest {
         String password;
     }
 
+    @Getter
+    public static class memberPreferDto{
+        Long mainCategoryId;
+        Long subCategoryId;
+        String etc;
+    }
 
 }

@@ -36,8 +36,16 @@ public class MemberController {
 
     @Operation(summary = "회원가입 언어 관심분야 API")
     @PostMapping("/signup/{memberId}")
-    public ApiResponse<String> joinByCategory() {
-        return null;
+    public ApiResponse<Long> joinSetting(@PathVariable("memberId") Long memberId,
+                                         @RequestParam("language_id") Long languageId,
+                                         @Valid @RequestBody MemberRequest.memberPreferDto request) {
+
+        memberService.addLanguageSetting(memberId, languageId);
+
+        // 관심분야 설정 추가
+        memberService.addPreferSetting(memberId, request);
+
+        return ApiResponse.of(SuccessCode._OK, memberId);
     }
 
 

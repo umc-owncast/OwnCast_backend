@@ -6,8 +6,6 @@ import com.umc.owncast.domain.language.entity.Language;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -40,15 +38,10 @@ public class Member extends BaseTimeEntity {
     @JoinColumn(name = "language_id")
     private Language language;
 
-
-    public Member(String loginId, String username, String password, String nickname, Status status, Language language) {
-        this.loginId = loginId;
-        this.username = username;
-        this.password = password;
-        this.nickname = nickname;
-        this.status = (status != null) ? status : Status.ACTIVE;
+    public void getLanguage(Language language) {
         this.language = language;
     }
+
 
 
     /*@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
