@@ -11,6 +11,8 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
             "WHERE p.name = '담아온 캐스트' AND p.id = :memberId")
     Optional<Playlist> findSavedPlaylist(Long memberId);
 
-    boolean existsByName(String name);
+    boolean existsByNameAndMemberId(String name, Long memberId);
+
+    Optional<Playlist> findByIdAndMemberId(Long id, Long memberId);
 
 }

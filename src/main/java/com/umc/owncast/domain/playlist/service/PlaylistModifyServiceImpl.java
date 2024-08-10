@@ -16,11 +16,11 @@ import java.util.Optional;
 public class PlaylistModifyServiceImpl {
     private final PlaylistRepository playlistRepository;
 
-    public PlaylistDTO.ModifyPlaylistDTO modifyPlaylist(Long categoryId, String categoryName) {
+    public PlaylistDTO.ModifyPlaylistDTO modifyPlaylist(Long playlistId, String playlistName) {
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
 
-        Optional<Playlist> optionalPlaylist = playlistRepository.findById(categoryId);
+        Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, 1L);
         Playlist playlist;
 
         if(optionalPlaylist.isEmpty()) {
@@ -28,11 +28,11 @@ public class PlaylistModifyServiceImpl {
         } else {
             playlist = optionalPlaylist.get();
 
-            if(playlistRepository.existsByName(categoryName)) {
+            if(playlistRepository.existsByNameAndMemberId(playlistName, 1L)) {
                 throw new UserHandler(ErrorCode.PLAYLIST_ALREADY_EXIST);
             }
             else {
-                playlist.setName(categoryName);
+                playlist.setName(playlistName);
                 playlistRepository.save(playlist);
 
                 return PlaylistDTO.ModifyPlaylistDTO.builder()
@@ -41,7 +41,6 @@ public class PlaylistModifyServiceImpl {
                         .build();
             }
         }
-
 
     }
 }

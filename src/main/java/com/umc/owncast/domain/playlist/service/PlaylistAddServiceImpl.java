@@ -20,7 +20,7 @@ public class PlaylistAddServiceImpl {
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
 
-        if(playlistRepository.existsByName(playlistName)) {
+        if(playlistRepository.existsByNameAndMemberId(playlistName, 1L)) {
             throw new UserHandler(ErrorCode.PLAYLIST_ALREADY_EXIST);  //에러
         } else {
             Playlist newPlaylist = Playlist.builder()
@@ -29,6 +29,7 @@ public class PlaylistAddServiceImpl {
                     .build();
 
             playlistRepository.save(newPlaylist);
+
             return PlaylistDTO.AddPlaylistDTO.builder()
                     .playlistId(newPlaylist.getId())
                     .build();

@@ -1,8 +1,12 @@
 package com.umc.owncast.domain.castplaylist.repository;
 
 
+import com.umc.owncast.common.exception.handler.UserHandler;
+import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
+import com.umc.owncast.domain.playlist.entity.Playlist;
+import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +19,14 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
             "FROM CastPlaylist c WHERE c.playlist.id = :playlistId AND c.cast.id = :castId")
     boolean existsByPlaylistIdAndCastId(@Param("playlistId") Long playlistId, @Param("castId") Long castId);
 
-    void deleteByPlaylistId(Long playlistId);
+    void deleteByPlaylistIdAndCastId(Long playlistId, Long castId);
+
+    default void deleteByPlaylistIdAndMemberId(Long playlistId, Long memberId, PlaylistRepository playlistRepository) {
+        Playlist playlist = playlistRepository.findByIdAndMemberId(playlistId, memberId)
+                .orElseThrow(( )-> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
+
+        deleteByPlaylistIdAndCastId(playlist.getId(), memberId);
+    }
 
     Page<CastPlaylist> findByPlaylistId(Long playlistId, Pageable pageable);
 }

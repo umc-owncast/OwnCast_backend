@@ -25,7 +25,7 @@ public class PlaylistDeleteServiceImpl {
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
 
-        Optional<Playlist> optionalPlaylist = playlistRepository.findById(playlistId);
+        Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, 1L);
         Playlist playlist;
 
         if(optionalPlaylist.isEmpty()) {
@@ -33,8 +33,9 @@ public class PlaylistDeleteServiceImpl {
         } else {
             playlist = optionalPlaylist.get();
 
-            // cast_playlist 엔티티에서 해당 플레이리스트 id를 가진 모든 행을 삭제
-            castPlaylistRepository.deleteByPlaylistId(playlistId);
+            // TODO: cast_playlist 엔티티에서 해당 플레이리스트 id를 가진 모든 행을 삭제
+//            castPlaylistRepository.deleteById(playlistId);
+//            castPlaylistRepository.deleteByPlaylistIdAndMemberId(playlistId, 1L, playlistRepository);
             // playlist 엔티티에서 해당 플레이리스트 삭제
             playlistRepository.delete(playlist);
 
