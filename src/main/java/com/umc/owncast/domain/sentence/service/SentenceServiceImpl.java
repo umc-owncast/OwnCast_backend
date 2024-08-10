@@ -20,11 +20,12 @@ public class SentenceServiceImpl implements SentenceService {
     private final ParsingService parsingService;
 
     @Override
-    public void save(String original, TTSResultDTO ttsResultDTO, Cast cast) {
+    public List<Sentence> save(String original, TTSResultDTO ttsResultDTO, Cast cast) {
         int i = 0;
         String koreanScript = translateService.translate(original);
         String[] originalList = parsingService.parseSentences(original);
         String[] koreanList = parsingService.parseSentences(koreanScript);
+        List<Sentence> sentences = new ArrayList<>();
         for(Double timepoint : ttsResultDTO.getTimePointList()) {
             Sentence sentence = Sentence.builder()
                     .cast(cast)
@@ -33,8 +34,10 @@ public class SentenceServiceImpl implements SentenceService {
                     .timePoint(timepoint)
                     .build();
             i++;
-            sentenceRepository.save(sentence);
+            // sentenceRepository.save(sentence);
+            sentences.add(sentence);
         }
+        return sentenceRepository.saveAll(sentences);
     }
 
     @Override

@@ -78,9 +78,12 @@ public class CastService {
                 .hits(0L)
                 .build();
         cast = castRepository.save(cast);
-        sentenceService.save(script, ttsResult, cast);
+        List<Sentence> sentences = sentenceService.save(script, ttsResult, cast);
 
         CastScriptDTO response = new CastScriptDTO(cast);
+        response.setSentences(sentences.stream()
+                .map(SentenceResponseDTO::new)
+                .toList());
         return ApiResponse.of(SuccessCode._OK, response);
     }
 
