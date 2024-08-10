@@ -2,6 +2,7 @@ package com.umc.owncast.domain.cast.controller;
 
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.domain.cast.dto.CastSaveDTO;
+import com.umc.owncast.domain.cast.dto.CastUpdateDTO;
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
 import com.umc.owncast.domain.cast.dto.ScriptCastCreationDTO;
 import com.umc.owncast.domain.cast.service.CastService;
@@ -47,7 +48,7 @@ public class CastController {
         castService.createCast(castRequest);
     }*/
 
-    @GetMapping("/stream-test")
+    /*@GetMapping("/stream-test")
     @CrossOrigin(origins = "*") // TODO 프론트 url로 대체
     @Operation(summary = "스트리밍 테스트. 테스트용 음악 파일을 스트리밍 합니다")
     public Object streamTest(@RequestHeader HttpHeaders headers) throws IOException {
@@ -61,7 +62,7 @@ public class CastController {
     public Object streamTest(@RequestHeader HttpHeaders headers,
                              @PathVariable(name = "filename") String filename) throws IOException {
         return streamService.stream(filename, headers);
-    }
+    }*/
 
 
     /* * * * * * * *
@@ -86,14 +87,18 @@ public class CastController {
     @PostMapping(value = "/{castId}", consumes = {MediaType.APPLICATION_JSON_VALUE , MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "캐스트 저장 API (저장 화면에서 호출)")
     public ApiResponse<Object> saveCast(@PathVariable("castId") Long castId,
-                                        @Valid @RequestPart CastSaveDTO saveRequest,
-                                        @RequestPart MultipartFile image){
+                                        @Valid @RequestPart(value = "saveInfo") CastSaveDTO saveRequest,
+                                        @RequestPart(value = "image", required = false) MultipartFile image){
+        System.out.println("CastController: save()");
+        System.out.println(saveRequest);
+        System.out.println(image);
         return castService.saveCast(castId, saveRequest, image);
     }
 
     /* Cast 재생 API */
     @GetMapping("/{castId}/audio")
     @Operation(summary = "캐스트 재생 API")
+    @CrossOrigin
     public ResponseEntity<UrlResource> streamCast(@PathVariable("castId") Long castId,
                                                   @RequestHeader HttpHeaders headers){
         return castService.streamCast(castId, headers);
@@ -102,11 +107,25 @@ public class CastController {
     /* Cast 스크립트 가져오는 API */
     @GetMapping("/{castId}/scripts")
     @Operation(summary = "캐스트 스크립트 가져오기 API")
-    public ApiResponse<Object> findCastScripts(@PathVariable("castId") Long castId){
-        return castService.getSentenceList(castId);
+    public ApiResponse<Object> fetchCastScripts(@PathVariable("castId") Long castId){
+        return castService.fetchCastScript(castId);
     }
 
     /* Cast 수정 API */
+    @PatchMapping("/{castId}")
+    @Operation(summary = "캐스트 수정 API")
+    public ApiResponse<Object> updateCast(@PathVariable("castId") Long castId,
+                                          @Valid @RequestPart(value = "updateInfo") CastUpdateDTO updateRequest,
+                                          @RequestPart(value = "image", required = false) MultipartFile image){
+        // TODO 캐스트 생성자 혹은 관리자여야 함
+        return castService.updateCast(castId, updateRequest, image);
+    }
 
     /* Cast 삭제 API */
+    @DeleteMapping("/{castId}")
+    @Operation(summary = "캐스트 삭제 API")
+    public ApiResponse<Object> deleteCast(@PathVariable("castId") Long castId){
+        // TODO 캐스트 생성자 혹은 관리자여야 함
+        return castService.deleteCast(castId);
+    }
 }
