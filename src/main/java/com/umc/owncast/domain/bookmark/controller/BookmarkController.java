@@ -28,6 +28,20 @@ public class BookmarkController {
     }
 
     @CrossOrigin
+    @Operation(summary = "내가 저장한 캐스트의 북마크된 문장 불러오기")
+    @GetMapping("/study/mycast")
+    public ApiResponse<List<BookMarkDTO.BookMarkResultDTO>> getMyCastBookmarks() {
+        return ApiResponse.onSuccess(bookmarkService.getMyCastBookmarks());
+    }
+
+    @CrossOrigin
+    @Operation(summary = "내가 저장한 남의 캐스트의 북마크된 문장 불러오기")
+    @GetMapping("/study/savedcast")
+    public ApiResponse<List<BookMarkDTO.BookMarkResultDTO>> getSavedBookmarks() {
+        return ApiResponse.onSuccess(bookmarkService.getSavedBookmarks());
+    }
+
+    @CrossOrigin
     @Operation(summary = "문장 북마크 하기")
     @PostMapping("/bookmark")
     public ApiResponse<BookMarkDTO.BookMarkSaveResultDTO> saveBookmark(@RequestParam("sentenceId") Long sentenceId) {
