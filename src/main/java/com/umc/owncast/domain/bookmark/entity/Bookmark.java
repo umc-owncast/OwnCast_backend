@@ -3,9 +3,11 @@ package com.umc.owncast.domain.bookmark.entity;
 import com.umc.owncast.common.entity.BaseTimeEntity;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.sentence.entity.Sentence;
-import com.umc.owncast.domain.member.entity.Member;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
@@ -13,7 +15,7 @@ import lombok.*;
 @Entity
 @Table(name = "bookmark")
 @AllArgsConstructor
-public class Bookmark extends BaseTimeEntity{
+public class Bookmark extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,7 +24,7 @@ public class Bookmark extends BaseTimeEntity{
     @JoinColumn(name = "cast_playlist_id")
     private CastPlaylist castPlaylist;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sentence_id")
     private Sentence sentence;
 }

@@ -6,7 +6,6 @@ import com.umc.owncast.domain.language.entity.Language;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -19,7 +18,7 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column( nullable = false, length = 30, updatable = false)
+    @Column(nullable = false, length = 30, updatable = false)
     private String loginId;
 
     @Column(nullable = false, length = 50)
@@ -35,11 +34,9 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id")
     private Language language;
-
 
     public Member(String loginId, String username, String password, String nickname, Status status, Language language) {
         this.loginId = loginId;

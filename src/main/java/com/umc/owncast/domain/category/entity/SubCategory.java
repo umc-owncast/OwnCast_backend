@@ -1,8 +1,10 @@
 package com.umc.owncast.domain.category.entity;
 
-import com.umc.owncast.domain.category.entity.MainCategory;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder

@@ -4,17 +4,17 @@ import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.category.entity.MainCategory;
 import com.umc.owncast.domain.category.entity.SubCategory;
-import com.umc.owncast.domain.category.main_category.repository.MainCategoryRepository;
-import com.umc.owncast.domain.category.sub_category.repository.SubCategoryRepository;
+import com.umc.owncast.domain.category.repository.MainCategoryRepository;
+import com.umc.owncast.domain.category.repository.SubCategoryRepository;
 import com.umc.owncast.domain.language.repository.LanguageRepository;
 import com.umc.owncast.domain.member.dto.MemberPreferRequestDTO;
 import com.umc.owncast.domain.member.dto.MemberProfileRequestDTO;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.member.repository.MemberRepository;
 import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
-import com.umc.owncast.domain.memberprefer.entity.MainPreferRepository;
 import com.umc.owncast.domain.memberprefer.entity.SubPrefer;
-import com.umc.owncast.domain.memberprefer.entity.SubPreferRepository;
+import com.umc.owncast.domain.memberprefer.repository.MainPreferRepository;
+import com.umc.owncast.domain.memberprefer.repository.SubPreferRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ public class UserService {
     private final MainCategoryRepository mainCategoryRepository;
     private final SubCategoryRepository subCategoryRepository;
 
-    public Long languageSetting(Long languageId){
+    public Long languageSetting(Long languageId) {
 
         // 토큰을 이용해서 사용자 정보 받기
         // 일단은 1L로 설정
@@ -41,7 +41,7 @@ public class UserService {
         Optional<Member> optionalMember = memberRepository.findById(1L);
         Member member;
 
-        if(optionalMember.isEmpty()){
+        if (optionalMember.isEmpty()) {
             throw new UserHandler(ErrorCode.MEMBER_NOT_FOUND);
         } else {
             member = optionalMember.get();
@@ -52,7 +52,7 @@ public class UserService {
         return member.getId();
     }
 
-    public Long preferSetting(MemberPreferRequestDTO memberPreferRequestDTO){
+    public Long preferSetting(MemberPreferRequestDTO memberPreferRequestDTO) {
 
         // 토큰을 이용해서 사용자 정보 받기
         // 일단은 1L로 설정
@@ -61,11 +61,11 @@ public class UserService {
         Optional<MainCategory> optionalMainCategory = mainCategoryRepository.findById(memberPreferRequestDTO.getMainCategoryId());
         Optional<SubCategory> optionalSubCategory = subCategoryRepository.findById(memberPreferRequestDTO.getSubCategoryId());
 
-        if(optionalMember.isEmpty()){
+        if (optionalMember.isEmpty()) {
             throw new UserHandler(ErrorCode.MEMBER_NOT_FOUND);
         }
 
-        if(optionalMainCategory.isEmpty() || (optionalSubCategory.isEmpty() && memberPreferRequestDTO.getEtc() == null)){
+        if (optionalMainCategory.isEmpty() || (optionalSubCategory.isEmpty() && memberPreferRequestDTO.getEtc() == null)) {
             throw new UserHandler(ErrorCode.CATEGORY_NOT_EXIST);
         }
 
@@ -75,7 +75,7 @@ public class UserService {
         Optional<MainPrefer> optionalMainPrefer = mainPreferRepository.findByMember(member);
         Optional<SubPrefer> optionalSubPrefer = subPreferRepository.findByMember(member);
 
-        if(optionalMainPrefer.isEmpty() || optionalSubPrefer.isEmpty()){
+        if (optionalMainPrefer.isEmpty() || optionalSubPrefer.isEmpty()) {
             throw new UserHandler(ErrorCode._BAD_REQUEST);
         }
 
@@ -96,14 +96,14 @@ public class UserService {
         subPrefer.setSubCategory(subCategory);
         subCategoryRepository.save(subCategory);
 
-        if(oldSubCategory.isUserCreated()) {
+        if (oldSubCategory.isUserCreated()) {
             subCategoryRepository.delete(oldSubCategory);
         }
 
         return member.getId();
     }
 
-    public Long idPasswordSetting(MemberProfileRequestDTO memberProfileRequestDTO){
+    public Long idPasswordSetting(MemberProfileRequestDTO memberProfileRequestDTO) {
 
         // 토큰을 이용해서 사용자 정보 받기
         // 일단은 1L로 설정
@@ -111,7 +111,7 @@ public class UserService {
         Optional<Member> optionalMember = memberRepository.findById(1L);
         Member member;
 
-        if(optionalMember.isEmpty()){
+        if (optionalMember.isEmpty()) {
             throw new UserHandler(ErrorCode.MEMBER_NOT_FOUND);
         } else {
             member = optionalMember.get();
