@@ -33,6 +33,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     private final CastRepository castRepository;
     private final CastPlaylistRepository castPlaylistRepository;
 
+    @Override
     public List<PlaylistDTO.PlaylistResultDTO> getAllPlaylists(){
 
         // Token으로 사용자 id 불러오기
@@ -183,7 +184,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         return PlaylistDTO.CastDTO.builder()
                 .castId(castPlaylist.getCast().getId())
                 .castTitle(castPlaylist.getCast().getTitle())
-                .isPublic(castPlaylist.getCast().isPublic())
+                .isPublic(castPlaylist.getCast().getIsPublic())
                 .castCreator(castPlaylist.getCast().getMember().getUsername())
                 .castCategory(castPlaylist.getPlaylist().getName())
                 .audioLength(castPlaylist.getCast().getAudioLength())

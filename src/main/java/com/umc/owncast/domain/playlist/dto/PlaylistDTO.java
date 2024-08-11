@@ -56,7 +56,7 @@ public class PlaylistDTO {
         Boolean isPublic;
         String castCreator;
         String castCategory;
-        Integer audioLength;
+        String audioLength;
     }
 
 }

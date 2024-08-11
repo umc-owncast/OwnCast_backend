@@ -1,14 +1,11 @@
 package com.umc.owncast.domain.cast.service;
 
-
-import com.theokanning.openai.OpenAiHttpException;
 import com.theokanning.openai.completion.chat.*;
 import com.theokanning.openai.service.OpenAiService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.net.SocketTimeoutException;
 import java.time.Duration;
 
 @Service
