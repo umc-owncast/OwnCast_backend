@@ -18,14 +18,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.umc.owncast.domain.cast.service.KeywordService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
+import java.util.List;
 
 @Tag(name = "캐스트 API", description = "캐스트 관련 API입니다")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/cast")
 public class CastController {
+    private final KeywordService keywordService;
     private final CastService castService;
     private final ScriptService scriptService;
     private final StreamService streamService;
@@ -127,5 +133,11 @@ public class CastController {
     public ApiResponse<Object> deleteCast(@PathVariable("castId") Long castId){
         // TODO 캐스트 생성자 혹은 관리자여야 함
         return castService.deleteCast(castId);
+    }
+
+    @GetMapping("/home")
+    @Operation(summary = "홈 화면 키워드 6개 받아오기")
+    public List<String> createScript() {
+        return keywordService.createKeyword();
     }
 }

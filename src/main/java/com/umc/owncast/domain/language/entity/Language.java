@@ -16,6 +16,8 @@ public class Language {
 
     @Column(nullable = false, length = 50)
     private String languageName;
+    @Column
+    private Long accent;
 
     /*@OneToMany(mappedBy = "language", cascade = CascadeType.ALL)
     private List<Member> memberList = new ArrayList<>();
