@@ -25,8 +25,6 @@ public class CastController {
     private final CastService castService;
     private final ScriptService scriptService;
     private final StreamService streamService;
-//    private final CastSearchService castSearchService;
-    private final CastSaveService castSaveService;
 
     /* * * * * * * * * * * * * *
      * 테스트용 메소드 (나중에 삭제) *
@@ -135,21 +133,21 @@ public class CastController {
 
     @CrossOrigin
     @Operation(summary = "검색 홈 API")
-    @GetMapping("/search/{page}")
-    public ApiResponse<List<CastDTO.CastHomeDTO>> searchHome(@PathVariable("page") Integer page) {
-        return ApiResponse.onSuccess(castService.getHomeCast(page));
+    @GetMapping("/search/home")
+    public ApiResponse<List<CastDTO.CastHomeDTO>> searchHome() {
+        return ApiResponse.onSuccess(castService.getHomeCast());
     }
 
     @CrossOrigin
-    @Operation(summary = "캐스트 저장")
-    @PostMapping("/save")
-    public ApiResponse<Long> saveCast(@RequestBody CastDTO.CastSaveRequestDTO castDTO) {
-        return ApiResponse.onSuccess(castSaveService.saveCast(castDTO));
+    @Operation(summary = "다른 사람의 플레이리스트 가져오기")
+    @PostMapping("/other")
+    public ApiResponse<Long> getOtherCast(@RequestBody CastDTO.CastSaveRequestDTO castDTO) {
+        return ApiResponse.onSuccess(castService.getOtherCast(castDTO));
     }
 
     @CrossOrigin
     @Operation(summary = "검색 API")
-    @PostMapping("/search") // 수정 필요
+    @PostMapping("/search")
     public ApiResponse<List<CastDTO.CastHomeDTO>> saveCast(@RequestParam("keyword") String keyword) {
         return ApiResponse.onSuccess(castService.getCast(keyword));
     }

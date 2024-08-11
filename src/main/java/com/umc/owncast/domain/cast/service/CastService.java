@@ -154,7 +154,7 @@ public class CastService {
         return ApiResponse.of(SuccessCode._OK, cast);
     }
 
-    public List<CastDTO.CastHomeDTO> getHomeCast(Integer page) {
+    public List<CastDTO.CastHomeDTO> getHomeCast() {
         // Long memberId = 토큰으로 정보 받아오기
         Optional<MainPrefer> userMainCategory = memberPreferRepository.findByMemberId(1L);
         //임시로 1L로 설정
@@ -164,7 +164,7 @@ public class CastService {
             throw new UserHandler(ErrorCode.CAST_NOT_FOUND);
         } else {
             Long userCategoryId = userMainCategory.get().getMainCategory().getId();
-            Pageable pageable = PageRequest.of(page - 1, 5);
+            Pageable pageable = PageRequest.of(0, 5);
             List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategoryId, pageable, 1L).getContent();
 
             castHomeDTOList = castMainCategories.stream().map(cast ->
@@ -182,7 +182,8 @@ public class CastService {
     }
 
     public List<CastDTO.CastHomeDTO> getCast(String keyword) {
-        List<Cast> castList = castRepository.castSearch(keyword);
+
+        List<Cast> castList = castRepository.castSearch(keyword, 1L);
 
         return castList.stream().map(cast ->
                 CastDTO.CastHomeDTO.builder()
@@ -193,5 +194,43 @@ public class CastService {
                         .playlistName(playlistRepository.findUserCategoryName(cast.getId()).getName())
                         .build()
         ).toList();
+    }
+
+    public Long getOtherCast(CastDTO.CastSaveRequestDTO castSaveRequestDTO) {
+
+        // Long memberId = 토큰으로 정보 받아오기
+        //임시로 1L로 설정
+
+        Optional<Playlist> optionalCastPlaylist = playlistRepository.findById(castSaveRequestDTO.getPlaylistId());
+        Optional<Cast> optionalCast = castRepository.findById(castSaveRequestDTO.getCastId());
+
+        Playlist castPlaylist;
+        Cast cast;
+
+
+        if (optionalCast.isEmpty() || optionalCastPlaylist.isEmpty()) {
+            throw new UserHandler(ErrorCode.CAST_NOT_FOUND);
+        } else {
+            cast = optionalCast.get();
+            castPlaylist = optionalCastPlaylist.get();
+        }
+
+        if (castPlaylistRepository.existsByMemberIdAndCastId(1L, cast.getId())) { // 해당 캐스트가 유저의 플레이리스트에 이미 저장한 경우
+            throw new UserHandler(ErrorCode.CAST_ALREADY_EXIST);
+        }
+        ; // 이미 존재하는 경우
+
+        if (!cast.getIsPublic()) {
+            throw new UserHandler(ErrorCode.CAST_PRIVATE);
+        }
+
+        CastPlaylist newCastPlaylist = CastPlaylist.builder()
+                .cast(cast)
+                .playlist(castPlaylist)
+                .build();
+
+        castPlaylistRepository.save(newCastPlaylist);
+
+        return newCastPlaylist.getId();
     }
 }

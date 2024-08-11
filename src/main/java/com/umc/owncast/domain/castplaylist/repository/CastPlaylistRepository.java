@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long> {
 
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END " +
-            "FROM CastPlaylist c WHERE c.cast.id = :castId AND c.cast.member.id = :memberId ")
+            "FROM CastPlaylist c WHERE c.playlist.member.id = :memberId AND c.cast.id = :castId ")
     boolean existsByMemberIdAndCastId(@Param("memberId") Long memberId, @Param("castId") Long castId);
 
     @Query("SELECT cp FROM CastPlaylist cp JOIN cp.cast c JOIN Sentence s ON s.cast = c WHERE s.id = :sentenceId AND cp.playlist.member.id = :memberId")
