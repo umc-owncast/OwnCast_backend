@@ -40,6 +40,10 @@ public enum ErrorCode implements BaseErrorCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_4013", "토큰이 올바르지 않습니다"),
     OUTPUT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_5000", "서버 출력에 오류가 있습니다. 관리자에게 문의하세요"),
 
+    BOOKMARK_NOT_EXIST(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "존재하지 않는 북마크입니다."),
+    BOOKMARK_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "BOOKMARK4002", "이미 존재하는 북마크입니다.")
+
+
     // 기타 에러는 아래에 추가
     ;
 
