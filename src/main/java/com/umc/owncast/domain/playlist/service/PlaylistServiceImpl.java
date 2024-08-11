@@ -63,7 +63,7 @@ public class PlaylistServiceImpl implements PlaylistService {
             playlist = optionalPlaylist.get();
 
             // cast_playlist 엔티티에서 해당 플레이리스트 id를 가진 모든 행을 삭제
-            castPlaylistRepository.deleteByPlaylistId(playlistId);
+            castPlaylistRepository.deleteAllByPlaylistId(playlistId);
 
             // playlist 엔티티에서 해당 플레이리스트 삭제
             playlistRepository.delete(playlist);
