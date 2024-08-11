@@ -36,7 +36,7 @@ public class KeywordService {
         }
 
         try {
-            ChatCompletionRequest prompt = chatGPTPromptGenerator.generatePrompt(categoryName);
+            ChatCompletionRequest prompt = chatGPTPromptGenerator.generateKeywordPrompt(categoryName);
             script = chatGPTKeywordGenerator.generateKeyword(prompt);
 
             Gson gson = new Gson();

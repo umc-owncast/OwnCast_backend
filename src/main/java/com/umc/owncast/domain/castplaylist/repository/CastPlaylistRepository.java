@@ -6,10 +6,9 @@ import com.umc.owncast.domain.playlist.entity.Playlist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.List;
 
 public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long> {
 
@@ -22,4 +21,6 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
 
     @Query("SELECT cp.cast FROM CastPlaylist cp WHERE cp.playlist.member.id = :memberId AND cp.cast.member.id != :memberId")
     List<Cast> findSavedCast(@Param("memberId") long memberId);
+
+    Optional<CastPlaylist> findByCastIdAndPlaylistId(Long castId, Long id);
 }
