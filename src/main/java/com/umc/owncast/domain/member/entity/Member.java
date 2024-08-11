@@ -6,6 +6,7 @@ import com.umc.owncast.domain.language.entity.Language;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,7 +18,7 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column( nullable = false, length = 30, updatable = false)
+    @Column(nullable = false, length = 30, updatable = false)
     private String loginId;
 
     @Column(nullable = false, length = 50)
@@ -37,10 +38,25 @@ public class Member extends BaseTimeEntity {
     @JoinColumn(name = "language_id")
     private Language language;
 
-    public void setLanguage(Language language) {
+    public Member(String loginId, String username, String password, String nickname, Status status, Language language) {
+        this.loginId = loginId;
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.status = (status != null) ? status : Status.ACTIVE;
         this.language = language;
     }
 
+    public void setMember(String loginId, String username, String password, String nickname) {
+        this.loginId = loginId;
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
 
 
     /*@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)

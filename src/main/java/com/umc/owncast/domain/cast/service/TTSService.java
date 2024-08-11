@@ -1,17 +1,16 @@
 package com.umc.owncast.domain.cast.service;
 
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
-import com.umc.owncast.domain.cast.dto.ScriptCastCreationDTO;
 import com.umc.owncast.domain.cast.dto.TTSDTO;
 import com.umc.owncast.domain.cast.dto.TTSResultDTO;
 import com.umc.owncast.domain.cast.enums.VoiceCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.*;
 
@@ -41,7 +40,7 @@ public class TTSService {
     }
 
     private TTSResultDTO requestSpeech(TTSDTO ttsdto) {
-        String url = "https://texttospeech.googleapis.com/v1beta1/text:synthesize?key="+apiKey;
+        String url = "https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=" + apiKey;
 
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("enableTimePointing", new String[]{"SSML_MARK"});
@@ -69,7 +68,7 @@ public class TTSService {
 
         List<Double> timepointList = new ArrayList<>();
         for (Map<String, Object> timepoint : timepoints) {
-            if(timepoint.containsKey("timeSeconds")) {
+            if (timepoint.containsKey("timeSeconds")) {
                 timepointList.add(((Number) timepoint.get("timeSeconds")).doubleValue());
             }
         }

@@ -23,7 +23,7 @@ public class CastDTO {
     private Long hits;
     private List<SentenceResponseDTO> sentences;
 
-    public CastDTO(Cast cast){
+    public CastDTO(Cast cast) {
         id = cast.getId();
         title = cast.getTitle();
         imagePath = cast.getImagePath();

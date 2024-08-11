@@ -15,14 +15,14 @@ public class ChatGPTPromptGenerator {
 
     /* GPT 모델 : "gpt-4o" 혹은 "gpt-4o-mini" 중 선택 */
     private final String DEFAULT_MODEL = "gpt-4o-mini";
-    
+
     /* 문장을 뭘로 나눌지 */
     private final String SENTENCE_DELIMITER = "@";
     /**
-    * 스크립트 결정성 제어변수, 0~2 사이값
-    * 0에 가까울 수록 결정적인 답변을 얻음 (사실적)
-    * 2에 가까울 수록 랜덤하고 다양한 답변을 얻음 (아무말대잔치)
-    **/
+     * 스크립트 결정성 제어변수, 0~2 사이값
+     * 0에 가까울 수록 결정적인 답변을 얻음 (사실적)
+     * 2에 가까울 수록 랜덤하고 다양한 답변을 얻음 (아무말대잔치)
+     **/
     private final double DEFAULT_TEMPERATURE = 0.1;
 
     /* 사용자의 keyword를 바탕으로 프롬프트 생성 */
@@ -61,7 +61,7 @@ public class ChatGPTPromptGenerator {
                 new ChatMessage(system, "Answer should only contain what you have to say (no markdowns or background musics)"), // 형식 지정
                 //new ChatMessage(system, "Answer should be less than " + tokens + " tokens"), // 분량 설정
                 //new ChatMessage(system, "Use around " + words + "words"), // 분량 설정 2   -->  (calculateWords() 개발 후 해보기)
-                new ChatMessage(system, "Answer should be " + audioTime/60 + " minutes long."), // 분량 설정 3
+                new ChatMessage(system, "Answer should be " + audioTime / 60 + " minutes long."), // 분량 설정 3
                 new ChatMessage(system, "You should add " + SENTENCE_DELIMITER + " at each end of sentences."), // 문장 분리
                 new ChatMessage(system, "Answer in " + formality.name() + " manner."), // 격식 설정 (official, casual)
                 new ChatMessage(system, "The answer should be in " + language.toLowerCase()) // 언어 설정 (English, Spanish, Japanese, ...)
@@ -81,7 +81,9 @@ public class ChatGPTPromptGenerator {
         return result;
     }
 
-    /** 분당 단어 수 기반으로 오디오 분량에 맞는 단어 수 어림계산 (아직 개발 X) */
+    /**
+     * 분당 단어 수 기반으로 오디오 분량에 맞는 단어 수 어림계산 (아직 개발 X)
+     */
     private int calculateWords(int audioTime) {
         // TODO: 언어 사투리 별로 WPM 나눠 계산
         // WPM: Word Per Minute
@@ -92,7 +94,7 @@ public class ChatGPTPromptGenerator {
         final int WPM = 0;
         // TODO: 사용자 언어 설정에 따라 WPM 결정
         final String userLanguage = "TODO";
-        switch(userLanguage.toLowerCase()){
+        switch (userLanguage.toLowerCase()) {
             case "english":
                 break;
             case "spanish":
@@ -102,7 +104,7 @@ public class ChatGPTPromptGenerator {
             default:
                 break;
         }
-        return WPM * (audioTime/60);
+        return WPM * (audioTime / 60);
     }
 
     public ChatCompletionRequest generateKeywordPrompt(String categoryName) {
@@ -156,7 +158,6 @@ public class ChatGPTPromptGenerator {
         result.addAll(chatPrompts);
         return result;
     }
-
 
 
 }

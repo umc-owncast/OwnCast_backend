@@ -22,14 +22,14 @@ public class KeywordService {
     private final MainCategoryRepository mainCategoryRepository;
 
     public List<String> createKeyword() {
-        String script="";
+        String script = "";
         List<String> keywords = null;
 
         // 멤버 토큰으로 id 가져오기
         Optional<String> optionalCategoryName = mainCategoryRepository.getMainCategoryNameByMemberId(2L);
         String categoryName = null;
 
-        if(optionalCategoryName.isEmpty()){
+        if (optionalCategoryName.isEmpty()) {
             throw new UserHandler(ErrorCode._BAD_REQUEST);
         } else {
             categoryName = optionalCategoryName.get();
@@ -40,10 +40,11 @@ public class KeywordService {
             script = chatGPTKeywordGenerator.generateKeyword(prompt);
 
             Gson gson = new Gson();
-            Type listType = new TypeToken<List<String>>() {}.getType();
+            Type listType = new TypeToken<List<String>>() {
+            }.getType();
             keywords = gson.fromJson(script, listType);
 
-        } catch(Exception e){
+        } catch (Exception e) {
             // 출력만 하고 전파 -> CastService에서 처리??
             System.out.println("CastServiceImpl: Exception on createScript - " + e.getMessage());
             System.out.println("Exception class : " + e.getClass());

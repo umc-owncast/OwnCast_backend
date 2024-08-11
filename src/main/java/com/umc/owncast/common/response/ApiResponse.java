@@ -34,6 +34,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> onFailure(String code, String message, T data) {
         return new ApiResponse<>(false, code, message, data);
     }
+
     public static <T> ApiResponse<T> ofFailure(BaseErrorCode code, T result) {
         return new ApiResponse<>(false, code.getReasonHttpStatus().getCode(), code.getReasonHttpStatus().getMessage(), result);
     }

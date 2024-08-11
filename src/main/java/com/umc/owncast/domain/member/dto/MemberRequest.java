@@ -27,7 +27,7 @@ public class MemberRequest {
     }
 
     @Getter
-    public static class memberPreferDto{
+    public static class memberPreferDto {
         @NotBlank
         Long mainCategoryId;
         Long subCategoryId;

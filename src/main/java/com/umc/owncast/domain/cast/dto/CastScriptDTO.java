@@ -15,7 +15,7 @@ public class CastScriptDTO {
     private Long id;
     private List<SentenceResponseDTO> sentences;
 
-    public CastScriptDTO(Cast cast){
+    public CastScriptDTO(Cast cast) {
         id = cast.getId();
         sentences = cast.getSentences().stream()
                 .map(SentenceResponseDTO::new)

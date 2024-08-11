@@ -8,8 +8,8 @@ import com.umc.owncast.domain.member.repository.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,13 +32,13 @@ public class LoginService {
     private Long refreshExpirationTime;
 
     public String issueAccessToken(Long userId) {
-        String accessToken = jwtUtil.createJwt("access", userId, accessExpirationTime*1000L);
+        String accessToken = jwtUtil.createJwt("access", userId, accessExpirationTime * 1000L);
         return "Bearer " + accessToken;
     }
 
     @Transactional
     public String issueRefreshToken(Long userId) {
-        String refreshToken = jwtUtil.createJwt("refresh", userId, refreshExpirationTime*1000L);
+        String refreshToken = jwtUtil.createJwt("refresh", userId, refreshExpirationTime * 1000L);
         saveRefreshToken(userId, refreshToken, refreshExpirationTime);
         return refreshToken;
     }
@@ -47,7 +47,7 @@ public class LoginService {
     @Transactional
     public String reissueRefreshToken(Long userId, String refreshToken) {
         refreshRepository.deleteByRefreshToken(refreshToken);
-        String newRefreshToken = jwtUtil.createJwt("refresh", userId, refreshExpirationTime*1000L);
+        String newRefreshToken = jwtUtil.createJwt("refresh", userId, refreshExpirationTime * 1000L);
         saveRefreshToken(userId, newRefreshToken, refreshExpirationTime);
         return newRefreshToken;
     }

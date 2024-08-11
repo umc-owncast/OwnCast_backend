@@ -1,6 +1,8 @@
 package com.umc.owncast.domain.cast.service;
 
-import com.theokanning.openai.completion.chat.*;
+import com.theokanning.openai.completion.chat.ChatCompletionChoice;
+import com.theokanning.openai.completion.chat.ChatCompletionRequest;
+import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.service.OpenAiService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,15 +17,15 @@ public class ChatGPTScriptGenerator {
     private OpenAiService openAiService;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         openAiService = new OpenAiService(SECRET_KEY, Duration.ofSeconds(30)); // 30초 내에 응답 안올 시 예외 던짐
     }
 
     /**
-    * API를 요청해서 답변을 가져온다  <br>
-    * 프롬프트에 따라 여러가지 답변이 오게 만들 수도 있는데, <br>
-    * 이 경우 여러가지 Choice 중 첫 번째의 답변을 반환한다
-    * */
+     * API를 요청해서 답변을 가져온다  <br>
+     * 프롬프트에 따라 여러가지 답변이 오게 만들 수도 있는데, <br>
+     * 이 경우 여러가지 Choice 중 첫 번째의 답변을 반환한다
+     */
     public String generateScript(ChatCompletionRequest request) {
         ChatCompletionResult result = null;
         result = openAiService.createChatCompletion(request); // OpenAiHttpException 발생 가능

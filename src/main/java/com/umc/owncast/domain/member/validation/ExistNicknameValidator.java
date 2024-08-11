@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class ExistNicknameValidator implements ConstraintValidator<ExistNickname, String> {
 
     private final MemberRepository memberRepository;
+
     @Override
     public void initialize(ExistNickname constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);

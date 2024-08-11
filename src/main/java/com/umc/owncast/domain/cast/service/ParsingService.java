@@ -15,9 +15,9 @@ public class ParsingService {
     }
 
     public String addMarks(String[] sentences) {
-        int i=0;
-        String processedScript= "<speak>";
-        for(String sentence : sentences) {
+        int i = 0;
+        String processedScript = "<speak>";
+        for (String sentence : sentences) {
             processedScript += String.format("<mark name=\"%d\"/>", i) + sentence;
             i++;
         }

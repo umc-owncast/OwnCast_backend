@@ -2,10 +2,13 @@ package com.umc.owncast.domain.member.controller;
 
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.SuccessCode;
+import com.umc.owncast.domain.member.dto.MemberPreferRequestDTO;
+import com.umc.owncast.domain.member.dto.MemberProfileRequestDTO;
 import com.umc.owncast.domain.member.dto.MemberRequest;
 import com.umc.owncast.domain.member.dto.MemberResponse;
 import com.umc.owncast.domain.member.service.MemberMapper;
 import com.umc.owncast.domain.member.service.MemberService;
+import com.umc.owncast.domain.member.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,13 +23,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class MemberController {
 
-
+    private final UserService userService;
     private final MemberService memberService;
 
     @Operation(summary = "회원가입 API")
     @PostMapping("/signup")
     public ApiResponse<MemberResponse.refreshTokenDto> joinByLoginId(HttpServletResponse response,
-                                                              @Valid @RequestBody MemberRequest.joinLoginIdDto requestDto) {
+                                                                     @Valid @RequestBody MemberRequest.joinLoginIdDto requestDto) {
         String refreshToken = memberService.insertMember(response, requestDto);
         return ApiResponse.of(SuccessCode._SIGNUP_SUCCESS, MemberMapper.toRefreshToken(refreshToken));
     }
@@ -35,8 +38,8 @@ public class MemberController {
     @PostMapping("/signup/{member_id}")
     public ApiResponse<Long> joinSetting(@PathVariable("member_id") Long memberId,
                                          @RequestParam Long languageId
-            ,@Valid @RequestBody MemberRequest.memberPreferDto request
-                                         ) {
+            , @Valid @RequestBody MemberRequest.memberPreferDto request
+    ) {
 
         Long updatedMemberId = memberService.addPreferSetting(memberId, request);
 
@@ -65,4 +68,25 @@ public class MemberController {
     }
 
 
+    @CrossOrigin
+    @Operation(summary = "언어 설정 바꾸기")
+    @PostMapping("/setting/language")
+    public ApiResponse<Long> language(@RequestParam("languageId") Long languageId) {
+        return ApiResponse.onSuccess(userService.languageSetting(languageId));
+    }
+
+    @CrossOrigin
+    @Operation(summary = "관심사 설정 바꾸기")
+    @PostMapping("/setting/prefer")
+    public ApiResponse<Long> category(@Valid @RequestBody MemberPreferRequestDTO memberPreferRequestDTO) {
+        return ApiResponse.onSuccess(userService.preferSetting(memberPreferRequestDTO));
+    }
+
+    @CrossOrigin
+    @Operation(summary = "닉네임, 이름, 아이디 바꾸기")
+    @PostMapping("/setting")
+    public ApiResponse<Long> language(@Valid @RequestBody MemberProfileRequestDTO memberProfileRequestDTO) {
+        //
+        return ApiResponse.onSuccess(userService.idPasswordSetting(memberProfileRequestDTO));
+    }
 }

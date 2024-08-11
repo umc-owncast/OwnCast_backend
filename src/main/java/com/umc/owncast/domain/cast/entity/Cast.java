@@ -8,7 +8,10 @@ import com.umc.owncast.domain.language.entity.Language;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,27 +67,27 @@ public class Cast extends BaseTimeEntity {
     @OneToMany(mappedBy = "cast", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sentence> sentences = new ArrayList<>();
 
-    public void addSentence(Sentence s){
+    public void addSentence(Sentence s) {
         sentences.add(s);
         s.setCast(this);
         // TODO timestamp 순으로 정렬해두거나 sentences를 timestamp 기준으로 PriorityQueue 등에 저장?
     }
 
-    public void addSentences(Collection<Sentence> s){
+    public void addSentences(Collection<Sentence> s) {
         sentences.addAll(s);
-        for(Sentence sentence: s) sentence.setCast(this);
+        for (Sentence sentence : s) sentence.setCast(this);
     }
 
     public void update(CastUpdateDTO updateRequest) {
-        if(!StringUtil.isBlank(updateRequest.getTitle()))
+        if (!StringUtil.isBlank(updateRequest.getTitle()))
             this.title = updateRequest.getTitle();
-        if(Objects.nonNull(updateRequest.getIsPublic()))
+        if (Objects.nonNull(updateRequest.getIsPublic()))
             this.isPublic = updateRequest.getIsPublic();
-        if(!StringUtil.isBlank(updateRequest.getImagePath()))
+        if (!StringUtil.isBlank(updateRequest.getImagePath()))
             this.imagePath = updateRequest.getImagePath();
     }
 
-    public void updateHits(){
+    public void updateHits() {
         this.hits++;
     }
 

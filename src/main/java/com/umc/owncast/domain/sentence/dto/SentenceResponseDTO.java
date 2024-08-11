@@ -13,7 +13,7 @@ public class SentenceResponseDTO {
     private String translatedSentence;
     private Double timePoint;
 
-    public SentenceResponseDTO(Sentence sentence){
+    public SentenceResponseDTO(Sentence sentence) {
         originalSentence = sentence.getOriginalSentence();
         translatedSentence = sentence.getTranslatedSentence();
         timePoint = sentence.getTimePoint();

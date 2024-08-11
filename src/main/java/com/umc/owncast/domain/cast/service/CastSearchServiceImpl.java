@@ -1,26 +1,11 @@
 package com.umc.owncast.domain.cast.service;
 
-import com.umc.owncast.common.exception.handler.UserHandler;
-import com.umc.owncast.common.response.status.ErrorCode;
-import com.umc.owncast.domain.cast.dto.CastDTO;
-import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
-import com.umc.owncast.domain.castcategory.entity.CastMainCategory;
 import com.umc.owncast.domain.castcategory.repository.CastMainCategoryRepository;
-import com.umc.owncast.domain.category.entity.MainCategory;
-import com.umc.owncast.domain.memberprefer.Repository.MemberPreferRepository;
-import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
+import com.umc.owncast.domain.memberprefer.repository.MemberPreferRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor

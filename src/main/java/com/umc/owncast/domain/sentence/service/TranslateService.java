@@ -41,14 +41,14 @@ public class TranslateService {
         return translatedText;
     }
 
-    private static String post(Map<String, String> requestHeaders, String text){
+    private static String post(Map<String, String> requestHeaders, String text) {
         HttpURLConnection con = connect("https://naveropenapi.apigw.ntruss.com/nmt/v1/translation");
 
         //todo user 완성후 언어 선택에서 끌어오기
         String postParams = "source=auto&target=ko&text=" + text;
         try {
             con.setRequestMethod("POST");
-            for(Map.Entry<String, String> header :requestHeaders.entrySet()) {
+            for (Map.Entry<String, String> header : requestHeaders.entrySet()) {
                 con.setRequestProperty(header.getKey(), header.getValue());
             }
 
@@ -71,10 +71,10 @@ public class TranslateService {
         }
     }
 
-    private static HttpURLConnection connect(String apiUrl){
+    private static HttpURLConnection connect(String apiUrl) {
         try {
             URL url = new URL(apiUrl);
-            return (HttpURLConnection)url.openConnection();
+            return (HttpURLConnection) url.openConnection();
         } catch (MalformedURLException e) {
             throw new RuntimeException("API URL이 잘못되었습니다. : " + apiUrl, e);
         } catch (IOException e) {
@@ -82,7 +82,7 @@ public class TranslateService {
         }
     }
 
-    private static String readBody(InputStream body){
+    private static String readBody(InputStream body) {
         InputStreamReader streamReader = new InputStreamReader(body);
 
         try (BufferedReader lineReader = new BufferedReader(streamReader)) {

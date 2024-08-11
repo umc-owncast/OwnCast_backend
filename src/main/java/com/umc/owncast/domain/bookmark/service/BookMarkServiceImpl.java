@@ -28,7 +28,7 @@ public class BookMarkServiceImpl {
     private final SentenceRepository sentenceRepository;
     private final CastRepository castRepository;
 
-    public List<BookMarkDTO.BookMarkResultDTO> getMyCastBookmarks(){
+    public List<BookMarkDTO.BookMarkResultDTO> getMyCastBookmarks() {
 
         List<Cast> castList = castRepository.findCastsByMember_Id(1L);
         List<BookMarkDTO.BookMarkResultDTO> sentenceList = new ArrayList<>(List.of());
@@ -53,7 +53,7 @@ public class BookMarkServiceImpl {
         return sentenceList;
     }
 
-    public List<BookMarkDTO.BookMarkResultDTO> getSavedBookmarks(){
+    public List<BookMarkDTO.BookMarkResultDTO> getSavedBookmarks() {
 
         List<Cast> castList = castPlaylistRepository.findSavedCast(1L);
 
@@ -77,7 +77,7 @@ public class BookMarkServiceImpl {
         return sentenceList;
     }
 
-    public List<BookMarkDTO.BookMarkResultDTO> getBookmarks(Long playlistId){
+    public List<BookMarkDTO.BookMarkResultDTO> getBookmarks(Long playlistId) {
 
         List<Sentence> sentenceList = bookmarkRepository.findSentencesByPlaylistId(playlistId);
 
@@ -95,20 +95,20 @@ public class BookMarkServiceImpl {
         Optional<CastPlaylist> optionalCastPlaylist = castPlaylistRepository.findBySentenceId(sentenceId, 1L);
         CastPlaylist castPlaylist;
 
-        if(optionalCastPlaylist.isPresent()){
+        if (optionalCastPlaylist.isPresent()) {
             castPlaylist = optionalCastPlaylist.get();
         } else {
             throw new UserHandler(ErrorCode._BAD_REQUEST);
         }
 
-        if(bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, 1L).isPresent()) {
+        if (bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, 1L).isPresent()) {
             throw new UserHandler(ErrorCode.BOOKMARK_ALREADY_EXIST);
         }
 
         Bookmark newBookmarks = Bookmark.builder()
-                        .castPlaylist(castPlaylist)
-                        .sentence(sentenceRepository.findById(sentenceId).get())
-                        .build();
+                .castPlaylist(castPlaylist)
+                .sentence(sentenceRepository.findById(sentenceId).get())
+                .build();
 
         bookmarkRepository.save(newBookmarks);
 
@@ -121,7 +121,7 @@ public class BookMarkServiceImpl {
 
         Optional<Bookmark> optionalBookmark = bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, 1L);
 
-        if(optionalBookmark.isPresent()){
+        if (optionalBookmark.isPresent()) {
             bookmarkRepository.delete(optionalBookmark.get());
             return BookMarkDTO.BookMarkSaveResultDTO.builder()
                     .bookmarkId(optionalBookmark.get().getId())

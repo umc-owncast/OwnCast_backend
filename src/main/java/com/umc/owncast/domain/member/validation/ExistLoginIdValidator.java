@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class ExistLoginIdValidator implements ConstraintValidator<ExistLoginId, String> {
 
     private final MemberRepository memberRepository;
+
     @Override
     public void initialize(ExistLoginId constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);

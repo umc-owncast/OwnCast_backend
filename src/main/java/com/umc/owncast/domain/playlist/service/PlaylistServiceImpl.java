@@ -2,15 +2,12 @@ package com.umc.owncast.domain.playlist.service;
 
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
-import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
-import com.umc.owncast.domain.bookmark.dto.BookMarkDTO;
-import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
+import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
 import com.umc.owncast.domain.playlist.dto.PlaylistDTO;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
-import com.umc.owncast.domain.playlist.entity.Playlist;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +31,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     private final CastPlaylistRepository castPlaylistRepository;
 
     @Override
-    public List<PlaylistDTO.PlaylistResultDTO> getAllPlaylists(){
+    public List<PlaylistDTO.PlaylistResultDTO> getAllPlaylists() {
 
         // Token으로 사용자 id 불러오기
         // 일단은 1L로 사용
@@ -80,7 +77,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
 
-        if(playlistRepository.existsByNameAndMemberId(playlistName, 1L)) {
+        if (playlistRepository.existsByNameAndMemberId(playlistName, 1L)) {
             throw new UserHandler(ErrorCode.PLAYLIST_ALREADY_EXIST);  //에러
         } else {
             Playlist newPlaylist = Playlist.builder()
@@ -105,7 +102,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, 1L);
         Playlist playlist;
 
-        if(optionalPlaylist.isEmpty()) {
+        if (optionalPlaylist.isEmpty()) {
             throw new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND);
         } else {
             playlist = optionalPlaylist.get();
@@ -132,7 +129,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         Playlist playlist;
         Page<CastPlaylist> castPlaylist;
 
-        if(optionalPlaylist.isEmpty()) {
+        if (optionalPlaylist.isEmpty()) {
             throw new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND);
         } else {
             playlist = optionalPlaylist.get();
@@ -160,15 +157,14 @@ public class PlaylistServiceImpl implements PlaylistService {
         Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, 1L);
         Playlist playlist;
 
-        if(optionalPlaylist.isEmpty()) {
+        if (optionalPlaylist.isEmpty()) {
             throw new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND);
         } else {
             playlist = optionalPlaylist.get();
 
-            if(playlistRepository.existsByNameAndMemberId(playlistName, 1L)) {
+            if (playlistRepository.existsByNameAndMemberId(playlistName, 1L)) {
                 throw new UserHandler(ErrorCode.PLAYLIST_ALREADY_EXIST);
-            }
-            else {
+            } else {
                 playlist.setName(playlistName);
                 playlistRepository.save(playlist);
 

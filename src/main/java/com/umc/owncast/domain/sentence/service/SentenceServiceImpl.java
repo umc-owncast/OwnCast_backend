@@ -26,7 +26,7 @@ public class SentenceServiceImpl implements SentenceService {
         String[] originalList = parsingService.parseSentences(original);
         String[] koreanList = parsingService.parseSentences(koreanScript);
         List<Sentence> sentences = new ArrayList<>();
-        for(Double timepoint : ttsResultDTO.getTimePointList()) {
+        for (Double timepoint : ttsResultDTO.getTimePointList()) {
             Sentence sentence = Sentence.builder()
                     .cast(cast)
                     .originalSentence(originalList[i])
@@ -40,13 +40,13 @@ public class SentenceServiceImpl implements SentenceService {
     }
 
     @Override
-    public List<Sentence> mapToSentence(String original, String korean, TTSResultDTO ttsResultDTO, Cast cast){
+    public List<Sentence> mapToSentence(String original, String korean, TTSResultDTO ttsResultDTO, Cast cast) {
         // TODO 테스트 필요
         int i = 0;
         List<Sentence> sentences = new ArrayList<>();
         String[] originalList = parsingService.parseSentences(original);
         String[] koreanList = parsingService.parseSentences(korean);
-        for(Double timepoint : ttsResultDTO.getTimePointList()) {
+        for (Double timepoint : ttsResultDTO.getTimePointList()) {
             sentences.add(Sentence.builder()
                     .cast(cast)
                     .originalSentence(originalList[i])

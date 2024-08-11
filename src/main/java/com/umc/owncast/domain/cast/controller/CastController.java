@@ -6,6 +6,7 @@ import com.umc.owncast.domain.cast.dto.CastUpdateDTO;
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
 import com.umc.owncast.domain.cast.dto.ScriptCastCreationDTO;
 import com.umc.owncast.domain.cast.service.CastService;
+import com.umc.owncast.domain.cast.service.KeywordService;
 import com.umc.owncast.domain.cast.service.ScriptService;
 import com.umc.owncast.domain.cast.service.StreamService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,11 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.umc.owncast.domain.cast.service.KeywordService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -37,12 +33,12 @@ public class CastController {
     private final StreamService streamService;
 
     /* * * * * * * * * * * * * *
-    * 테스트용 메소드 (나중에 삭제) *
-    * * * * * * * * * * * * * **/
+     * 테스트용 메소드 (나중에 삭제) *
+     * * * * * * * * * * * * * **/
 
     @PostMapping("/script-test")
     @Operation(summary = "스크립트 생성 API (ScriptService 테스트용)")
-    public String createScript(@Valid @RequestBody KeywordCastCreationDTO castRequest){
+    public String createScript(@Valid @RequestBody KeywordCastCreationDTO castRequest) {
         System.out.println(castRequest);
         return scriptService.createScript(castRequest);
     }
@@ -72,29 +68,29 @@ public class CastController {
 
 
     /* * * * * * * *
-    *  API 용 메소드 *
-    * * * * * * * **/
+     *  API 용 메소드 *
+     * * * * * * * **/
 
     /* Cast 생성 API (keyword) */
     @PostMapping("/keyword")
     @Operation(summary = "키워드로 캐스트를 생성하는 API")
-    public ApiResponse<Object> createCastByKeyword(@Valid @RequestBody KeywordCastCreationDTO castRequest){
+    public ApiResponse<Object> createCastByKeyword(@Valid @RequestBody KeywordCastCreationDTO castRequest) {
         return castService.createCastByKeyword(castRequest);
     }
 
     /* Cast 생성 API (script) */
     @PostMapping("/script")
     @Operation(summary = "스크립트로 캐스트를 생성하는 API.")
-    public ApiResponse<Object> createCastByScript(@Valid @RequestBody ScriptCastCreationDTO castRequest){
+    public ApiResponse<Object> createCastByScript(@Valid @RequestBody ScriptCastCreationDTO castRequest) {
         return castService.createCastByScript(castRequest);
     }
 
     /* Cast 저장 API */
-    @PostMapping(value = "/{castId}", consumes = {MediaType.APPLICATION_JSON_VALUE , MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/{castId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "캐스트 저장 API (저장 화면에서 호출)")
     public ApiResponse<Object> saveCast(@PathVariable("castId") Long castId,
                                         @Valid @RequestPart(value = "saveInfo") CastSaveDTO saveRequest,
-                                        @RequestPart(value = "image", required = false) MultipartFile image){
+                                        @RequestPart(value = "image", required = false) MultipartFile image) {
         System.out.println("CastController: save()");
         System.out.println(saveRequest);
         System.out.println(image);
@@ -106,14 +102,14 @@ public class CastController {
     @Operation(summary = "캐스트 재생 API")
     @CrossOrigin
     public ResponseEntity<UrlResource> streamCast(@PathVariable("castId") Long castId,
-                                                  @RequestHeader HttpHeaders headers){
+                                                  @RequestHeader HttpHeaders headers) {
         return castService.streamCast(castId, headers);
     }
 
     /* Cast 스크립트 가져오는 API */
     @GetMapping("/{castId}/scripts")
     @Operation(summary = "캐스트 스크립트 가져오기 API")
-    public ApiResponse<Object> fetchCastScripts(@PathVariable("castId") Long castId){
+    public ApiResponse<Object> fetchCastScripts(@PathVariable("castId") Long castId) {
         return castService.fetchCastScript(castId);
     }
 
@@ -122,7 +118,7 @@ public class CastController {
     @Operation(summary = "캐스트 수정 API")
     public ApiResponse<Object> updateCast(@PathVariable("castId") Long castId,
                                           @Valid @RequestPart(value = "updateInfo") CastUpdateDTO updateRequest,
-                                          @RequestPart(value = "image", required = false) MultipartFile image){
+                                          @RequestPart(value = "image", required = false) MultipartFile image) {
         // TODO 캐스트 생성자 혹은 관리자여야 함
         return castService.updateCast(castId, updateRequest, image);
     }
@@ -130,7 +126,7 @@ public class CastController {
     /* Cast 삭제 API */
     @DeleteMapping("/{castId}")
     @Operation(summary = "캐스트 삭제 API")
-    public ApiResponse<Object> deleteCast(@PathVariable("castId") Long castId){
+    public ApiResponse<Object> deleteCast(@PathVariable("castId") Long castId) {
         // TODO 캐스트 생성자 혹은 관리자여야 함
         return castService.deleteCast(castId);
     }

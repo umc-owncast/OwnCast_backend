@@ -1,4 +1,4 @@
-package com.umc.owncast.domain.memberprefer.Repository;
+package com.umc.owncast.domain.memberprefer.repository;
 
 import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
 import org.springframework.data.jpa.repository.JpaRepository;

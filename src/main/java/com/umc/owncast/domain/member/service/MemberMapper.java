@@ -1,6 +1,5 @@
 package com.umc.owncast.domain.member.service;
 
-import com.umc.owncast.domain.language.entity.Language;
 import com.umc.owncast.domain.member.dto.MemberResponse;
 import com.umc.owncast.domain.member.entity.Member;
 

@@ -1,8 +1,10 @@
 package com.umc.owncast.domain.category.entity;
 
-import com.umc.owncast.domain.category.entity.MainCategory;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
@@ -22,8 +24,9 @@ public class SubCategory {
     @JoinColumn(name = "category_id")
     private MainCategory mainCategory;
 
-    @Column(length = 50)
+    @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean isUserCreated;
+
     /*@OneToMany(mappedBy = "subCategory", cascade = CascadeType.ALL)
     private List<CastCategory> castCategoryList = new ArrayList<>();*/
 }

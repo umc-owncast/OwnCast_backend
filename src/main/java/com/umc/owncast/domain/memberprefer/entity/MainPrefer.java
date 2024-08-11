@@ -12,7 +12,7 @@ import lombok.*;
 @Entity
 @Table(name = "main_prefer")
 @AllArgsConstructor
-public class MainPrefer extends BaseTimeEntity{
+public class MainPrefer extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +21,9 @@ public class MainPrefer extends BaseTimeEntity{
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_category_id")
     private MainCategory mainCategory;
+
 }

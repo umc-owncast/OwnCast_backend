@@ -39,16 +39,18 @@ public class CastService {
 
     /**
      * keyword로 cast 생성
+     *
      * @param castRequest cast 관련 정보
      * @return cast를 List&lt;Sentence>에 담아 반환
      */
-    public ApiResponse<Object> createCastByKeyword(KeywordCastCreationDTO castRequest){
+    public ApiResponse<Object> createCastByKeyword(KeywordCastCreationDTO castRequest) {
         String script = scriptService.createScript(castRequest);
         return getObjectApiResponse(castRequest, script);
     }
 
     /**
      * script로 cast 생성
+     *
      * @param castRequest cast 관련 정보
      * @return cast를 List&lt;Sentence>에 담아 반환
      */
@@ -87,13 +89,13 @@ public class CastService {
         return ApiResponse.of(SuccessCode._OK, response);
     }
 
-    public ApiResponse<Object> saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image){
+    public ApiResponse<Object> saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image) {
         // 제목, 커버이미지, 공개여부 등 저장
         updateCast(castId,
                 CastUpdateDTO.builder()
-                .title(saveRequest.getTitle())
-                .isPublic(saveRequest.getIsPublic())
-                .build(),
+                        .title(saveRequest.getTitle())
+                        .isPublic(saveRequest.getIsPublic())
+                        .build(),
                 image
         );
         // 플레이리스트 저장
@@ -112,8 +114,8 @@ public class CastService {
         return ApiResponse.of(SuccessCode._OK, "저장되었습니다.");
     }
 
-    private void setCastImage(Cast cast, CastUpdateDTO updateRequest, MultipartFile image){
-        if(image == null) return;
+    private void setCastImage(Cast cast, CastUpdateDTO updateRequest, MultipartFile image) {
+        if (image == null) return;
         String imagePath = fileService.uploadFile(image);
         fileService.deleteFile(cast.getImagePath());
         updateRequest.setImagePath(imagePath);
@@ -133,7 +135,7 @@ public class CastService {
             Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다."));
             cast.updateHits();
             return streamService.stream(castId, headers);
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println("CastService: IOException at stream() -> " + e.getMessage());
             e.printStackTrace();
             throw new RuntimeException("캐스트 스트리밍에 실패하였습니다.");
