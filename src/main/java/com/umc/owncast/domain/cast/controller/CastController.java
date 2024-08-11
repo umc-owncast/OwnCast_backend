@@ -30,36 +30,12 @@ public class CastController {
      * 테스트용 메소드 (나중에 삭제) *
      * * * * * * * * * * * * * **/
 
-    @PostMapping("/script-test")
-    @Operation(summary = "스크립트 생성 API (ScriptService 테스트용)")
+    @PostMapping("/keyword-test")
+    @Operation(summary = "[테스트 API] keyword로 스크립트 생성 -> 스크립트 문자열 반환")
     public String createScript(@Valid @RequestBody KeywordCastCreationDTO castRequest) {
         System.out.println(castRequest);
         return scriptService.createScript(castRequest);
     }
-
-    /*cast 저장 전 api
-    @PostMapping("/temporary")
-    @Operation(summary = "스크립트 생성 api. 저장 버튼 전 화면 입니다.")
-    public void createCast(@Valid @RequestBody KeywordCastCreationDTO castRequest){
-        castService.createCast(castRequest);
-    }*/
-
-    /*@GetMapping("/stream-test")
-    @CrossOrigin(origins = "*") // TODO 프론트 url로 대체
-    @Operation(summary = "스트리밍 테스트. 테스트용 음악 파일을 스트리밍 합니다")
-    public Object streamTest(@RequestHeader HttpHeaders headers) throws IOException {
-        System.out.println("Stream test");
-        return streamService.stream("test.mp3", headers);
-    }
-
-    @GetMapping("/stream/{filename}")
-    @CrossOrigin(origins = "*")
-    @Operation(summary = "filename을 스트리밍합니다")
-    public Object streamTest(@RequestHeader HttpHeaders headers,
-                             @PathVariable(name = "filename") String filename) throws IOException {
-        return streamService.stream(filename, headers);
-    }*/
-
 
     /* * * * * * * *
      *  API 용 메소드 *
@@ -92,9 +68,9 @@ public class CastController {
     }
 
     /* Cast 재생 API */
+    @CrossOrigin
     @GetMapping("/{castId}/audio")
     @Operation(summary = "캐스트 재생 API")
-    @CrossOrigin
     public ResponseEntity<UrlResource> streamCast(@PathVariable("castId") Long castId,
                                                   @RequestHeader HttpHeaders headers) {
         return castService.streamCast(castId, headers);
