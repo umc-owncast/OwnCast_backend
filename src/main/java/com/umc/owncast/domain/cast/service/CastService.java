@@ -127,7 +127,7 @@ public class CastService {
         cast.update(updateRequest);
         castRepository.save(cast);
 
-        return ApiResponse.of(SuccessCode._OK, cast);
+        return ApiResponse.of(SuccessCode._OK, "수정되었습니다.");
     }
 
     public ResponseEntity<UrlResource> streamCast(Long castId, HttpHeaders headers) {
