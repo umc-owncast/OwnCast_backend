@@ -6,6 +6,8 @@ import com.umc.owncast.domain.language.entity.Language;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 
 @Getter
 @Builder
@@ -15,7 +17,7 @@ import lombok.*;
 @AllArgsConstructor
 public class Member extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 30, updatable = false)
@@ -30,7 +32,8 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, length = 50)
     private String nickname;
 
-    @Builder.Default
+    private LocalDate inactiveDate;
+
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 

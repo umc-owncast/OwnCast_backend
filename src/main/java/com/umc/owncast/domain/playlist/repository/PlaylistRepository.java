@@ -9,11 +9,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
-    List<Playlist> findAllByMemberIdOrderByCreatedAt(@Param("memberId") Long memberId);
-
     @Query("SELECT p FROM Playlist p " +
-            "WHERE p.name = '담아온 캐스트' AND p.id = :memberId")
-    Optional<Playlist> findSavedPlaylist(Long memberId);
+            "JOIN CastPlaylist cp ON cp.playlist.id = p.id " +
+            "WHERE cp.cast.id = :castId AND cp.cast.member.id = p.member.id ")
+    Playlist findUserCategoryName(@Param("castId") Long castId);
+
+    List<Playlist> findAllByMemberIdOrderByCreatedAt(@Param("memberId") Long memberId);
 
     boolean existsByNameAndMemberId(String name, Long memberId);
 

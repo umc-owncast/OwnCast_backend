@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "cast_playlist")
 @AllArgsConstructor
 public class CastPlaylist extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

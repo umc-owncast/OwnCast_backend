@@ -1,14 +1,8 @@
 package com.umc.owncast.domain.cast.controller;
 
 import com.umc.owncast.common.response.ApiResponse;
-import com.umc.owncast.domain.cast.dto.CastSaveDTO;
-import com.umc.owncast.domain.cast.dto.CastUpdateDTO;
-import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
-import com.umc.owncast.domain.cast.dto.ScriptCastCreationDTO;
-import com.umc.owncast.domain.cast.service.CastService;
-import com.umc.owncast.domain.cast.service.KeywordService;
-import com.umc.owncast.domain.cast.service.ScriptService;
-import com.umc.owncast.domain.cast.service.StreamService;
+import com.umc.owncast.domain.cast.dto.*;
+import com.umc.owncast.domain.cast.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,6 +25,8 @@ public class CastController {
     private final CastService castService;
     private final ScriptService scriptService;
     private final StreamService streamService;
+    private final CastSearchService castSearchService;
+    private final CastSaveService castSaveService;
 
     /* * * * * * * * * * * * * *
      * 테스트용 메소드 (나중에 삭제) *
@@ -135,5 +131,26 @@ public class CastController {
     @Operation(summary = "홈 화면 키워드 6개 받아오기")
     public List<String> createScript() {
         return keywordService.createKeyword();
+    }
+
+    @CrossOrigin
+    @Operation(summary = "검색 홈 API")
+    @GetMapping("/search/{page}")
+    public ApiResponse<List<CastDTO.CastHomeDTO>> searchHome(@PathVariable("page") Integer page) {
+        return ApiResponse.onSuccess(castSearchService.getHomeCast(page));
+    }
+
+    @CrossOrigin
+    @Operation(summary = "캐스트 저장")
+    @PostMapping("/save")
+    public ApiResponse<Long> saveCast(@RequestBody CastDTO.CastSaveRequestDTO castDTO) {
+        return ApiResponse.onSuccess(castSaveService.saveCast(castDTO));
+    }
+
+    @CrossOrigin
+    @Operation(summary = "검색 API")
+    @PostMapping("/search") // 수정 필요
+    public ApiResponse<List<CastDTO.CastHomeDTO>> saveCast(@RequestParam("keyword") String keyword) {
+        return ApiResponse.onSuccess(castSearchService.getCast(keyword));
     }
 }

@@ -2,6 +2,7 @@ package com.umc.owncast.domain.cast.service;
 
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
+import com.umc.owncast.domain.cast.dto.CastDTO;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
@@ -17,39 +18,47 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class CastSaveServiceImpl {
+public class CastSaveServiceImpl implements CastSaveService {
     private final PlaylistRepository playlistRepository;
     private final CastPlaylistRepository castPlaylistRepository;
     private final CastRepository castRepository;
 
-    public void saveCast(Long castId) {
+    @Override
+    public Long saveCast(CastDTO.CastSaveRequestDTO castSaveRequestDTO) {
+
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
 
-        Optional<Playlist> optionalPlaylist = playlistRepository.findSavedPlaylist(1L);
-        //담아온 캐스트란 항목을 찾는다.
-        Optional<Cast> optionalCast = castRepository.findById(castId);
-        Cast cast;
-        Playlist playlist;
+        Optional<Playlist> optionalCastPlaylist = playlistRepository.findById(castSaveRequestDTO.getPlaylistId());
+        Optional<Cast> optionalCast = castRepository.findById(castSaveRequestDTO.getCastId());
 
-        if (optionalCast.isEmpty() || optionalPlaylist.isEmpty()) {
+        Playlist castPlaylist;
+        Cast cast;
+
+
+        if (optionalCast.isEmpty() || optionalCastPlaylist.isEmpty()) {
             throw new UserHandler(ErrorCode.CAST_NOT_FOUND);
         } else {
             cast = optionalCast.get();
-            playlist = optionalPlaylist.get();
+            castPlaylist = optionalCastPlaylist.get();
         }
 
-        if (castPlaylistRepository.existsByPlaylistIdAndCastId(playlist.getId(), cast.getId())) {
+        if (castPlaylistRepository.existsByMemberIdAndCastId(1L, cast.getId())) { // 해당 멤버 id로 이미 캐스트가 존재하는 경우
             throw new UserHandler(ErrorCode.CAST_ALREADY_EXIST);
         }
         ; // 이미 존재하는 경우
 
+        if (!cast.getIsPublic()) {
+            throw new UserHandler(ErrorCode.CAST_PRIVATE);
+        }
+
         CastPlaylist newCastPlaylist = CastPlaylist.builder()
                 .cast(cast)
-                .playlist(playlist)
-                .id(1L)
+                .playlist(castPlaylist)
                 .build();
 
         castPlaylistRepository.save(newCastPlaylist);
+
+        return newCastPlaylist.getId();
     }
 }

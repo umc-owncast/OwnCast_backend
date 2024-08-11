@@ -40,16 +40,13 @@ public enum ErrorCode implements BaseErrorCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_4013", "토큰이 올바르지 않습니다"),
     OUTPUT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_5000", "서버 출력에 오류가 있습니다. 관리자에게 문의하세요"),
 
-    BOOKMARK_NOT_EXIST(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "존재하지 않는 북마크입니다."),
-    BOOKMARK_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "BOOKMARK4002", "이미 존재하는 북마크입니다."),
-
-
-    // 캐스트 관련 에러
-    REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "CAST4001", "캐스트 생성시간이 너무 오래 걸립니다."),
-
     //Cast 관련 에러
     CAST_NOT_FOUND(HttpStatus.BAD_REQUEST, "CAST4001", "해당 캐스트가 없습니다"),
     CAST_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "CAST4002", "이미 존재하는 캐스트입니다."),
+    CAST_PRIVATE(HttpStatus.BAD_REQUEST, "CAST4003", "비공개 캐스트입니다."),
+    BOOKMARK_NOT_EXIST(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "존재하지 않는 북마크입니다."),
+    BOOKMARK_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "BOOKMARK4002", "이미 존재하는 북마크입니다."),
+    REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "CAST4001", "캐스트 생성시간이 너무 오래 걸립니다."),
 
     //Playlist 관련 에러
     PLAYLIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "PLAYLIST4001", "해당 플레이리스트가 없습니다."),
