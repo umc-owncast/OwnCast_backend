@@ -1,12 +1,10 @@
 package com.umc.owncast.domain.bookmark.Repository;
 
 import com.umc.owncast.domain.bookmark.entity.Bookmark;
-import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 import java.util.Optional;

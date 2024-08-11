@@ -5,7 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
-import com.umc.owncast.domain.category.entity.repository.MainCategoryRepository;
+import com.umc.owncast.domain.category.repository.MainCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

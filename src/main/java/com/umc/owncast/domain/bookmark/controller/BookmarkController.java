@@ -4,7 +4,6 @@ package com.umc.owncast.domain.bookmark.controller;
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.domain.bookmark.dto.BookMarkDTO;
 import com.umc.owncast.domain.bookmark.service.BookMarkServiceImpl;
-import com.umc.owncast.domain.bookmark.service.BookmarkService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

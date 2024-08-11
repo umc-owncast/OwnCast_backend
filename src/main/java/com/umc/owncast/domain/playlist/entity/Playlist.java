@@ -32,4 +32,8 @@ public class Playlist extends BaseTimeEntity {
 
     /*@OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL)
     private List<CastPlaylist> castPlaylistList = new ArrayList<>();*/
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
