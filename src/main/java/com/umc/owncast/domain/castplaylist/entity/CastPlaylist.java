@@ -1,10 +1,13 @@
 package com.umc.owncast.domain.castplaylist.entity;
 
 import com.umc.owncast.common.entity.BaseTimeEntity;
-import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.cast.entity.Cast;
+import com.umc.owncast.domain.playlist.entity.Playlist;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder

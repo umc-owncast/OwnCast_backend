@@ -1,6 +1,5 @@
 package com.umc.owncast.domain.cast.service;
 
-import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.domain.cast.dto.CastDTO;
 
 import java.util.List;

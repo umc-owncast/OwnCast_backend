@@ -8,9 +8,10 @@ import lombok.*;
 
 import java.time.LocalDate;
 
+
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "member")
 @AllArgsConstructor
@@ -19,21 +20,47 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 30, updatable = false)
+    private String loginId;
+
     @Column(nullable = false, length = 50)
     private String username;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 255)
     private String password;
+
+    @Column(nullable = false, length = 50)
+    private String nickname;
 
     private LocalDate inactiveDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(255) DEFAULT 'ACTIVE'")
-    private Status status;
+    private Status status = Status.ACTIVE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id")
     private Language language;
+
+    public Member(String loginId, String username, String password, String nickname, Status status, Language language) {
+        this.loginId = loginId;
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.status = (status != null) ? status : Status.ACTIVE;
+        this.language = language;
+    }
+
+    public void setMember(String loginId, String username, String password, String nickname) {
+        this.loginId = loginId;
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
+
 
     /*@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberPrefer> memberPreferList = new ArrayList<>();

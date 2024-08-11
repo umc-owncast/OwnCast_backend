@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
@@ -12,4 +13,11 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
             "JOIN CastPlaylist cp ON cp.playlist.id = p.id " +
             "WHERE cp.cast.id = :castId AND cp.cast.member.id = p.member.id ")
     Playlist findUserCategoryName(@Param("castId") Long castId);
+
+    List<Playlist> findAllByMemberIdOrderByCreatedAt(@Param("memberId") Long memberId);
+
+    boolean existsByNameAndMemberId(String name, Long memberId);
+
+    Optional<Playlist> findByIdAndMemberId(Long id, Long memberId);
+
 }

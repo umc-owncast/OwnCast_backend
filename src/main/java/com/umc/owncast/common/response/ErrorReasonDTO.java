@@ -14,5 +14,7 @@ public class ErrorReasonDTO {
     private final String code;
     private final String message;
 
-    public boolean getIsSuccess(){return isSuccess;}
+    public boolean getIsSuccess() {
+        return isSuccess;
+    }
 }
