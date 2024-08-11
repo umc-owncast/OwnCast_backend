@@ -1,14 +1,7 @@
 package com.umc.owncast.domain.castplaylist.service;
 
-import org.springframework.stereotype.Service;
+import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 
-@Service
-public class CastPlaylistService {
-    public void addToPlaylist(Long castId, Long playlistId) {
-
-    }
-
-    public void removeFromPlaylist(Long castId, Long playlistId) {
-
-    }
+public interface CastPlaylistService {
+    CastPlaylist findBySentenceId(Long sentenceId, Long memberId);
 }

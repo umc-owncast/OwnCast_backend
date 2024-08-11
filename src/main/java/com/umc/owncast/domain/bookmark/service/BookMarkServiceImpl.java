@@ -10,6 +10,7 @@ import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
+import com.umc.owncast.domain.castplaylist.service.CastPlaylistService;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import com.umc.owncast.domain.sentence.service.SentenceService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.Optional;
 public class BookMarkServiceImpl implements BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final CastPlaylistRepository castPlaylistRepository;
+    private final CastPlaylistService castPlaylistService;
     private final SentenceService sentenceService;
     private final CastRepository castRepository;
 
@@ -83,14 +85,7 @@ public class BookMarkServiceImpl implements BookmarkService {
 
     @Override
     public BookMarkSaveResultDTO saveBookmark(Long sentenceId) {
-        Optional<CastPlaylist> optionalCastPlaylist = castPlaylistRepository.findBySentenceId(sentenceId, 1L);
-        CastPlaylist castPlaylist;
-
-        if (optionalCastPlaylist.isPresent()) {
-            castPlaylist = optionalCastPlaylist.get();
-        } else {
-            throw new UserHandler(ErrorCode._BAD_REQUEST);
-        }
+        CastPlaylist castPlaylist = castPlaylistService.findBySentenceId(sentenceId, 1L);
 
         if (bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, 1L).isPresent()) {
             throw new UserHandler(ErrorCode.BOOKMARK_ALREADY_EXIST);
