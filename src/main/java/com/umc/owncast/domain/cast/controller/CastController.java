@@ -25,7 +25,7 @@ public class CastController {
     private final CastService castService;
     private final ScriptService scriptService;
     private final StreamService streamService;
-    private final CastSearchService castSearchService;
+//    private final CastSearchService castSearchService;
     private final CastSaveService castSaveService;
 
     /* * * * * * * * * * * * * *
@@ -137,7 +137,7 @@ public class CastController {
     @Operation(summary = "검색 홈 API")
     @GetMapping("/search/{page}")
     public ApiResponse<List<CastDTO.CastHomeDTO>> searchHome(@PathVariable("page") Integer page) {
-        return ApiResponse.onSuccess(castSearchService.getHomeCast(page));
+        return ApiResponse.onSuccess(castService.getHomeCast(page));
     }
 
     @CrossOrigin
@@ -151,6 +151,6 @@ public class CastController {
     @Operation(summary = "검색 API")
     @PostMapping("/search") // 수정 필요
     public ApiResponse<List<CastDTO.CastHomeDTO>> saveCast(@RequestParam("keyword") String keyword) {
-        return ApiResponse.onSuccess(castSearchService.getCast(keyword));
+        return ApiResponse.onSuccess(castService.getCast(keyword));
     }
 }

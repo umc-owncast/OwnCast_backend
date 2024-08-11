@@ -1,12 +1,16 @@
 package com.umc.owncast.domain.cast.service;
 
+import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.ApiResponse;
+import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.cast.dto.*;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
+import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
+import com.umc.owncast.domain.memberprefer.repository.MemberPreferRepository;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
@@ -15,6 +19,8 @@ import com.umc.owncast.domain.sentence.service.SentenceService;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,24 +43,15 @@ public class CastService {
     private final CastRepository castRepository;
     private final PlaylistRepository playlistRepository;
     private final CastPlaylistRepository castPlaylistRepository;
+    private final MemberPreferRepository memberPreferRepository;
 
-    /**
-     * keyword로 cast 생성
-     *
-     * @param castRequest cast 관련 정보
-     * @return cast를 List&lt;Sentence>에 담아 반환
-     */
+    /** keyword로 cast 생성 */
     public ApiResponse<Object> createCastByKeyword(KeywordCastCreationDTO castRequest) {
         String script = scriptService.createScript(castRequest);
         return getObjectApiResponse(castRequest, script);
     }
 
-    /**
-     * script로 cast 생성
-     *
-     * @param castRequest cast 관련 정보
-     * @return cast를 List&lt;Sentence>에 담아 반환
-     */
+    /** script로 cast 생성 */
     public ApiResponse<Object> createCastByScript(ScriptCastCreationDTO castRequest) {
         String script = castRequest.getScript();
         KeywordCastCreationDTO request = KeywordCastCreationDTO.builder()
@@ -154,5 +152,46 @@ public class CastService {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
         castRepository.delete(cast);
         return ApiResponse.of(SuccessCode._OK, cast);
+    }
+
+    public List<CastDTO.CastHomeDTO> getHomeCast(Integer page) {
+        // Long memberId = 토큰으로 정보 받아오기
+        Optional<MainPrefer> userMainCategory = memberPreferRepository.findByMemberId(1L);
+        //임시로 1L로 설정
+        List<CastDTO.CastHomeDTO> castHomeDTOList;
+
+        if (userMainCategory.isEmpty()) {
+            throw new UserHandler(ErrorCode.CAST_NOT_FOUND);
+        } else {
+            Long userCategoryId = userMainCategory.get().getMainCategory().getId();
+            Pageable pageable = PageRequest.of(page - 1, 5);
+            List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategoryId, pageable, 1L).getContent();
+
+            castHomeDTOList = castMainCategories.stream().map(cast ->
+                    CastDTO.CastHomeDTO.builder()
+                            .id(cast.getId())
+                            .title(cast.getTitle())
+                            .memberName(cast.getMember().getUsername())
+                            .audioLength(cast.getAudioLength())
+                            .playlistName(playlistRepository.findUserCategoryName(cast.getId()).getName())
+                            .build()
+            ).toList();
+        }
+
+        return castHomeDTOList;
+    }
+
+    public List<CastDTO.CastHomeDTO> getCast(String keyword) {
+        List<Cast> castList = castRepository.castSearch(keyword);
+
+        return castList.stream().map(cast ->
+                CastDTO.CastHomeDTO.builder()
+                        .id(cast.getId())
+                        .title(cast.getTitle())
+                        .memberName(cast.getMember().getUsername())
+                        .audioLength(cast.getAudioLength())
+                        .playlistName(playlistRepository.findUserCategoryName(cast.getId()).getName())
+                        .build()
+        ).toList();
     }
 }
