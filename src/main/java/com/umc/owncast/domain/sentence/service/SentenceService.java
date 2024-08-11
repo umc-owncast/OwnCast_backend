@@ -16,7 +16,8 @@ public interface SentenceService {
     /**
      * 매개변수를 묶어 List<Sentence>로 반환
      */
-    List<Sentence> mapToSentence(String original, String korean, TTSResultDTO ttsResultDTO, Cast cast);
 
     List<Sentence> findCastSentence(Long castId);
+
+    Sentence findById(Long sentenceId);
 }
