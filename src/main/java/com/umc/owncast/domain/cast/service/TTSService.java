@@ -3,7 +3,7 @@ package com.umc.owncast.domain.cast.service;
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
 import com.umc.owncast.domain.cast.dto.TTSDTO;
 import com.umc.owncast.domain.cast.dto.TTSResultDTO;
-import com.umc.owncast.domain.cast.enums.VoiceCode;
+import com.umc.owncast.domain.enums.VoiceCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;

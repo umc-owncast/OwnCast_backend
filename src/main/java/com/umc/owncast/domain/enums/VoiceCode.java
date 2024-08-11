@@ -1,4 +1,4 @@
-package com.umc.owncast.domain.cast.enums;
+package com.umc.owncast.domain.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
