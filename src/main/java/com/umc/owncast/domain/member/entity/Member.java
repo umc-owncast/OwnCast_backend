@@ -6,39 +6,42 @@ import com.umc.owncast.domain.language.entity.Language;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "member")
 @AllArgsConstructor
 public class Member extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column( nullable = false, length = 30, updatable = false)
+    private String loginId;
 
     @Column(nullable = false, length = 50)
     private String username;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(length = 50)
-    private String email;
+    @Column(nullable = false, length = 50)
+    private String nickname;
 
-    private LocalDate inactiveDate;
-
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(255) DEFAULT 'ACTIVE'")
-    private Status status;
-
-    private boolean emailVerified;
+    private Status status = Status.ACTIVE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id")
     private Language language;
+
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
+
+
 
     /*@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberPrefer> memberPreferList = new ArrayList<>();

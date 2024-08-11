@@ -22,11 +22,22 @@ public class PlaylistDTO {
         String playlistName;
     }
 
+    @Setter
+    @Getter
+    @Builder
+    public static class PlaylistResultDTO {
+        String name;
+        String imagePath;
+        Long playlistId;
+        Long totalCast;
+    }
+
     @Builder
     @Setter
     @Getter
     public static class DeletePlaylistDTO {
         Long playlistId;
+        Long totalCast;
     }
 
     @Builder
