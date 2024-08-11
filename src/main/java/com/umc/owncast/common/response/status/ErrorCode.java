@@ -25,6 +25,10 @@ public enum ErrorCode implements BaseErrorCode {
     MEMBER_SIGNUP_ERROR(HttpStatus.BAD_REQUEST, "SIGNUP4001", "회원가입 유효성 검사 실패"),
     EMAIL_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "SIGNUP4002", "이미 존재하는 이메일입니다."),
 
+    //Cast 관련 에러
+    CAST_NOT_FOUND(HttpStatus.BAD_REQUEST, "CAST4001", "해당 캐스트가 없습니다"),
+    CAST_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "CAST4002", "이미 존재하는 캐스트입니다."),
+    CAST_PRIVATE(HttpStatus.BAD_REQUEST, "CAST4003", "비공개 캐스트입니다.")
     // 기타 에러는 아래에 추가
     ;
 
