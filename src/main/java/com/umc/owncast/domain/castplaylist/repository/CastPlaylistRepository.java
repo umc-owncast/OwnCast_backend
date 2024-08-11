@@ -21,12 +21,14 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
 
     void deleteByPlaylistIdAndCastId(Long playlistId, Long castId);
 
-    default void deleteByPlaylistIdAndMemberId(Long playlistId, Long memberId, PlaylistRepository playlistRepository) {
-        Playlist playlist = playlistRepository.findByIdAndMemberId(playlistId, memberId)
-                .orElseThrow(( )-> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
+    void deleteByPlaylistId(Long playlistId);
 
-        deleteByPlaylistIdAndCastId(playlist.getId(), memberId);
-    }
+//    default void deleteByPlaylistIdAndMemberId(Long playlistId, Long memberId, PlaylistRepository playlistRepository) {
+//        Playlist playlist = playlistRepository.findByIdAndMemberId(playlistId, memberId)
+//                .orElseThrow(( )-> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
+//
+//        deleteByPlaylistIdAndCastId(playlist.getId(), memberId);
+//    }
 
     Page<CastPlaylist> findByPlaylistId(Long playlistId, Pageable pageable);
 }
