@@ -50,8 +50,7 @@ public class Member extends BaseTimeEntity {
         this.language = language;
     }
 
-    public void setMember(String loginId, String username, String password, String nickname) {
-        this.loginId = loginId;
+    public void setMember(String username, String password, String nickname) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;

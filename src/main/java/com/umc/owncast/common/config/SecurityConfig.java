@@ -47,9 +47,12 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .authorizeHttpRequests(registry -> registry
-                        .requestMatchers("/h2/**", "/favicon.ico", "/error", "/swagger-ui/**", "/v3/api-docs/**", "/api/users/login", "api/users/signup", "api/users/signup/**").permitAll()
-                )
+//                .authorizeHttpRequests(registry -> registry
+//                        .requestMatchers("/h2/**", "/favicon.ico", "/error", "/swagger-ui/**", "/v3/api-docs/**", "/api/users/login", "api/users/signup", "api/users/signup/**").permitAll()
+//                )
+                .authorizeHttpRequests(http -> {
+                    http.requestMatchers("**").permitAll();
+                })
                 .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), loginService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new LogoutFilter(loginService), org.springframework.security.web.authentication.logout.LogoutFilter.class)
@@ -57,9 +60,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+    /*public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
-    }
+    }*/
 
     CorsConfigurationSource apiConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
