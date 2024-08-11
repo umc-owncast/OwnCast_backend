@@ -16,7 +16,7 @@ public class CastDTO {
     private Long id;
     private String title;
     private String imagePath;
-    private Integer audioLength;
+    private String audioLength;
     private String voice;
     private Formality formality;
     private Boolean isPublic;

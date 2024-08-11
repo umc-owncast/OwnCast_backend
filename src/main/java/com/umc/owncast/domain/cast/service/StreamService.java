@@ -19,21 +19,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StreamService {
     private final CastRepository castRepository;
-    private static final String AUDIO_FILES_PATH = "src/main/resources/stream-test/"; // 이후 수정
 
-    public Object stream(String filename, HttpHeaders headers) throws IOException {
-        Path filePath = Paths.get(AUDIO_FILES_PATH).resolve(filename).normalize();
-        return streamResource(headers, filePath);
-    }
+//    public Object stream(String filename, HttpHeaders headers) throws IOException {
+//        final String AUDIO_FILES_PATH = "src/main/resources/stream-test/";
+//        Path filePath = Paths.get(AUDIO_FILES_PATH).resolve(filename).normalize();
+//        return streamResource(headers, filePath);
+//    }
 
     public ResponseEntity<UrlResource> stream(Long castId, HttpHeaders headers) throws IOException {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new IllegalArgumentException("castId가 잘못되었습니다"));
-        Path filePath = Paths.get(AUDIO_FILES_PATH).resolve(cast.getFilePath()).normalize();
-        return streamResource(headers, filePath);
+        return streamResource(headers, cast.getFilePath());
     }
 
-    private ResponseEntity<UrlResource> streamResource(HttpHeaders headers, Path filePath) throws IOException {
-        UrlResource resource = new UrlResource(filePath.toUri());
+    private ResponseEntity<UrlResource> streamResource(HttpHeaders headers, String fileURL) throws IOException {
+        UrlResource resource = new UrlResource(fileURL);
 
         if (!resource.exists()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

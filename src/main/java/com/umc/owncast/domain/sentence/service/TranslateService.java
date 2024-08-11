@@ -1,4 +1,4 @@
-package com.umc.owncast.domain.cast.service;
+package com.umc.owncast.domain.sentence.service;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;

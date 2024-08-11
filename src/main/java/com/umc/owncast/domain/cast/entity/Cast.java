@@ -1,6 +1,7 @@
 package com.umc.owncast.domain.cast.entity;
 
 import com.umc.owncast.common.entity.BaseTimeEntity;
+import com.umc.owncast.common.util.StringUtil;
 import com.umc.owncast.domain.cast.dto.CastUpdateDTO;
 import com.umc.owncast.domain.enums.Formality;
 import com.umc.owncast.domain.language.entity.Language;
@@ -34,7 +35,7 @@ public class Cast extends BaseTimeEntity {
     private String imagePath;
 
     @Column(nullable = false)
-    private Integer audioLength;
+    private String audioLength;
 
     @Column
     private String voice;
@@ -75,11 +76,11 @@ public class Cast extends BaseTimeEntity {
     }
 
     public void update(CastUpdateDTO updateRequest) {
-        if(Objects.nonNull(updateRequest.getTitle()) && !updateRequest.getTitle().isBlank())
+        if(!StringUtil.isBlank(updateRequest.getTitle()))
             this.title = updateRequest.getTitle();
         if(Objects.nonNull(updateRequest.getIsPublic()))
             this.isPublic = updateRequest.getIsPublic();
-        if(Objects.nonNull(updateRequest.getImagePath()) && !updateRequest.getImagePath().isBlank())
+        if(!StringUtil.isBlank(updateRequest.getImagePath()))
             this.imagePath = updateRequest.getImagePath();
     }
 

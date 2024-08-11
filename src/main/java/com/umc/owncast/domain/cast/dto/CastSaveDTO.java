@@ -1,8 +1,8 @@
 package com.umc.owncast.domain.cast.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
@@ -14,12 +14,8 @@ public class CastSaveDTO {
     @NotEmpty
     private String title;
 
-    private MultipartFile castImage;
-
-    private String imagePath;
-
-    @NotEmpty
+    @NotNull
     private Long playlistId;
 
-    private Boolean isPublic = false;
+    private Boolean isPublic;
 }

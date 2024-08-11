@@ -15,11 +15,11 @@ public class KeywordCastCreationDTO {
     @NotEmpty(message = "키워드는 필수 입력 항목입니다.")
     private String keyword;
 
-    private Formality formality = Formality.CASUAL;
+    private Formality formality;
 
-    private String voice = "DEFAULT_VOICE";
+    private String voice;
 
     @Min(60)
     @Max(600)
-    private int audioTime = 60;
+    private int audioTime;
 }

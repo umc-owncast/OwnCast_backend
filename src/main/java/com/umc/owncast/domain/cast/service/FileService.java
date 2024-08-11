@@ -39,4 +39,17 @@ public class FileService {
         }
         return "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
     }
+
+    public void deleteFile(String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            return;
+        }
+        try {
+            amazonS3Client.deleteObject(bucket, filePath);
+        } catch (Exception e) {
+            System.out.println("FileService: IOException at stream() -> " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("S3 삭제에 실패하였습니다.");
+        }
+    }
 }
