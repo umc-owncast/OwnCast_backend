@@ -36,7 +36,6 @@ import java.util.Optional;
 public class CastService {
     private final ScriptService scriptService;
     private final TTSService ttsService;
-    private final StreamService streamService;
     private final FileService fileService;
     private final SentenceService sentenceService;
 
@@ -132,7 +131,7 @@ public class CastService {
         try {
             Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다."));
             cast.updateHits();
-            return streamService.stream(castId, headers);
+            return fileService.streamFile(cast.getFilePath(), headers);
         } catch (IOException e) {
             System.out.println("CastService: IOException at stream() -> " + e.getMessage());
             e.printStackTrace();

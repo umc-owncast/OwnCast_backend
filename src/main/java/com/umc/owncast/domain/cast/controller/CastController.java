@@ -24,7 +24,6 @@ public class CastController {
     private final KeywordService keywordService;
     private final CastService castService;
     private final ScriptService scriptService;
-    private final StreamService streamService;
 
     /* * * * * * * * * * * * * *
      * 테스트용 메소드 (나중에 삭제) *
