@@ -105,6 +105,24 @@ public class ChatGPTPromptGenerator {
         return WPM * (audioTime/60);
     }
 
+    public ChatCompletionRequest generateKeywordPrompt(String categoryName) {
+        return generateKeywordPrompt(categoryName, DEFAULT_MODEL);
+    }
+
+    public ChatCompletionRequest generateKeywordPrompt(String categoryName, String modelName) {
+        List<ChatMessage> promptMessage = createKeywordPromptMessage(categoryName);
+
+        ChatCompletionRequest prompt = ChatCompletionRequest.builder()
+                .model(modelName)
+                .messages(promptMessage)
+                .temperature(DEFAULT_TEMPERATURE)
+                .build();
+
+        System.out.println("ChatGPTPromptGenerator - generated prompt:");
+        System.out.println(prompt);
+        return prompt;
+    }
+
     public List<ChatMessage> createKeywordPromptMessage(String keyword) {
         // 현재 사용자의 언어 설정에 맞춘다 TODO: 회원 기능으로 언어 설정 가져오기
         String language = "Korean";

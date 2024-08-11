@@ -81,7 +81,7 @@ public class CastService {
         cast = castRepository.save(cast);
         List<Sentence> sentences = sentenceService.save(script, ttsResult, cast);
 
-        CastScriptDTO response = new CastScriptDTO(cast);
+        CastScriptDTO response = new CastScriptDTO(cast); // TODO 여기서 return + 함수명 createCastResponse 등으로 변경
         response.setSentences(sentences.stream()
                 .map(SentenceResponseDTO::new)
                 .toList());
