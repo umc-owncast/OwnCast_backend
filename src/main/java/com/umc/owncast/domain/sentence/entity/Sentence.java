@@ -17,7 +17,7 @@ public class Sentence extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Integer sentenceIndex;
+    private Integer index;
 
     @Column(nullable = false)
     private String originalSentence;

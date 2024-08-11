@@ -4,7 +4,6 @@ import com.umc.owncast.common.entity.BaseTimeEntity;
 import com.umc.owncast.domain.enums.Voice;
 import com.umc.owncast.domain.language.entity.Language;
 import com.umc.owncast.domain.member.entity.Member;
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import lombok.*;
 
