@@ -22,6 +22,8 @@ public class SubCategory {
     @JoinColumn(name = "category_id")
     private MainCategory mainCategory;
 
+    @Column(length = 50)
+    private boolean isUserCreated;
     /*@OneToMany(mappedBy = "subCategory", cascade = CascadeType.ALL)
     private List<CastCategory> castCategoryList = new ArrayList<>();*/
 }
