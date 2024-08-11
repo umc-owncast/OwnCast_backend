@@ -4,11 +4,11 @@ import com.umc.owncast.domain.playlist.dto.PlaylistDTO;
 
 public interface PlaylistService {
 
-    public PlaylistDTO.AddPlaylistDTO addPlaylist(String playlistName);
+    PlaylistDTO.AddPlaylistDTO addPlaylist(String playlistName);
 
-    public PlaylistDTO.DeletePlaylistDTO deletePlaylist(Long playlistId);
+    PlaylistDTO.DeletePlaylistDTO deletePlaylist(Long playlistId);
 
-    public PlaylistDTO.GetPlaylistDTO getPlaylist(Long playlistId, int page, int size);
+    PlaylistDTO.GetPlaylistDTO getPlaylist(Long playlistId, int page, int size);
 
-    public PlaylistDTO.ModifyPlaylistDTO modifyPlaylist(Long playlistId, String playlistName);
+    PlaylistDTO.ModifyPlaylistDTO modifyPlaylist(Long playlistId, String playlistName);
 }
