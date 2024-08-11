@@ -1,11 +1,9 @@
 package com.umc.owncast.domain.member.service;
 
-import com.umc.owncast.common.exception.GeneralException;
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.jwt.JwtUtil;
 import com.umc.owncast.common.jwt.LoginService;
 import com.umc.owncast.common.response.status.ErrorCode;
-import com.umc.owncast.domain.category.entity.MainCategory;
 import com.umc.owncast.domain.category.entity.SubCategory;
 import com.umc.owncast.domain.category.repository.MainCategoryRepository;
 import com.umc.owncast.domain.category.repository.SubCategoryRepository;
@@ -21,6 +19,8 @@ import com.umc.owncast.domain.memberprefer.repository.SubPreferRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +41,7 @@ public class MemberService {
     private final MainCategoryRepository mainCategoryRepository;
     private final SubCategoryRepository subCategoryRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(MemberService.class);
 
     @Transactional
     public String insertMember(HttpServletResponse response, MemberRequest.joinLoginIdDto requestDto) {
@@ -77,20 +78,33 @@ public class MemberService {
         return newRefreshToken;
     }
 
+
     @Transactional
-    public Long addLanguageSetting(Long memberId, Long languageId){
+    public Long addLanguage(Long languageId) {
+        // 토큰을 이용해서 사용자 정보 받기 (현재는 1L로 설정)
+        Optional<Member> optionalMember = memberRepository.findById(1002L);
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
+        System.out.println(optionalMember);
 
+        if (optionalMember.isEmpty()) {
+            throw new UserHandler(ErrorCode.MEMBER_NOT_FOUND);
+        }
+
+        Member member = optionalMember.get();
+
+        // Language 엔티티를 안전하게 조회
         Language language = languageRepository.findById(languageId)
                 .orElseThrow(() -> new UserHandler(ErrorCode.LANGUAGE_NOT_FOUND));
 
-        member.getLanguage(language);
-        memberRepository.save(member);
+        // 언어 설정
+        member.setLanguage(language);
+
+        // 변경된 엔티티를 저장
+        memberRepository.saveAndFlush(member);
 
         return member.getId();
     }
+
 
     @Transactional
     public Long addPreferSetting(Long memberId, MemberRequest.memberPreferDto request) {

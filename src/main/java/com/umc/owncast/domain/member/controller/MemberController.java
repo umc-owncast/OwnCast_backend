@@ -2,10 +2,8 @@ package com.umc.owncast.domain.member.controller;
 
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.SuccessCode;
-import com.umc.owncast.domain.member.dto.CustomUserDetails;
 import com.umc.owncast.domain.member.dto.MemberRequest;
 import com.umc.owncast.domain.member.dto.MemberResponse;
-import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.member.service.MemberMapper;
 import com.umc.owncast.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -35,17 +32,15 @@ public class MemberController {
     }
 
     @Operation(summary = "회원가입 언어 관심분야 API")
-    @PostMapping("/signup/{memberId}")
-    public ApiResponse<Long> joinSetting(@PathVariable("memberId") Long memberId,
-                                         @RequestParam("language_id") Long languageId,
-                                         @Valid @RequestBody MemberRequest.memberPreferDto request) {
+    @PostMapping("/signup/{member_id}")
+    public ApiResponse<Long> joinSetting(@PathVariable("member_id") Long memberId,
+                                         @RequestParam Long languageId
+            ,@Valid @RequestBody MemberRequest.memberPreferDto request
+                                         ) {
 
-       memberService.addLanguageSetting(memberId, languageId);
-
-        // 관심분야 설정 추가
         Long updatedMemberId = memberService.addPreferSetting(memberId, request);
 
-        return ApiResponse.of(SuccessCode._OK, updatedMemberId);
+        return ApiResponse.of(SuccessCode._OK, memberService.addLanguage(languageId));
     }
 
 

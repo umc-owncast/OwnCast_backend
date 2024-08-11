@@ -38,7 +38,7 @@ public class Member extends BaseTimeEntity {
     @JoinColumn(name = "language_id")
     private Language language;
 
-    public void getLanguage(Language language) {
+    public void setLanguage(Language language) {
         this.language = language;
     }
 
