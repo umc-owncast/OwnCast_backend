@@ -13,35 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class CastDTO {
-
-    @Builder
-    @Getter
-    public static class CastHomeDTO {
-        Long id;
-        String audioLength;
-        String title;
-        String memberName;
-        String playlistName;
-    }
-
-    @Builder
-    @Getter
-    public static class CastPlayDTO {
-        Long id;
-        String title;
-        String memberName;
-        String mainCategoryName;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CastSaveRequestDTO {
-        Long castId;
-        Long playlistId;
-    }
-
     private Long id;
     private String title;
     private String imagePath;

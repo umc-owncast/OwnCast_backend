@@ -109,21 +109,21 @@ public class CastController {
     @CrossOrigin
     @Operation(summary = "검색 홈 API")
     @GetMapping("/search/home")
-    public ApiResponse<List<CastDTO.CastHomeDTO>> searchHome() {
+    public ApiResponse<List<CastHomeDTO>> searchHome() {
         return ApiResponse.onSuccess(castService.getHomeCast());
     }
 
     @CrossOrigin
     @Operation(summary = "다른 사람의 플레이리스트 가져오기")
     @PostMapping("/other")
-    public ApiResponse<Long> getOtherCast(@RequestBody CastDTO.CastSaveRequestDTO castDTO) {
+    public ApiResponse<Long> getOtherCast(@RequestBody OtherCastRequestDTO castDTO) {
         return ApiResponse.onSuccess(castService.getOtherCast(castDTO));
     }
 
     @CrossOrigin
     @Operation(summary = "검색 API")
     @PostMapping("/search")
-    public ApiResponse<List<CastDTO.CastHomeDTO>> saveCast(@RequestParam("keyword") String keyword) {
+    public ApiResponse<List<CastHomeDTO>> saveCast(@RequestParam("keyword") String keyword) {
         return ApiResponse.onSuccess(castService.getCast(keyword));
     }
 }
