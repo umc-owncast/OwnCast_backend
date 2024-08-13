@@ -14,17 +14,19 @@ import lombok.*;
 @Table(name = "member")
 @AllArgsConstructor
 public class Member extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
-    @Column(nullable = false, length = 30, updatable = false)
+    @Column(nullable = false, length = 30)
     private String loginId;
 
     @Column(nullable = false, length = 50)
     private String username;
 
+    @Setter
     @Column(nullable = false, length = 255)
     @Size(min = 5)
     private String password;
@@ -36,19 +38,15 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
-
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id")
     private Language language;
 
-    public void setMember(String username, String password, String nickname){
+    public void setMember(String loginId, String username, String nickname){
+        this.loginId = loginId;
         this.username = username;
-        this.password = password;
         this.nickname = nickname;
-    }
-
-    public void setLanguage(Language language) {
-        this.language = language;
     }
 
 

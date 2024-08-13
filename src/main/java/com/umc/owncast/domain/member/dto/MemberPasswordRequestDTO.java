@@ -4,21 +4,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberProfileRequestDTO {
-
+public class MemberPasswordRequestDTO {
     @NotBlank
-    String loginId;
-
-    @NotBlank
-    String username;
-
-    @NotBlank
-    String nickname;
+    @Size(min = 8, max = 255)
+    String password;
 }
-
