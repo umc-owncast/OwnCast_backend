@@ -44,6 +44,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+
         LoginDTO loginDTO = new LoginDTO();
 
         try {
@@ -55,7 +56,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             return null;
         }
 
-        String LoginId = loginDTO.getLoginId();
+        String LoginId= loginDTO.getLoginId();
         String Password = loginDTO.getPassword();
 
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(LoginId, Password);
@@ -64,8 +65,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         if (customUserDetails.getStatus() == Status.INACTIVE) {
             writeOutput(request, response, HttpServletResponse.SC_FORBIDDEN, ApiResponse.onSuccess(ErrorCode.INACTIVATE_FORBIDDEN));
@@ -75,9 +76,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Long userId = customUserDetails.getUserId();
 
         String accessToken = loginService.issueAccessToken(userId);
+        //Cookie refreshTokenCookie = loginService.issueRefreshToken(userId);
         String refreshToken = loginService.issueRefreshToken(userId);
 
         response.addHeader("Authorization", accessToken);
+        //response.addCookie(refreshTokenCookie);
         writeOutput(request, response, HttpServletResponse.SC_OK, ApiResponse.of(SuccessCode._OK, MemberMapper.toRefreshToken(refreshToken)));
     }
 
