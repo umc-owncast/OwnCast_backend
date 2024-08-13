@@ -16,7 +16,7 @@ public class MemberRequest {
         @NotBlank
         String loginId;
         @NotBlank
-        @Size(min = 8, max = 255)
+        @Size(min = 8, max = 16)
         String password;
     }
 
