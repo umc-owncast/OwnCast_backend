@@ -58,10 +58,13 @@ public class LoginService {
     }
 
     public String validateRefreshToken(Cookie[] cookies) {
+
         String refreshToken = null;
+
         for (Cookie cookie : cookies)
             if (cookie.getName().equals("refresh"))
                 refreshToken = cookie.getValue();
+
 
         if (refreshToken == null)
             throw new GeneralException(ErrorCode.NOT_FOUND_TOKEN);
@@ -93,4 +96,5 @@ public class LoginService {
 
         refreshRepository.save(newRefresh);
     }
+
 }

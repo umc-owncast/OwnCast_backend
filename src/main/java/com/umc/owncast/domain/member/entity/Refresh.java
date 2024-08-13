@@ -16,7 +16,7 @@ public class Refresh extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "member_id")
     private Long id;
 
     private Long userId;
