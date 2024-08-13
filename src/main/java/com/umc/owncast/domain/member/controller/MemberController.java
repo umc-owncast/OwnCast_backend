@@ -10,14 +10,15 @@ import com.umc.owncast.domain.member.service.MemberMapper;
 import com.umc.owncast.domain.member.service.MemberService;
 import com.umc.owncast.domain.member.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
+
+@Tag(name = "유저 관련 API", description = "유저 관련 API입니다")
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 @RestController
@@ -37,9 +38,8 @@ public class MemberController {
     @Operation(summary = "회원가입 언어 관심분야 API")
     @PostMapping("/signup/{member_id}")
     public ApiResponse<Long> joinSetting(@PathVariable("member_id") Long memberId,
-                                         @RequestParam Long languageId
-            , @Valid @RequestBody MemberRequest.memberPreferDto request
-    ) {
+                                         @RequestParam Long languageId,
+                                         @Valid @RequestBody MemberRequest.memberPreferDto request) {
 
         Long updatedMemberId = memberService.addPreferSetting(memberId, request);
 

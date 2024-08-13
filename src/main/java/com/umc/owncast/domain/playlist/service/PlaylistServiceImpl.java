@@ -5,7 +5,7 @@ import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.cast.repository.CastRepository;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
-import com.umc.owncast.domain.playlist.dto.PlaylistDTO;
+import com.umc.owncast.domain.playlist.dto.*;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import jakarta.transaction.Transactional;
@@ -31,15 +31,15 @@ public class PlaylistServiceImpl implements PlaylistService {
     private final CastPlaylistRepository castPlaylistRepository;
 
     @Override
-    public List<PlaylistDTO.PlaylistResultDTO> getAllPlaylists() {
+    public List<PlaylistResultDTO> getAllPlaylists() {
 
         // Token으로 사용자 id 불러오기
         // 일단은 1L로 사용
         List<Playlist> playlistList = playlistRepository.findAllByMemberIdOrderByCreatedAt(1L);
-        List<PlaylistDTO.PlaylistResultDTO> playlistDTOList = new ArrayList<>();
+        List<PlaylistResultDTO> playlistDTOList = new ArrayList<>();
 
         playlistDTOList.add(
-                PlaylistDTO.PlaylistResultDTO.builder()
+                PlaylistResultDTO.builder()
                         .name("내가 만든 캐스트")
                         .imagePath(castRepository.findFirstByMemberIdOrderByCreatedAt(1L).getImagePath())
                         .playlistId(null)
@@ -48,7 +48,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         );
 
         playlistDTOList.add(
-                PlaylistDTO.PlaylistResultDTO.builder()
+                PlaylistResultDTO.builder()
                         .name("담아온 캐스트")
                         .imagePath(castPlaylistRepository.findFirstByPlaylist_Member_IdOrderByCreatedAt(1L).getPlaylist().getImagePath())
                         .playlistId(null)
@@ -58,7 +58,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
         playlistList.forEach(playlist ->
                 playlistDTOList.add(
-                        PlaylistDTO.PlaylistResultDTO.builder()
+                        PlaylistResultDTO.builder()
                                 .name(playlist.getName())
                                 .imagePath(playlist.getImagePath())
                                 .playlistId(playlist.getId())
@@ -73,7 +73,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     @Transactional
-    public PlaylistDTO.AddPlaylistDTO addPlaylist(String playlistName) {
+    public AddPlaylistDTO addPlaylist(String playlistName) {
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
 
@@ -87,7 +87,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
             playlistRepository.save(newPlaylist);
 
-            return PlaylistDTO.AddPlaylistDTO.builder()
+            return AddPlaylistDTO.builder()
                     .playlistId(newPlaylist.getId())
                     .build();
         }
@@ -95,7 +95,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     @Transactional
-    public PlaylistDTO.DeletePlaylistDTO deletePlaylist(Long playlistId) {
+    public DeletePlaylistDTO deletePlaylist(Long playlistId) {
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
 
@@ -113,7 +113,7 @@ public class PlaylistServiceImpl implements PlaylistService {
             // playlist 엔티티에서 해당 플레이리스트 삭제
             playlistRepository.delete(playlist);
 
-            return PlaylistDTO.DeletePlaylistDTO.builder()
+            return DeletePlaylistDTO.builder()
                     .playlistId(playlist.getId())
                     .build();
         }
@@ -121,7 +121,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     @Transactional
-    public PlaylistDTO.GetPlaylistDTO getPlaylist(Long playlistId, int page, int size) {
+    public GetPlaylistDTO getPlaylist(Long playlistId, int page, int size) {
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
 
@@ -138,11 +138,11 @@ public class PlaylistServiceImpl implements PlaylistService {
             Pageable pageable = PageRequest.of(page, size);
             castPlaylist = castPlaylistRepository.findByPlaylistId(playlistId, pageable);
 
-            List<PlaylistDTO.CastDTO> castDTOList = castPlaylist.getContent().stream()
+            List<CastDTO> castDTOList = castPlaylist.getContent().stream()
                     .map(this::convertToCastDTO)
                     .collect(Collectors.toList());
 
-            return PlaylistDTO.GetPlaylistDTO.builder()
+            return GetPlaylistDTO.builder()
                     .castList(castDTOList)
                     .build();
         }
@@ -150,7 +150,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     @Transactional
-    public PlaylistDTO.ModifyPlaylistDTO modifyPlaylist(Long playlistId, String playlistName) {
+    public ModifyPlaylistDTO modifyPlaylist(Long playlistId, String playlistName) {
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
 
@@ -168,7 +168,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                 playlist.setName(playlistName);
                 playlistRepository.save(playlist);
 
-                return PlaylistDTO.ModifyPlaylistDTO.builder()
+                return ModifyPlaylistDTO.builder()
                         .playlistId(playlist.getId())
                         .playlistName(playlist.getName())
                         .build();
@@ -176,8 +176,8 @@ public class PlaylistServiceImpl implements PlaylistService {
         }
     }
 
-    private PlaylistDTO.CastDTO convertToCastDTO(CastPlaylist castPlaylist) {
-        return PlaylistDTO.CastDTO.builder()
+    private CastDTO convertToCastDTO(CastPlaylist castPlaylist) {
+        return CastDTO.builder()
                 .castId(castPlaylist.getCast().getId())
                 .castTitle(castPlaylist.getCast().getTitle())
                 .isPublic(castPlaylist.getCast().getIsPublic())

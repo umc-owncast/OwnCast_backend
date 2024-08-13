@@ -25,8 +25,5 @@ public class SubPrefer extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_category_id")
     private SubCategory subCategory;
-
-    @Column(nullable = false)
-    private boolean isUserCreated;
 }
 

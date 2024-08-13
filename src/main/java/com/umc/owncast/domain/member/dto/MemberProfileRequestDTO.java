@@ -16,8 +16,6 @@ public class MemberProfileRequestDTO {
     @NotBlank
     String username;
     @NotBlank
-    String loginId;
-    @NotBlank
     @Size(min = 8, max = 255)
     String password;
 }

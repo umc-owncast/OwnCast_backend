@@ -19,8 +19,6 @@ import com.umc.owncast.domain.memberprefer.repository.SubPreferRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,25 +32,24 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final LoginService loginService;
     private final JwtUtil jwtUtil;
-    private final BCryptPasswordEncoder encoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final LanguageRepository languageRepository;
     private final MainPreferRepository mainPreferRepository;
     private final SubPreferRepository subPreferRepository;
     private final MainCategoryRepository mainCategoryRepository;
     private final SubCategoryRepository subCategoryRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(MemberService.class);
 
     @Transactional
     public String insertMember(HttpServletResponse response, MemberRequest.joinLoginIdDto requestDto) {
         if (memberRepository.existsByNickname(requestDto.getNickname())) {
             throw new UserHandler(ErrorCode.NICKNAME_ALREADY_EXIST); // 사용자 정의 예외
         }
-        if (memberRepository.existsByNickname(requestDto.getLoginId())) {
+        if (memberRepository.existsByLoginId(requestDto.getLoginId())) {
             throw new UserHandler(ErrorCode.ID_ALREADY_EXIST); // 사용자 정의 예외
         }
 
-        Member newMember = MemberMapper.toLoginIdMember(requestDto.getLoginId(), encoder.encode(requestDto.getPassword()), requestDto.getNickname(), requestDto.getUsername());
+        Member newMember = MemberMapper.toLoginIdMember(requestDto.getLoginId(), bCryptPasswordEncoder.encode(requestDto.getPassword()), requestDto.getNickname(), requestDto.getUsername());
         Member savedMember = memberRepository.save(newMember);
 
         return issueToken(savedMember.getId(), response);
@@ -123,7 +120,6 @@ public class MemberService {
             if (request.getEtc() == null || request.getEtc().isEmpty()) {
                 throw new UserHandler(ErrorCode.SUBCATEGORY_ETC_REQUIRED);
             }
-            // Create a new SubCategory based on 'etc'
             SubCategory newSubCategory = SubCategory.builder()
                     .name(request.getEtc())
                     .mainCategory(mainPrefer.getMainCategory())

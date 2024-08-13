@@ -6,6 +6,7 @@ import com.umc.owncast.domain.category.entity.MainCategory;
 import com.umc.owncast.domain.category.entity.SubCategory;
 import com.umc.owncast.domain.category.repository.MainCategoryRepository;
 import com.umc.owncast.domain.category.repository.SubCategoryRepository;
+import com.umc.owncast.domain.language.entity.Language;
 import com.umc.owncast.domain.language.repository.LanguageRepository;
 import com.umc.owncast.domain.member.dto.MemberPreferRequestDTO;
 import com.umc.owncast.domain.member.dto.MemberProfileRequestDTO;
@@ -45,7 +46,14 @@ public class UserService {
             throw new UserHandler(ErrorCode.MEMBER_NOT_FOUND);
         } else {
             member = optionalMember.get();
-            member.setLanguage(languageRepository.findById(languageId).get());
+
+            Optional<Language> optionalLanguage = languageRepository.findById(languageId);
+
+            if (optionalLanguage.isEmpty()) {
+                throw new UserHandler(ErrorCode.LANGUAGE_NOT_FOUND);
+            }
+
+            member.setLanguage(optionalLanguage.get());
             memberRepository.save(member);
         }
 
@@ -58,8 +66,8 @@ public class UserService {
         // 일단은 1L로 설정
 
         Optional<Member> optionalMember = memberRepository.findById(1L);
-        Optional<MainCategory> optionalMainCategory = mainCategoryRepository.findById(memberPreferRequestDTO.getMainCategoryId());
-        Optional<SubCategory> optionalSubCategory = subCategoryRepository.findById(memberPreferRequestDTO.getSubCategoryId());
+        Optional<MainCategory> optionalMainCategory = mainCategoryRepository.findById(memberPreferRequestDTO.getMainCategoryId()); // 주 카테고리
+        Optional<SubCategory> optionalSubCategory = subCategoryRepository.findById(memberPreferRequestDTO.getSubCategoryId()); // 부 카테고리 찾기
 
         if (optionalMember.isEmpty()) {
             throw new UserHandler(ErrorCode.MEMBER_NOT_FOUND);
@@ -81,13 +89,12 @@ public class UserService {
 
         MainPrefer mainPrefer = optionalMainPrefer.get();
         SubPrefer subPrefer = optionalSubPrefer.get();
-        SubCategory oldSubCategory = optionalSubPrefer.get().getSubCategory();
+        SubCategory oldSubCategory = subPrefer.getSubCategory(); // 멤버의 기존 subCategory
 
         mainPrefer.setMainCategory(mainCategory);
 
         SubCategory subCategory;
-
-        subCategory = optionalSubCategory.orElseGet(() -> SubCategory.builder()
+        subCategory = optionalSubCategory.orElseGet(() -> SubCategory.builder() // 만약 부카테고리가 null이라면, etc에 값이 들어있음. 해당 값으로 새로운 부 카테고리 생성
                 .name(memberPreferRequestDTO.getEtc())
                 .mainCategory(mainCategory)
                 .isUserCreated(true)
@@ -96,8 +103,8 @@ public class UserService {
         subPrefer.setSubCategory(subCategory);
         subCategoryRepository.save(subCategory);
 
-        if (oldSubCategory.isUserCreated()) {
-            subCategoryRepository.delete(oldSubCategory);
+        if (oldSubCategory.getIsUserCreated()) {
+            subCategoryRepository.delete(oldSubCategory); // 기존 부 카테고리가 유저가 만든 카테고리라면 삭제하기
         }
 
         return member.getId();
@@ -116,7 +123,6 @@ public class UserService {
         } else {
             member = optionalMember.get();
             member.setMember(
-                    memberProfileRequestDTO.getLoginId(),
                     memberProfileRequestDTO.getUsername(),
                     memberProfileRequestDTO.getPassword(),
                     memberProfileRequestDTO.getNickname());

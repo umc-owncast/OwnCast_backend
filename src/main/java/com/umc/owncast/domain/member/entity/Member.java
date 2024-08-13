@@ -4,10 +4,8 @@ import com.umc.owncast.common.entity.BaseTimeEntity;
 import com.umc.owncast.domain.enums.Status;
 import com.umc.owncast.domain.language.entity.Language;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
-
-import java.time.LocalDate;
-
 
 @Getter
 @Builder
@@ -18,6 +16,7 @@ import java.time.LocalDate;
 public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private Long id;
 
     @Column(nullable = false, length = 30, updatable = false)
@@ -27,31 +26,22 @@ public class Member extends BaseTimeEntity {
     private String username;
 
     @Column(nullable = false, length = 255)
+    @Size(min = 5)
     private String password;
 
     @Column(nullable = false, length = 50)
     private String nickname;
 
-    private LocalDate inactiveDate;
-
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id")
     private Language language;
 
-    public Member(String loginId, String username, String password, String nickname, Status status, Language language) {
-        this.loginId = loginId;
-        this.username = username;
-        this.password = password;
-        this.nickname = nickname;
-        this.status = (status != null) ? status : Status.ACTIVE;
-        this.language = language;
-    }
-
-    public void setMember(String loginId, String username, String password, String nickname) {
-        this.loginId = loginId;
+    public void setMember(String username, String password, String nickname){
         this.username = username;
         this.password = password;
         this.nickname = nickname;
@@ -60,6 +50,7 @@ public class Member extends BaseTimeEntity {
     public void setLanguage(Language language) {
         this.language = language;
     }
+
 
 
     /*@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)

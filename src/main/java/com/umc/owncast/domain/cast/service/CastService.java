@@ -153,11 +153,11 @@ public class CastService {
         return ApiResponse.of(SuccessCode._OK, cast);
     }
 
-    public List<CastDTO.CastHomeDTO> getHomeCast() {
+    public List<CastHomeDTO> getHomeCast() {
         // Long memberId = 토큰으로 정보 받아오기
         Optional<MainPrefer> userMainCategory = memberPreferRepository.findByMemberId(1L);
         //임시로 1L로 설정
-        List<CastDTO.CastHomeDTO> castHomeDTOList;
+        List<CastHomeDTO> castHomeDTOList;
 
         if (userMainCategory.isEmpty()) {
             throw new UserHandler(ErrorCode.CAST_NOT_FOUND);
@@ -167,7 +167,7 @@ public class CastService {
             List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategoryId, pageable, 1L).getContent();
 
             castHomeDTOList = castMainCategories.stream().map(cast ->
-                    CastDTO.CastHomeDTO.builder()
+                    CastHomeDTO.builder()
                             .id(cast.getId())
                             .title(cast.getTitle())
                             .memberName(cast.getMember().getUsername())
@@ -180,12 +180,12 @@ public class CastService {
         return castHomeDTOList;
     }
 
-    public List<CastDTO.CastHomeDTO> getCast(String keyword) {
+    public List<CastHomeDTO> getCast(String keyword) {
 
         List<Cast> castList = castRepository.castSearch(keyword, 1L);
 
         return castList.stream().map(cast ->
-                CastDTO.CastHomeDTO.builder()
+                CastHomeDTO.builder()
                         .id(cast.getId())
                         .title(cast.getTitle())
                         .memberName(cast.getMember().getUsername())
@@ -195,7 +195,7 @@ public class CastService {
         ).toList();
     }
 
-    public Long getOtherCast(CastDTO.CastSaveRequestDTO castSaveRequestDTO) {
+    public Long getOtherCast(OtherCastRequestDTO castSaveRequestDTO) {
 
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
