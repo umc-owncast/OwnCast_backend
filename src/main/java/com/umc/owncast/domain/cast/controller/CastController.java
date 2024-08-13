@@ -102,8 +102,8 @@ public class CastController {
 
     @GetMapping("/home")
     @Operation(summary = "홈 화면 키워드 6개 받아오기")
-    public List<String> createScript() {
-        return keywordService.createKeyword();
+    public ApiResponse<List<String>> getHomeKeyword() {
+        return ApiResponse.onSuccess(keywordService.createKeyword());
     }
 
     @CrossOrigin
