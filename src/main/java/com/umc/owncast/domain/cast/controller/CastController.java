@@ -1,6 +1,7 @@
 package com.umc.owncast.domain.cast.controller;
 
 import com.umc.owncast.common.response.ApiResponse;
+import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.cast.dto.*;
 import com.umc.owncast.domain.cast.service.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,14 +45,14 @@ public class CastController {
     @PostMapping("/keyword")
     @Operation(summary = "키워드로 캐스트를 생성하는 API")
     public ApiResponse<Object> createCastByKeyword(@Valid @RequestBody KeywordCastCreationDTO castRequest) {
-        return castService.createCastByKeyword(castRequest);
+        return ApiResponse.of(SuccessCode._OK, castService.createCastByKeyword(castRequest));
     }
 
     /* Cast 생성 API (script) */
     @PostMapping("/script")
     @Operation(summary = "스크립트로 캐스트를 생성하는 API.")
     public ApiResponse<Object> createCastByScript(@Valid @RequestBody ScriptCastCreationDTO castRequest) {
-        return castService.createCastByScript(castRequest);
+        return ApiResponse.of(SuccessCode._OK, castService.createCastByScript(castRequest));
     }
 
     /* Cast 저장 API */
@@ -63,7 +64,7 @@ public class CastController {
         System.out.println("CastController: save()");
         System.out.println(saveRequest);
         System.out.println(image);
-        return castService.saveCast(castId, saveRequest, image);
+        return ApiResponse.of(SuccessCode._OK, castService.saveCast(castId, saveRequest, image));
     }
 
     /* Cast 재생 API */
@@ -79,7 +80,7 @@ public class CastController {
     @GetMapping("/{castId}/scripts")
     @Operation(summary = "캐스트 스크립트 가져오기 API")
     public ApiResponse<Object> fetchCastScripts(@PathVariable("castId") Long castId) {
-        return castService.fetchCastScript(castId);
+        return ApiResponse.of(SuccessCode._OK, castService.fetchCastScript(castId));
     }
 
     /* Cast 수정 API */
@@ -89,7 +90,7 @@ public class CastController {
                                           @Valid @RequestPart(value = "updateInfo") CastUpdateDTO updateRequest,
                                           @RequestPart(value = "image", required = false) MultipartFile image) {
         // TODO 캐스트 생성자 혹은 관리자여야 함
-        return castService.updateCast(castId, updateRequest, image);
+        return ApiResponse.of(SuccessCode._OK, castService.updateCast(castId, updateRequest, image));
     }
 
     /* Cast 삭제 API */
@@ -97,7 +98,7 @@ public class CastController {
     @Operation(summary = "캐스트 삭제 API")
     public ApiResponse<Object> deleteCast(@PathVariable("castId") Long castId) {
         // TODO 캐스트 생성자 혹은 관리자여야 함
-        return castService.deleteCast(castId);
+        return ApiResponse.of(SuccessCode._OK, castService.deleteCast(castId));
     }
 
     @GetMapping("/home")
