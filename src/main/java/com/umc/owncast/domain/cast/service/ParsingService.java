@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ParsingService {
     public String[] parseSentences(String script) {
-        String[] sentences = script.split("@");
+        String[] sentences = script.split("(\\.{5}|\\.{4}|\\.{3}|\\.{2}|@|,|\\.|\n|!|\\?)");
 
         for (int i = 0; i < sentences.length; i++) {
             sentences[i] = sentences[i].replace("\n", "");

@@ -1,9 +1,7 @@
 package com.umc.owncast.domain.cast.service;
 
 import com.umc.owncast.common.exception.handler.UserHandler;
-import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.ErrorCode;
-import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.cast.dto.*;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
@@ -17,7 +15,6 @@ import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import com.umc.owncast.domain.sentence.service.SentenceService;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -89,7 +86,7 @@ public class CastService {
     }
 
     /** Cast 제목, 커버이미지, 공개여부, 플레이리스트 저장 */
-    public Object saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image) {
+    public String saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image) {
         // 제목, 커버이미지, 공개여부 등 저장
         updateCast(castId,
                 CastUpdateDTO.builder()
@@ -123,7 +120,7 @@ public class CastService {
     }
 
     /** Cast 수정 */
-    public Object updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image) {
+    public String updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
         setCastImage(cast, updateRequest, image);
         cast.update(updateRequest);

@@ -143,14 +143,11 @@ public class PlaylistServiceImpl implements PlaylistService {
         //임시로 1L로 설정
 
         Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, 1L);
-        Playlist playlist;
         Page<CastPlaylist> castPlaylist;
 
         if (optionalPlaylist.isEmpty()) {
             throw new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND);
         } else {
-            playlist = optionalPlaylist.get();
-
             // 페이지 요청 객체 생성
             Pageable pageable = PageRequest.of(page, size);
             castPlaylist = castPlaylistRepository.findByPlaylistId(playlistId, pageable);
