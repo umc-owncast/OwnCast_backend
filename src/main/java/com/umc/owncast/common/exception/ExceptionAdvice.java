@@ -6,16 +6,17 @@ import com.umc.owncast.common.response.status.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.TypeMismatchException;
+import org.springframework.http.*;
+import org.springframework.lang.Nullable;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.LinkedHashMap;
@@ -45,6 +46,14 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
             errors.merge(fieldName, errorMessage, (existingErrorMessage, newErrorMessage) -> existingErrorMessage + ", " + newErrorMessage);
         });
         return handleExceptionInternalArgs(e, HttpHeaders.EMPTY, ErrorCode.valueOf("BAD_REQUEST"), request, errors);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        Object[] args = new Object[]{ex.getPropertyName(), ex.getValue()};
+        log.error("TypeMismatchException - Failed to convert '" + args[0] + "' with value: '" + args[1] + "'");
+        ApiResponse<String> body = ApiResponse.ofFailure(ErrorCode._BAD_REQUEST, "요청 파라미터가 잘못되었습니다");
+        return this.handleExceptionInternal(ex, body, headers, status, request);
     }
 
     @ExceptionHandler(Exception.class)
