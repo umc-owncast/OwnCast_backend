@@ -45,22 +45,23 @@ public class CastService {
     private final MemberPreferRepository memberPreferRepository;
 
     /** keyword로 cast 생성 */
-    public ApiResponse<Object> createCastByKeyword(KeywordCastCreationDTO castRequest) {
+    public CastScriptDTO createCastByKeyword(KeywordCastCreationDTO castRequest) {
         String script = scriptService.createScript(castRequest);
-        return ApiResponse.of(SuccessCode._OK, handleCastCreation(castRequest, script));
+        return handleCastCreation(castRequest, script);
     }
 
     /** script로 cast 생성 */
-    public ApiResponse<Object> createCastByScript(ScriptCastCreationDTO castRequest) {
+    public CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest) {
         String script = castRequest.getScript();
         KeywordCastCreationDTO request = KeywordCastCreationDTO.builder()
                 .voice(castRequest.getVoice())
                 .formality(castRequest.getFormality())
                 .build();
-        return ApiResponse.of(SuccessCode._OK, handleCastCreation(request, script));
+        return handleCastCreation(request, script);
     }
 
-    private @NotNull CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script) {
+    /** Cast와 Sentence 저장 후 CastScriptDTO로 묶어 반환 */
+    private CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script) {
         TTSResultDTO ttsResult = ttsService.createSpeech(script, castRequest);
         Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
         int minutes = (int) (audioLength / 60);
@@ -79,10 +80,16 @@ public class CastService {
         cast = castRepository.save(cast);
         List<Sentence> sentences = sentenceService.save(script, ttsResult, cast);
 
-        return new CastScriptDTO(cast);
+        return CastScriptDTO.builder()
+                .id(cast.getId())
+                .sentences(sentences.stream()
+                        .map(SentenceResponseDTO::new)
+                        .toList())
+                .build();
     }
 
-    public ApiResponse<Object> saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image) {
+    /** Cast 제목, 커버이미지, 공개여부, 플레이리스트 저장 */
+    public Object saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image) {
         // 제목, 커버이미지, 공개여부 등 저장
         updateCast(castId,
                 CastUpdateDTO.builder()
@@ -104,9 +111,10 @@ public class CastService {
                 });
 
         castPlaylistRepository.save(castPlaylist);
-        return ApiResponse.of(SuccessCode._OK, "저장되었습니다.");
+        return "저장되었습니다.";
     }
-
+    
+    /** Cast 커버 이미지 수정 */
     private void setCastImage(Cast cast, CastUpdateDTO updateRequest, MultipartFile image) {
         if (image == null) return;
         String imagePath = fileService.uploadFile(image);
@@ -114,15 +122,17 @@ public class CastService {
         updateRequest.setImagePath(imagePath);
     }
 
-    public ApiResponse<Object> updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image) {
+    /** Cast 수정 */
+    public Object updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
         setCastImage(cast, updateRequest, image);
         cast.update(updateRequest);
         castRepository.save(cast);
 
-        return ApiResponse.of(SuccessCode._OK, "수정되었습니다.");
+        return "수정되었습니다.";
     }
 
+    /** Cast 오디오파일 스트리밍 */
     public ResponseEntity<UrlResource> streamCast(Long castId, HttpHeaders headers) {
         try {
             Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다."));
@@ -135,20 +145,21 @@ public class CastService {
         }
     }
 
-    public ApiResponse<Object> fetchCastScript(Long castId) {
+    /** Cast 스크립트 검색 */
+    public List<SentenceResponseDTO> fetchCastScript(Long castId) {
         List<Sentence> sentences = sentenceService.findCastSentence(castId);
-        List<SentenceResponseDTO> response = sentences.stream()
+        return sentences.stream()
                 .map(SentenceResponseDTO::new)
                 .toList();
-        return ApiResponse.of(SuccessCode._OK, response);
     }
 
-    public ApiResponse<Object> deleteCast(Long castId) {
+    public SimpleCastDTO deleteCast(Long castId) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
         castRepository.delete(cast);
-        return ApiResponse.of(SuccessCode._OK, cast);
+        return new SimpleCastDTO(cast);
     }
 
+    /** 홈 화면에서 보여줄 캐스트 검색?? TODO 바꿔줘 */
     public List<CastHomeDTO> getHomeCast() {
         // Long memberId = 토큰으로 정보 받아오기
         Optional<MainPrefer> userMainCategory = memberPreferRepository.findByMemberId(1L);
