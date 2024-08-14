@@ -47,7 +47,7 @@ public class CastService {
     /** keyword로 cast 생성 */
     public ApiResponse<Object> createCastByKeyword(KeywordCastCreationDTO castRequest) {
         String script = scriptService.createScript(castRequest);
-        return getObjectApiResponse(castRequest, script);
+        return ApiResponse.of(SuccessCode._OK, handleCastCreation(castRequest, script));
     }
 
     /** script로 cast 생성 */
@@ -57,10 +57,10 @@ public class CastService {
                 .voice(castRequest.getVoice())
                 .formality(castRequest.getFormality())
                 .build();
-        return getObjectApiResponse(request, script);
+        return ApiResponse.of(SuccessCode._OK, handleCastCreation(request, script));
     }
 
-    private @NotNull ApiResponse<Object> getObjectApiResponse(KeywordCastCreationDTO castRequest, String script) {
+    private @NotNull CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script) {
         TTSResultDTO ttsResult = ttsService.createSpeech(script, castRequest);
         Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
         int minutes = (int) (audioLength / 60);
@@ -79,8 +79,7 @@ public class CastService {
         cast = castRepository.save(cast);
         List<Sentence> sentences = sentenceService.save(script, ttsResult, cast);
 
-        CastScriptDTO response = new CastScriptDTO(cast); // TODO 여기서 return + 함수명 createCastResponse 등으로 변경
-        return ApiResponse.of(SuccessCode._OK, response);
+        return new CastScriptDTO(cast);
     }
 
     public ApiResponse<Object> saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image) {
