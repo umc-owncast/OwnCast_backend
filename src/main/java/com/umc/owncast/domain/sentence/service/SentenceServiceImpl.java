@@ -38,6 +38,7 @@ public class SentenceServiceImpl implements SentenceService {
             i++;
             sentences.add(sentence);
         }
+        cast.addSentences(sentences);
         return sentenceRepository.saveAll(sentences);
     }
 

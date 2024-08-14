@@ -80,9 +80,6 @@ public class CastService {
         List<Sentence> sentences = sentenceService.save(script, ttsResult, cast);
 
         CastScriptDTO response = new CastScriptDTO(cast); // TODO 여기서 return + 함수명 createCastResponse 등으로 변경
-        response.setSentences(sentences.stream()
-                .map(SentenceResponseDTO::new)
-                .toList());
         return ApiResponse.of(SuccessCode._OK, response);
     }
 
