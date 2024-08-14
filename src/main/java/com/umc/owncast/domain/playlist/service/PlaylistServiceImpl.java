@@ -64,18 +64,16 @@ public class PlaylistServiceImpl implements PlaylistService {
                         .build()
         );
 
-        playlistList.forEach(playlist -> {
-            playlistDTOList.add(
-                    PlaylistResultDTO.builder()
-                            .name(playlist.getName())
-                            .imagePath(getOldestCastFromPlaylist(playlist.getId())
-                                    .map(Cast::getImagePath)
-                                    .orElse("default/image/path")) // 기본 경로로 대체)
-                            .playlistId(playlist.getId())
-                            .totalCast(castPlaylistRepository.countAllByPlaylist(playlist))
-                            .build()
-            );
-        });
+        playlistList.forEach(playlist -> playlistDTOList.add(
+                PlaylistResultDTO.builder()
+                        .name(playlist.getName())
+                        .imagePath(getOldestCastFromPlaylist(playlist.getId())
+                                .map(Cast::getImagePath)
+                                .orElse("default/image/path")) // 기본 경로로 대체)
+                        .playlistId(playlist.getId())
+                        .totalCast(castPlaylistRepository.countAllByPlaylist(playlist))
+                        .build()
+        ));
 
         return playlistDTOList;
     }

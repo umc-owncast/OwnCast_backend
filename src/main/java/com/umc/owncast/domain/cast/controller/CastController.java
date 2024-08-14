@@ -4,6 +4,8 @@ import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.cast.dto.*;
 import com.umc.owncast.domain.cast.service.*;
+import com.umc.owncast.domain.cast.service.chatGPT.keyword.KeywordService;
+import com.umc.owncast.domain.cast.service.chatGPT.script.ScriptService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
