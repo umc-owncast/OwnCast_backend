@@ -10,10 +10,7 @@ import com.umc.owncast.domain.category.repository.MainCategoryRepository;
 import com.umc.owncast.domain.category.repository.SubCategoryRepository;
 import com.umc.owncast.domain.language.entity.Language;
 import com.umc.owncast.domain.language.repository.LanguageRepository;
-import com.umc.owncast.domain.member.dto.MemberPasswordRequestDTO;
-import com.umc.owncast.domain.member.dto.MemberPreferRequestDTO;
-import com.umc.owncast.domain.member.dto.MemberProfileRequestDTO;
-import com.umc.owncast.domain.member.dto.MemberRequest;
+import com.umc.owncast.domain.member.dto.*;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.member.repository.MemberRepository;
 import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
@@ -159,126 +156,92 @@ public class MemberService {
         return member.getId();
     }
 
-    public Long languageSetting(Long languageId) {
+    public MemberSettingResponseDTO languageSetting(Long languageId) {
 
-        // 토큰을 이용해서 사용자 정보 받기
-        // 일단은 1L로 설정
+        Member member = memberRepository.findById(1L).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
+        Language language = languageRepository.findById(languageId).orElseThrow(() -> new UserHandler(ErrorCode.LANGUAGE_NOT_FOUND));
+        member.setLanguage(language);
+        memberRepository.save(member);
 
-        Optional<Member> optionalMember = memberRepository.findById(1L);
-        Member member;
-
-        if (optionalMember.isEmpty()) {
-            throw new UserHandler(ErrorCode.MEMBER_NOT_FOUND);
-        } else {
-            member = optionalMember.get();
-
-            Optional<Language> optionalLanguage = languageRepository.findById(languageId);
-
-            if (optionalLanguage.isEmpty()) {
-                throw new UserHandler(ErrorCode.LANGUAGE_NOT_FOUND);
-            }
-
-            member.setLanguage(optionalLanguage.get());
-            memberRepository.save(member);
-        }
-
-        return member.getId();
+        return MemberSettingResponseDTO.builder()
+                .memberId(1L)
+                .build();
     }
 
-    public Long preferSetting(MemberPreferRequestDTO memberPreferRequestDTO) {
+    public MemberSettingResponseDTO preferSetting(MemberPreferRequestDTO memberPreferRequestDTO) {
 
-        // 토큰을 이용해서 사용자 정보 받기
-        // 일단은 1L로 설정
+        Member member = memberRepository.findById(1L)
+                .orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
 
-        Optional<Member> optionalMember = memberRepository.findById(1L);
-        Optional<MainCategory> optionalMainCategory = mainCategoryRepository.findById(memberPreferRequestDTO.getMainCategoryId()); // 주 카테고리
-        Optional<SubCategory> optionalSubCategory = subCategoryRepository.findById(memberPreferRequestDTO.getSubCategoryId()); // 부 카테고리 찾기
+        MainCategory mainCategory = mainCategoryRepository.findById(memberPreferRequestDTO.getMainCategoryId())
+                .orElseThrow(() -> new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
 
-        if (optionalMember.isEmpty()) {
-            throw new UserHandler(ErrorCode.MEMBER_NOT_FOUND);
-        }
+        SubCategory subCategory = subCategoryRepository.findById(memberPreferRequestDTO.getSubCategoryId())
+                .orElseGet(() -> {
+                    if (memberPreferRequestDTO.getEtc() == null) {
+                        throw new UserHandler(ErrorCode.SUBCATEGORY_ETC_REQUIRED);
+                    }
+                    return SubCategory.builder()
+                            .name(memberPreferRequestDTO.getEtc())
+                            .mainCategory(mainCategory)
+                            .isUserCreated(true)
+                            .build();
+                });
 
-        if (optionalMainCategory.isEmpty() || (optionalSubCategory.isEmpty() && memberPreferRequestDTO.getEtc() == null)) {
-            throw new UserHandler(ErrorCode.CATEGORY_NOT_EXIST);
-        }
+        MainPrefer mainPrefer = mainPreferRepository.findByMember(member)
+                .orElseThrow(() -> new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
 
-        Member member = optionalMember.get();
-        MainCategory mainCategory = optionalMainCategory.get();
-
-        Optional<MainPrefer> optionalMainPrefer = mainPreferRepository.findByMember(member);
-        Optional<SubPrefer> optionalSubPrefer = subPreferRepository.findByMember(member);
-
-        if (optionalMainPrefer.isEmpty() || optionalSubPrefer.isEmpty()) {
-            throw new UserHandler(ErrorCode._BAD_REQUEST);
-        }
-
-        MainPrefer mainPrefer = optionalMainPrefer.get();
-        SubPrefer subPrefer = optionalSubPrefer.get();
-        SubCategory oldSubCategory = subPrefer.getSubCategory(); // 멤버의 기존 subCategory
+        SubPrefer subPrefer = subPreferRepository.findByMember(member)
+                .orElseThrow(() -> new UserHandler(ErrorCode.SUBCATEGORY_NOT_EXIST));
 
         mainPrefer.setMainCategory(mainCategory);
+        mainPreferRepository.save(mainPrefer);
 
-        SubCategory subCategory;
-        subCategory = optionalSubCategory.orElseGet(() -> SubCategory.builder() // 만약 부카테고리가 null이라면, etc에 값이 들어있음. 해당 값으로 새로운 부 카테고리 생성
-                .name(memberPreferRequestDTO.getEtc())
-                .mainCategory(mainCategory)
-                .isUserCreated(true)
-                .build());
-
+        SubCategory oldSubCategory = subPrefer.getSubCategory();
         subPrefer.setSubCategory(subCategory);
-        subCategoryRepository.save(subCategory);
+        subPreferRepository.save(subPrefer);
 
         if (oldSubCategory.getIsUserCreated()) {
-            subCategoryRepository.delete(oldSubCategory); // 기존 부 카테고리가 유저가 만든 카테고리라면 삭제하기
+            subCategoryRepository.delete(oldSubCategory);
         }
 
-        return member.getId();
+        return MemberSettingResponseDTO.builder()
+                .memberId(1L)
+                .build();
     }
 
-    public Long profileSetting(MemberProfileRequestDTO memberProfileRequestDTO) {
+    public MemberSettingResponseDTO profileSetting(MemberProfileRequestDTO memberProfileRequestDTO) {
 
-        // 토큰을 이용해서 사용자 정보 받기
-        // 일단은 1L로 설정
 
-        Optional<Member> optionalMember = memberRepository.findById(1L);
-        Member member;
+        Member member = memberRepository.findById(1L).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
 
-        if (optionalMember.isEmpty()) {
-            throw new UserHandler(ErrorCode.MEMBER_NOT_FOUND);
-        } else {
-
-            if (memberRepository.existsByNickname(memberProfileRequestDTO.getNickname())) {
-                throw new UserHandler(ErrorCode.NICKNAME_ALREADY_EXIST); // 사용자 정의 예외
-            }
-
-            if (memberRepository.existsByLoginId(memberProfileRequestDTO.getLoginId())) {
-                throw new UserHandler(ErrorCode.ID_ALREADY_EXIST); // 사용자 정의 예외
-            }
-
-            member = optionalMember.get();
-            member.setMember(
-                    memberProfileRequestDTO.getLoginId(),
-                    memberProfileRequestDTO.getUsername(),
-                    memberProfileRequestDTO.getNickname());
-
-            memberRepository.save(member);
-
+        if (memberRepository.existsByNickname(memberProfileRequestDTO.getNickname())) {
+            throw new UserHandler(ErrorCode.NICKNAME_ALREADY_EXIST);
         }
-        return member.getId();
+
+        if (memberRepository.existsByLoginId(memberProfileRequestDTO.getLoginId())) {
+            throw new UserHandler(ErrorCode.ID_ALREADY_EXIST);
+        }
+
+        member.setMember(
+                memberProfileRequestDTO.getLoginId(),
+                memberProfileRequestDTO.getUsername(),
+                memberProfileRequestDTO.getNickname());
+        memberRepository.save(member);
+
+        return MemberSettingResponseDTO.builder()
+                .memberId(1L)
+                .build();
     }
 
-    public Long passwordSetting(MemberPasswordRequestDTO memberPasswordRequestDTO){
-        Optional<Member> optionalMember = memberRepository.findById(1L);
-        Member member;
+    public MemberSettingResponseDTO passwordSetting(MemberPasswordRequestDTO memberPasswordRequestDTO) {
+        Member member = memberRepository.findById(1L).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
 
-        if (optionalMember.isEmpty()) {
-            throw new UserHandler(ErrorCode.MEMBER_NOT_FOUND);
-        } else {
-            member = optionalMember.get();
-            member.setPassword(bCryptPasswordEncoder.encode(memberPasswordRequestDTO.getPassword()));
-            memberRepository.save(member);
+        member.setPassword(bCryptPasswordEncoder.encode(memberPasswordRequestDTO.getPassword()));
+        memberRepository.save(member);
 
-            return member.getId();
-        }
+        return MemberSettingResponseDTO.builder()
+                .memberId(1L)
+                .build();
     }
 }

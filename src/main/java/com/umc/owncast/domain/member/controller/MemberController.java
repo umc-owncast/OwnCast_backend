@@ -76,28 +76,28 @@ public class MemberController {
     @CrossOrigin
     @Operation(summary = "언어 설정 바꾸기")
     @PostMapping("/setting/language")
-    public ApiResponse<Long> language(@RequestParam("languageId") Long languageId) {
+    public ApiResponse<MemberSettingResponseDTO> language(@RequestParam("languageId") Long languageId) {
         return ApiResponse.onSuccess(memberService.languageSetting(languageId));
     }
 
     @CrossOrigin
     @Operation(summary = "관심사 설정 바꾸기")
     @PostMapping("/setting/prefer")
-    public ApiResponse<Long> category(@Valid @RequestBody MemberPreferRequestDTO memberPreferRequestDTO) {
+    public ApiResponse<MemberSettingResponseDTO> category(@Valid @RequestBody MemberPreferRequestDTO memberPreferRequestDTO) {
         return ApiResponse.onSuccess(memberService.preferSetting(memberPreferRequestDTO));
     }
 
     @CrossOrigin
     @Operation(summary = "닉네임, 이름, 아이디 바꾸기")
     @PostMapping("/setting")
-    public ApiResponse<Long> profileSetting(@Valid @RequestBody MemberProfileRequestDTO memberProfileRequestDTO) {
+    public ApiResponse<MemberSettingResponseDTO> profileSetting(@Valid @RequestBody MemberProfileRequestDTO memberProfileRequestDTO) {
         return ApiResponse.onSuccess(memberService.profileSetting(memberProfileRequestDTO));
     }
 
     @CrossOrigin
     @Operation(summary = "비밀번호 바꾸기")
     @PostMapping("/setting/password")
-    public ApiResponse<Long> passwordSetting(@Valid @RequestBody MemberPasswordRequestDTO memberPasswordRequestDTO) {
+    public ApiResponse<MemberSettingResponseDTO> passwordSetting(@Valid @RequestBody MemberPasswordRequestDTO memberPasswordRequestDTO) {
         return ApiResponse.onSuccess(memberService.passwordSetting(memberPasswordRequestDTO));
     }
 }
