@@ -50,7 +50,7 @@ public class CastServiceImpl implements CastService{
 
     @Override
     public CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest) {
-        String script = castRequest.getScript();
+        String script = castRequest.getScript().strip();
         KeywordCastCreationDTO request = KeywordCastCreationDTO.builder()
                 .voice(castRequest.getVoice())
                 .formality(castRequest.getFormality())
