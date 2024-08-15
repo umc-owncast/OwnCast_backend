@@ -113,14 +113,30 @@ public class PlaylistServiceImpl implements PlaylistService {
     public DeletePlaylistDTO deletePlaylist(Long playlistId) {
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
+        Long memberId = 1L;
 
         Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, 1L);
         Playlist playlist;
+        List<CastPlaylist> castPlaylists;
 
         if (optionalPlaylist.isEmpty()) {
             throw new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND);
         } else {
             playlist = optionalPlaylist.get();
+
+            // cast_playlist 엔티티에서 해당 플레이리스트 id를 가진 캐스트를 가져와 삭제
+            castPlaylists = castPlaylistRepository.findAllByPlaylistId(playlistId);
+
+            for (CastPlaylist castPlaylist : castPlaylists) {
+                Long castMemberId = castPlaylist.getCast().getMember().getId();
+                if(castMemberId.equals(memberId)) {
+                    Cast cast = castPlaylist.getCast();
+                    // castPlaylist 와 관련된 모든 항목 삭제
+                    castPlaylistRepository.deleteAllByCastId(cast.getId());
+                    // 실제 cast 엔티티 삭제
+                    castRepository.delete(cast);
+                }
+            }
 
             // cast_playlist 엔티티에서 해당 플레이리스트 id를 가진 모든 행을 삭제
             castPlaylistRepository.deleteAllByPlaylistId(playlistId);

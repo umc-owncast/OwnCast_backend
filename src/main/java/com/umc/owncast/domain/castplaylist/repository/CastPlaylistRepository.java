@@ -32,12 +32,16 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
 
     void deleteAllByPlaylistId(Long playlistId);
 
+    void deleteAllByCastId(Long castId);
+
     @Query("SELECT cp.cast FROM CastPlaylist cp WHERE cp.playlist.member.id = :memberId AND cp.cast.member.id != :memberId")
     List<Cast> findSavedCast(@Param("memberId") long memberId);
 
     Optional<CastPlaylist> findByCastIdAndPlaylistId(Long castId, Long id);
 
     Page<CastPlaylist> findByPlaylistId(Long playlistId, Pageable pageable);
+
+    List<CastPlaylist> findAllByPlaylistId(Long playlistId);
 
     Optional<CastPlaylist> findFirstByPlaylist_IdOrderByCreatedAt(@Param("playlistId") long playlistId);
 }
