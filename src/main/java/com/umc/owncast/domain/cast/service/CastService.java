@@ -1,6 +1,7 @@
 package com.umc.owncast.domain.cast.service;
 
 import com.umc.owncast.domain.cast.dto.*;
+import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
 import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -31,10 +32,15 @@ public interface CastService {
 
     SimpleCastDTO deleteCast(Long castId);
 
-    /** 홈 화면에서 보여줄 캐스트 검색?? TODO 바꿔줘 */
+    /** 사용자의 관심사 가져오기 */
+    MainPrefer getMemberPrefer(Long memberId);
+
+    /** 사용자의 관심사 설정에 따른 Cast 추천 */
     List<CastHomeDTO> getHomeCast();
 
+    /** 캐스트 검색 */
     List<CastHomeDTO> getCast(String keyword);
 
-    Long getOtherCast(OtherCastRequestDTO castSaveRequestDTO);
+    /** 다른 사람의 캐스트 담아오기 */
+    OtherCastResponseDTO getOtherCast(OtherCastRequestDTO castSaveRequestDTO);
 }

@@ -10,11 +10,13 @@ import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
 import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
 import com.umc.owncast.domain.memberprefer.repository.MemberPreferRepository;
+import com.umc.owncast.domain.playlist.dto.CastDTO;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import com.umc.owncast.domain.sentence.service.SentenceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +33,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CastServiceImpl implements CastService{
+public class CastServiceImpl implements CastService {
     private final ScriptService scriptService;
     private final TTSService ttsService;
     private final FileService fileService;
@@ -159,85 +161,82 @@ public class CastServiceImpl implements CastService{
     }
 
     @Override
-    // TODO 바꿔줘
+    public MainPrefer getMemberPrefer(Long memberId) {
+        return memberPreferRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new UserHandler(ErrorCode.CAST_NOT_FOUND));
+
+    }
+
+    @Override
     public List<CastHomeDTO> getHomeCast() {
-        // Long memberId = 토큰으로 정보 받아오기
-        Optional<MainPrefer> userMainCategory = memberPreferRepository.findByMemberId(1L);
-        //임시로 1L로 설정
-        List<CastHomeDTO> castHomeDTOList;
 
-        if (userMainCategory.isEmpty()) {
-            throw new UserHandler(ErrorCode.CAST_NOT_FOUND);
-        } else {
-            Long userCategoryId = userMainCategory.get().getMainCategory().getId();
-            Pageable pageable = PageRequest.of(0, 5);
-            List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategoryId, pageable, 1L).getContent();
+        final int TOP_CASTS_LIMIT = 5;
 
-            castHomeDTOList = castMainCategories.stream().map(cast ->
-                    CastHomeDTO.builder()
-                            .id(cast.getId())
-                            .title(cast.getTitle())
-                            .memberName(cast.getMember().getUsername())
-                            .audioLength(cast.getAudioLength())
-                            .playlistName(playlistRepository.findUserCategoryName(cast.getId()).getName())
-                            .build()
-            ).toList();
-        }
+        MainPrefer userMainCategory = getMemberPrefer(1L);
+        Long userCategoryId = userMainCategory.getMainCategory().getId();
+        Pageable pageable = PageRequest.of(0, TOP_CASTS_LIMIT);
+        List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategoryId, 1L, pageable).getContent();
 
-        return castHomeDTOList;
+        return convertToCastHomeDTO(castMainCategories);
     }
 
     @Override
     public List<CastHomeDTO> getCast(String keyword) {
         List<Cast> castList = castRepository.castSearch(keyword, 1L);
 
-        return castList.stream().map(cast ->
-                CastHomeDTO.builder()
-                        .id(cast.getId())
-                        .title(cast.getTitle())
-                        .memberName(cast.getMember().getUsername())
-                        .audioLength(cast.getAudioLength())
-                        .playlistName(playlistRepository.findUserCategoryName(cast.getId()).getName())
-                        .build()
-        ).toList();
+        return convertToCastHomeDTO(castList);
     }
 
     @Override
-    public Long getOtherCast(OtherCastRequestDTO castSaveRequestDTO) {
+    public OtherCastResponseDTO getOtherCast(OtherCastRequestDTO castSaveRequestDTO) {
 
-        // Long memberId = 토큰으로 정보 받아오기
-        //임시로 1L로 설정
+        Playlist playlist = playlistRepository.findById(castSaveRequestDTO.getPlaylistId())
+                .orElseThrow(() -> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
 
-        Optional<Playlist> optionalCastPlaylist = playlistRepository.findById(castSaveRequestDTO.getPlaylistId());
-        Optional<Cast> optionalCast = castRepository.findById(castSaveRequestDTO.getCastId());
-
-        Playlist castPlaylist;
-        Cast cast;
-
-
-        if (optionalCast.isEmpty() || optionalCastPlaylist.isEmpty()) {
-            throw new UserHandler(ErrorCode.CAST_NOT_FOUND);
-        } else {
-            cast = optionalCast.get();
-            castPlaylist = optionalCastPlaylist.get();
-        }
+        Cast cast = castRepository.findById(castSaveRequestDTO.getCastId())
+                .orElseThrow(() -> new UserHandler(ErrorCode.CAST_NOT_FOUND));
 
         if (castPlaylistRepository.existsByMemberIdAndCastId(1L, cast.getId())) { // 해당 캐스트가 유저의 플레이리스트에 이미 저장한 경우
             throw new UserHandler(ErrorCode.CAST_ALREADY_EXIST);
         }
-        // 이미 존재하는 경우
 
         if (!cast.getIsPublic()) {
             throw new UserHandler(ErrorCode.CAST_PRIVATE);
         }
 
-        CastPlaylist newCastPlaylist = CastPlaylist.builder()
-                .cast(cast)
-                .playlist(castPlaylist)
+        // 새로운 CastPlaylist 객체를 생성하고 저장
+        CastPlaylist newCastPlaylist = castPlaylistRepository.save(
+                CastPlaylist.builder()
+                        .cast(cast)
+                        .playlist(playlist)
+                        .build()
+        );
+
+        return OtherCastResponseDTO.builder()
+                .castPlaylistId(newCastPlaylist.getId())
+                .memberId(1L)
                 .build();
-
-        castPlaylistRepository.save(newCastPlaylist);
-
-        return newCastPlaylist.getId();
     }
+
+    private List<CastHomeDTO> convertToCastHomeDTO(List<Cast> castList) {
+
+        return castList.stream().map(cast -> {
+
+            String castPlaylistName = playlistRepository.findUserCategoryName(cast.getId());
+
+            if (castPlaylistName == null) {
+                throw new UserHandler(ErrorCode.CAST_PLAYLIST_NOT_FOUND);
+            }
+
+            return CastHomeDTO.builder()
+                    .id(cast.getId())
+                    .title(cast.getTitle())
+                    .memberName(cast.getMember().getUsername())
+                    .audioLength(cast.getAudioLength())
+                    .playlistName(castPlaylistName)
+                    .build();
+        }).toList();
+    }
+
+
 }

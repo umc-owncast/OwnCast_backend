@@ -119,7 +119,7 @@ public class CastController {
     @CrossOrigin
     @Operation(summary = "다른 사람의 플레이리스트 가져오기")
     @PostMapping("/other")
-    public ApiResponse<Long> getOtherCast(@RequestBody OtherCastRequestDTO castDTO) {
+    public ApiResponse<OtherCastResponseDTO> getOtherCast(@RequestBody OtherCastRequestDTO castDTO) {
         return ApiResponse.onSuccess(castService.getOtherCast(castDTO));
     }
 
