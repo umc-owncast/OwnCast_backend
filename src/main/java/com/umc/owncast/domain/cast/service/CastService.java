@@ -2,7 +2,6 @@ package com.umc.owncast.domain.cast.service;
 
 import com.umc.owncast.domain.cast.dto.*;
 import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
-import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +27,7 @@ public interface CastService {
     ResponseEntity<UrlResource> streamCast(Long castId, HttpHeaders headers);
 
     /** Cast 스크립트 검색 */
-    List<SentenceResponseDTO> fetchCastScript(Long castId);
+    CastDTO fetchCast(Long castId);
 
     SimpleCastDTO deleteCast(Long castId);
 

@@ -5,15 +5,11 @@ import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.cast.dto.*;
 import com.umc.owncast.domain.cast.service.*;
 import com.umc.owncast.domain.cast.service.chatGPT.keyword.KeywordService;
-import com.umc.owncast.domain.cast.service.chatGPT.script.ScriptService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,18 +22,6 @@ import java.util.List;
 public class CastController {
     private final KeywordService keywordService;
     private final CastService castService;
-    private final ScriptService scriptService;
-
-    /* * * * * * * * * * * * * *
-     * 테스트용 메소드 (나중에 삭제) *
-     * * * * * * * * * * * * * **/
-
-    @PostMapping("/keyword-test")
-    @Operation(summary = "[테스트 API] keyword로 스크립트 생성 -> 스크립트 문자열 반환")
-    public String createScript(@Valid @RequestBody KeywordCastCreationDTO castRequest) {
-        System.out.println(castRequest);
-        return scriptService.createScript(castRequest);
-    }
 
     /* * * * * * * *
      *  API 용 메소드 *
@@ -71,18 +55,10 @@ public class CastController {
 
     /* Cast 재생 API */
     @CrossOrigin
-    @GetMapping("/{castId}/audio")
+    @GetMapping("/{castId}")
     @Operation(summary = "캐스트 재생 API")
-    public ResponseEntity<UrlResource> streamCast(@PathVariable("castId") Long castId,
-                                                  @RequestHeader HttpHeaders headers) {
-        return castService.streamCast(castId, headers);
-    }
-
-    /* Cast 스크립트 가져오는 API */
-    @GetMapping("/{castId}/scripts")
-    @Operation(summary = "캐스트 스크립트 가져오기 API")
-    public ApiResponse<Object> fetchCastScripts(@PathVariable("castId") Long castId) {
-        return ApiResponse.of(SuccessCode._OK, castService.fetchCastScript(castId));
+    public ApiResponse<Object> streamCast(@PathVariable("castId") Long castId) {
+        return ApiResponse.of(SuccessCode._OK, castService.fetchCast(castId));
     }
 
     /* Cast 수정 API */

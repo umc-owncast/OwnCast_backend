@@ -7,7 +7,7 @@ import java.util.List;
 
 @Service
 public class ParsingService {
-    private static final int MAX_LENGTH = 230;
+    private static final int MAX_LENGTH = 220;
 
     public String[] parseSentences(String script) {
         String[] sentences = script.split("\\.|@|\n|!|\\?");
@@ -33,9 +33,9 @@ public class ParsingService {
                     processedScript.append(sentence, 0, splitIndex).append("\n");
                     sentence = sentence.substring(splitIndex).trim();
                 }
-                processedScript.append(sentence).append(String.format(".<mark name=\"%d\"/>\n", i));
+                processedScript.append(sentence).append(String.format(".<break time=\"1s\"/><mark name=\"%d\"/>\n", i));
             } else {
-                processedScript.append(sentence).append(String.format(".<mark name=\"%d\"/>\n", i));
+                processedScript.append(sentence).append(String.format(".<break time=\"1s\"/><mark name=\"%d\"/>\n", i));
             }
             i++;
         }

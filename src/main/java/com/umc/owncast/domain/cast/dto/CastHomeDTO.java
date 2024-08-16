@@ -1,6 +1,5 @@
 package com.umc.owncast.domain.cast.dto;
 
-
 import lombok.Builder;
 import lombok.Getter;
 

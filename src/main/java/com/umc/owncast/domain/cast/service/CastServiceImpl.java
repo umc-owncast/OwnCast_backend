@@ -79,6 +79,7 @@ public class CastServiceImpl implements CastService {
 
         return CastScriptDTO.builder()
                 .id(cast.getId())
+                .fileUrl(cast.getFilePath())
                 .sentences(sentences.stream()
                         .map(SentenceResponseDTO::new)
                         .toList())
@@ -143,11 +144,9 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public List<SentenceResponseDTO> fetchCastScript(Long castId) {
-        List<Sentence> sentences = sentenceService.findCastSentence(castId);
-        return sentences.stream()
-                .map(SentenceResponseDTO::new)
-                .toList();
+    public CastDTO fetchCast(Long castId) {
+        Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
+        return new CastDTO(cast);
     }
 
     @Override

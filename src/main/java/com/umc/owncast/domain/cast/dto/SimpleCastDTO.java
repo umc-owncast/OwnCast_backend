@@ -15,6 +15,7 @@ public class SimpleCastDTO {
     private String audioLength;
     private Boolean isPublic;
     private Long hits;
+
     public SimpleCastDTO(Cast cast){
         id = cast.getId();
         title = cast.getTitle();;
