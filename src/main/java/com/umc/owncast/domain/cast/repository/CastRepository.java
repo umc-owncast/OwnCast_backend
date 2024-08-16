@@ -9,9 +9,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CastRepository extends JpaRepository<Cast, Long> {
-    Cast findFirstByMemberIdOrderByCreatedAt(@Param("memberId") Long memberId);
+
+    @Query("SELECT c.imagePath FROM Cast c " +
+            "WHERE c.member.id = :memberId " +
+            "ORDER BY c.createdAt ASC ")
+    Optional<String> findFirstCastImage(@Param("memberId") Long memberId);
 
     List<Cast> findCastsByMember_Id(@Param("memberId") Long memberId);
 

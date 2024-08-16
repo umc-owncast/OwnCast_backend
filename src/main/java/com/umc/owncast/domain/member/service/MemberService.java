@@ -3,6 +3,7 @@ package com.umc.owncast.domain.member.service;
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.jwt.JwtUtil;
 import com.umc.owncast.common.jwt.LoginService;
+import com.umc.owncast.common.jwt.SecurityUtils;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.category.entity.MainCategory;
 import com.umc.owncast.domain.category.entity.SubCategory;
@@ -20,6 +21,8 @@ import com.umc.owncast.domain.memberprefer.repository.SubPreferRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -243,5 +246,13 @@ public class MemberService {
         return MemberSettingResponseDTO.builder()
                 .memberId(1L)
                 .build();
+    }
+
+    public Member getCurrentMemberName() {
+
+        String userEmail = SecurityUtils.getCurrentUsername().orElseThrow(() -> new UserHandler(ErrorCode._UNAUTHORIZED));
+
+        return memberRepository.findByUsername(userEmail)
+                .orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
     }
 }

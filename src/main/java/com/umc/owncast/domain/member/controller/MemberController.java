@@ -3,6 +3,7 @@ package com.umc.owncast.domain.member.controller;
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.member.dto.*;
+import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.member.service.MemberMapper;
 import com.umc.owncast.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -100,4 +101,11 @@ public class MemberController {
     public ApiResponse<MemberSettingResponseDTO> passwordSetting(@Valid @RequestBody MemberPasswordRequestDTO memberPasswordRequestDTO) {
         return ApiResponse.onSuccess(memberService.passwordSetting(memberPasswordRequestDTO));
     }
+
+    @Operation(summary = "임시")
+    @GetMapping("/temp")
+    public ApiResponse<Member> temp() {
+        return ApiResponse.onSuccess(memberService.getCurrentMemberName());
+    }
+
 }

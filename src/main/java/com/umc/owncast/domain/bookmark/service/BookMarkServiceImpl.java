@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -85,7 +84,8 @@ public class BookMarkServiceImpl implements BookmarkService {
 
     @Override
     public BookmarkSaveResultDTO saveBookmark(Long sentenceId) {
-        CastPlaylist castPlaylist = castPlaylistService.findBySentenceId(sentenceId, 1L);
+
+        CastPlaylist castPlaylist = castPlaylistService.findBySentenceId(sentenceId, 1L).orElseThrow(() -> new UserHandler(ErrorCode._BAD_REQUEST));
 
         if (bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, 1L).isPresent()) {
             throw new UserHandler(ErrorCode.BOOKMARK_ALREADY_EXIST);
@@ -106,16 +106,13 @@ public class BookMarkServiceImpl implements BookmarkService {
     @Override
     public BookmarkSaveResultDTO deleteBookmark(Long sentenceId) {
 
-        Optional<Bookmark> optionalBookmark = bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, 1L);
+        Bookmark bookmark = bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, 1L).orElseThrow(() -> new UserHandler(ErrorCode.BOOKMARK_NOT_EXIST));
 
-        if (optionalBookmark.isPresent()) {
-            bookmarkRepository.delete(optionalBookmark.get());
-            return BookmarkSaveResultDTO.builder()
-                    .bookmarkId(optionalBookmark.get().getId())
-                    .build();
-        } else {
-            throw new UserHandler(ErrorCode.BOOKMARK_NOT_EXIST);
-        }
+        bookmarkRepository.delete(bookmark);
+
+        return BookmarkSaveResultDTO.builder()
+                .bookmarkId(bookmark.getId())
+                .build();
     }
 
 }

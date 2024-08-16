@@ -21,8 +21,8 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
     @Query("SELECT cp FROM CastPlaylist cp JOIN cp.cast c JOIN Sentence s ON s.cast = c WHERE s.id = :sentenceId AND cp.playlist.member.id = :memberId")
     Optional<CastPlaylist> findBySentenceId(@Param("sentenceId") Long sentenceId, @Param("memberId") Long memberId);
 
-    @Query("SELECT cp FROM CastPlaylist cp WHERE cp.cast.member.id != :memberId AND cp.playlist.member.id = :memberId ORDER BY cp.createdAt ASC")
-    Page<CastPlaylist> findFirstByPlaylist_Member_IdOrderByCreatedAt(@Param("memberId") long memberId, Pageable pageable);
+    @Query("SELECT cp.cast.imagePath FROM CastPlaylist cp WHERE cp.cast.member.id != :memberId AND cp.playlist.member.id = :memberId ORDER BY cp.createdAt ASC")
+    Page<String> findFirstByPlaylist_Member_IdOrderByCreatedAt(@Param("memberId") long memberId, Pageable pageable);
 
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END " +
             "FROM CastPlaylist c WHERE c.playlist.id = :playlistId AND c.cast.id = :castId")
