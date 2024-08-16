@@ -10,13 +10,11 @@ import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
 import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
 import com.umc.owncast.domain.memberprefer.repository.MemberPreferRepository;
-import com.umc.owncast.domain.playlist.dto.CastDTO;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import com.umc.owncast.domain.sentence.service.SentenceService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

@@ -51,7 +51,7 @@ public class TTSService {
 
         Map<String, Object> voice = new HashMap<>();
         voice.put("name", ttsdto.getVoice());
-        voice.put("languageCode", "en-US");
+        voice.put("languageCode", ttsdto.getLanguage());
         requestBody.put("voice", voice);
 
         Map<String, Object> audioConfig = new HashMap<>();
