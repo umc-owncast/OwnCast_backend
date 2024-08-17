@@ -36,9 +36,10 @@ public class SentenceServiceImpl implements SentenceService {
                     .timePoint(timepoint)
                     .build();
             i++;
-            sentences.add(sentence);
+            Sentence savedSentence = sentenceRepository.save(sentence);
+            sentences.add(savedSentence);
         }
-        return sentenceRepository.saveAll(sentences);
+        return sentences;
     }
 
     @Override

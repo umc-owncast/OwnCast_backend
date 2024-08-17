@@ -17,10 +17,7 @@ public class CastDTO {
     private String title;
     private String imagePath;
     private String audioLength;
-    private String voice;
-    private Formality formality;
-    private Boolean isPublic;
-    private Long hits;
+    private String fileUrl;
     private List<SentenceResponseDTO> sentences;
 
     public CastDTO(Cast cast) {
@@ -28,10 +25,7 @@ public class CastDTO {
         title = cast.getTitle();
         imagePath = cast.getImagePath();
         audioLength = cast.getAudioLength();
-        voice = cast.getVoice();
-        formality = cast.getFormality();
-        isPublic = cast.getIsPublic();
-        hits = cast.getHits();
+        fileUrl = cast.getFilePath();
         sentences = cast.getSentences().stream()
                 .map(SentenceResponseDTO::new)
                 .toList();

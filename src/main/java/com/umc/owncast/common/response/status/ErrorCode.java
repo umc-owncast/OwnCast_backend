@@ -49,7 +49,7 @@ public enum ErrorCode implements BaseErrorCode {
     REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "CAST4001", "캐스트 생성시간이 너무 오래 걸립니다."),
 
     //Cast-Playlist 관련 에러
-    CAST_PLAYLIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "CASTPLAYLIST4001", "해당 캐스트 플레이 리스트가 없습니다"),
+    CAST_PLAYLIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "CASTPLAYLIST4001", "해당 캐스트가 저장된 플레이 리스트가 없습니다"),
 
     //Playlist 관련 에러
     PLAYLIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "PLAYLIST4001", "해당 플레이리스트가 없습니다."),

@@ -1,7 +1,9 @@
-package com.umc.owncast.domain.cast.service;
+package com.umc.owncast.domain.cast.service.chatGPT.script;
 
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
+import com.umc.owncast.domain.cast.service.chatGPT.ChatGPTAnswerGenerator;
+import com.umc.owncast.domain.cast.service.chatGPT.ChatGPTPromptGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class ChatGPTScriptService implements ScriptService {
 
     private final ChatGPTPromptGenerator promptGenerator;
-    private final ChatGPTScriptGenerator scriptGenerator;
+    private final ChatGPTAnswerGenerator answerGenerator;
 
     public String createScript(KeywordCastCreationDTO castRequest) {
         String script = "";
@@ -20,7 +22,7 @@ public class ChatGPTScriptService implements ScriptService {
                     castRequest.getFormality(),
                     castRequest.getAudioTime()
             );
-            script = scriptGenerator.generateScript(prompt);
+            script = answerGenerator.generateAnswer(prompt);
         } catch (Exception e) {
             // 출력만 하고 전파 -> CastService에서 처리??
             System.out.println("CastServiceImpl: Exception on createScript - " + e.getMessage());

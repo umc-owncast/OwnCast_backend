@@ -1,4 +1,4 @@
-package com.umc.owncast.domain.cast.service;
+package com.umc.owncast.domain.cast.service.chatGPT;
 
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 
 @Service
-public class ChatGPTScriptGenerator {
+public class ChatGPTAnswerGenerator {
     @Value("${open-ai.secret-key}")
     private String SECRET_KEY;
     private OpenAiService openAiService;
@@ -26,7 +26,7 @@ public class ChatGPTScriptGenerator {
      * 프롬프트에 따라 여러가지 답변이 오게 만들 수도 있는데, <br>
      * 이 경우 여러가지 Choice 중 첫 번째의 답변을 반환한다
      */
-    public String generateScript(ChatCompletionRequest request) {
+    public String generateAnswer(ChatCompletionRequest request) {
         ChatCompletionResult result = null;
         result = openAiService.createChatCompletion(request); // OpenAiHttpException 발생 가능
         // 첫 번째 Choice의 답변 반환

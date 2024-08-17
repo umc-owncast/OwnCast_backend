@@ -1,10 +1,12 @@
-package com.umc.owncast.domain.cast.service;
+package com.umc.owncast.domain.cast.service.chatGPT.keyword;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
+import com.umc.owncast.domain.cast.service.chatGPT.ChatGPTAnswerGenerator;
+import com.umc.owncast.domain.cast.service.chatGPT.ChatGPTPromptGenerator;
 import com.umc.owncast.domain.category.repository.MainCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,12 +17,13 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class KeywordService {
+public class KeywordServiceImpl implements KeywordService {
 
     private final ChatGPTPromptGenerator chatGPTPromptGenerator;
-    private final ChatGPTKeywordGenerator chatGPTKeywordGenerator;
+    private final ChatGPTAnswerGenerator answerGenerator;
     private final MainCategoryRepository mainCategoryRepository;
 
+    @Override
     public List<String> createKeyword() {
         String script = "";
         List<String> keywords = null;
@@ -37,7 +40,7 @@ public class KeywordService {
 
         try {
             ChatCompletionRequest prompt = chatGPTPromptGenerator.generateKeywordPrompt(categoryName);
-            script = chatGPTKeywordGenerator.generateKeyword(prompt);
+            script = answerGenerator.generateAnswer(prompt);
 
             Gson gson = new Gson();
             Type listType = new TypeToken<List<String>>() {

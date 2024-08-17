@@ -2,13 +2,10 @@ package com.umc.owncast.domain.member.controller;
 
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.SuccessCode;
-import com.umc.owncast.domain.member.dto.MemberPreferRequestDTO;
-import com.umc.owncast.domain.member.dto.MemberProfileRequestDTO;
-import com.umc.owncast.domain.member.dto.MemberRequest;
-import com.umc.owncast.domain.member.dto.MemberResponse;
+import com.umc.owncast.domain.member.dto.*;
+import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.member.service.MemberMapper;
 import com.umc.owncast.domain.member.service.MemberService;
-import com.umc.owncast.domain.member.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class MemberController {
 
-    private final UserService userService;
     private final MemberService memberService;
 
     @Operation(summary = "회원가입 API")
@@ -46,12 +42,23 @@ public class MemberController {
         return ApiResponse.of(SuccessCode._OK, memberService.addLanguage(languageId));
     }
 
-
     @Operation(summary = "로그인 API")
     @PostMapping("/login")
     public ApiResponse<?> login(@Valid @RequestBody MemberRequest.loginDto request) {
         //Filter에서 작동, swagger 틀만 작성
         return ApiResponse.onSuccess(SuccessCode._LOGIN_SUCCESS);
+    }
+
+    @Operation(summary = "닉네임 중복 체크 API")
+    @PostMapping("/check/member-nickname")
+    public ApiResponse<Boolean> nickNameDuplicate(@RequestParam("nickName") String nickName) {
+        return ApiResponse.onSuccess(memberService.nickNameDuplicate(nickName));
+    }
+
+    @Operation(summary = "Id 중복체크 API")
+    @PostMapping("/check/login-id")
+    public ApiResponse<Boolean> memberIdDuplicate(@RequestParam("loginId") String loginId) {
+        return ApiResponse.onSuccess(memberService.memberIdDuplicate(loginId));
     }
 
     @Operation(summary = "토큰 재발급 api", description = "Cookie에 기존 refresh 토큰 필요, 헤더의 Authorization에 access 토큰, 바디(쿠키)에 refresh 토큰 반환")
@@ -67,26 +74,38 @@ public class MemberController {
         return ApiResponse.onSuccess(SuccessCode._OK);
     }
 
-
     @CrossOrigin
     @Operation(summary = "언어 설정 바꾸기")
     @PostMapping("/setting/language")
-    public ApiResponse<Long> language(@RequestParam("languageId") Long languageId) {
-        return ApiResponse.onSuccess(userService.languageSetting(languageId));
+    public ApiResponse<MemberSettingResponseDTO> language(@RequestParam("languageId") Long languageId) {
+        return ApiResponse.onSuccess(memberService.languageSetting(languageId));
     }
 
     @CrossOrigin
     @Operation(summary = "관심사 설정 바꾸기")
     @PostMapping("/setting/prefer")
-    public ApiResponse<Long> category(@Valid @RequestBody MemberPreferRequestDTO memberPreferRequestDTO) {
-        return ApiResponse.onSuccess(userService.preferSetting(memberPreferRequestDTO));
+    public ApiResponse<MemberSettingResponseDTO> category(@Valid @RequestBody MemberPreferRequestDTO memberPreferRequestDTO) {
+        return ApiResponse.onSuccess(memberService.preferSetting(memberPreferRequestDTO));
     }
 
     @CrossOrigin
     @Operation(summary = "닉네임, 이름, 아이디 바꾸기")
     @PostMapping("/setting")
-    public ApiResponse<Long> language(@Valid @RequestBody MemberProfileRequestDTO memberProfileRequestDTO) {
-        //
-        return ApiResponse.onSuccess(userService.idPasswordSetting(memberProfileRequestDTO));
+    public ApiResponse<MemberSettingResponseDTO> profileSetting(@Valid @RequestBody MemberProfileRequestDTO memberProfileRequestDTO) {
+        return ApiResponse.onSuccess(memberService.profileSetting(memberProfileRequestDTO));
     }
+
+    @CrossOrigin
+    @Operation(summary = "비밀번호 바꾸기")
+    @PostMapping("/setting/password")
+    public ApiResponse<MemberSettingResponseDTO> passwordSetting(@Valid @RequestBody MemberPasswordRequestDTO memberPasswordRequestDTO) {
+        return ApiResponse.onSuccess(memberService.passwordSetting(memberPasswordRequestDTO));
+    }
+
+    @Operation(summary = "임시")
+    @GetMapping("/temp")
+    public ApiResponse<Member> temp() {
+        return ApiResponse.onSuccess(memberService.getCurrentMemberName());
+    }
+
 }

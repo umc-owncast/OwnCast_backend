@@ -1,4 +1,4 @@
-package com.umc.owncast.domain.cast.service;
+package com.umc.owncast.domain.cast.service.chatGPT;
 
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;

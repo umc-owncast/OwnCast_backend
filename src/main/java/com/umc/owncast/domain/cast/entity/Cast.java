@@ -67,11 +67,6 @@ public class Cast extends BaseTimeEntity {
     @OneToMany(mappedBy = "cast", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sentence> sentences = new ArrayList<>();
 
-    public void addSentence(Sentence s) {
-        sentences.add(s);
-        s.setCast(this);
-        // TODO timestamp 순으로 정렬해두거나 sentences를 timestamp 기준으로 PriorityQueue 등에 저장?
-    }
 
     public void addSentences(Collection<Sentence> s) {
         sentences.addAll(s);

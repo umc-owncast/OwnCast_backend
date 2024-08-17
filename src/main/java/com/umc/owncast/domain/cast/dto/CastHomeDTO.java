@@ -1,6 +1,7 @@
 package com.umc.owncast.domain.cast.dto;
 
-
+import com.umc.owncast.domain.cast.entity.Cast;
+import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,8 +9,9 @@ import lombok.Getter;
 @Getter
 public class CastHomeDTO {
     Long id;
-    String audioLength;
     String title;
+    String imagePath;
+    String audioLength;
     String memberName;
     String playlistName;
 }

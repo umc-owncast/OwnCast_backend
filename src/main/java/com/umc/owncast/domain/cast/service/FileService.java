@@ -4,8 +4,6 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.umc.owncast.common.exception.GeneralException;
 import com.umc.owncast.common.response.status.ErrorCode;
-import com.umc.owncast.domain.cast.entity.Cast;
-import com.umc.owncast.domain.cast.repository.CastRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +23,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class FileService {
-    private final CastRepository castRepository;
     private final AmazonS3Client amazonS3Client;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;

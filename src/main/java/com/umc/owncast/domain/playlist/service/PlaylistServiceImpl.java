@@ -2,6 +2,7 @@ package com.umc.owncast.domain.playlist.service;
 
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
+import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
@@ -29,45 +30,57 @@ public class PlaylistServiceImpl implements PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final CastRepository castRepository;
     private final CastPlaylistRepository castPlaylistRepository;
+    private static final String DEFAULT_IMAGE_PATH = "default/image/path";
 
     @Override
     public List<PlaylistResultDTO> getAllPlaylists() {
 
-        // Token으로 사용자 id 불러오기
-        // 일단은 1L로 사용
         List<Playlist> playlistList = playlistRepository.findAllByMemberIdOrderByCreatedAt(1L);
         List<PlaylistResultDTO> playlistDTOList = new ArrayList<>();
+        Pageable pageable = PageRequest.of(0, 1);
 
-        playlistDTOList.add(
-                PlaylistResultDTO.builder()
-                        .name("내가 만든 캐스트")
-                        .imagePath(castRepository.findFirstByMemberIdOrderByCreatedAt(1L).getImagePath())
-                        .playlistId(null)
-                        .totalCast(null)
-                        .build()
-        );
+        String myCastImagePath = castRepository.findFirstCastImage(1L)
+                .orElse(DEFAULT_IMAGE_PATH);
 
-        playlistDTOList.add(
-                PlaylistResultDTO.builder()
-                        .name("담아온 캐스트")
-                        .imagePath(castPlaylistRepository.findFirstByPlaylist_Member_IdOrderByCreatedAt(1L).getPlaylist().getImagePath())
-                        .playlistId(null)
-                        .totalCast(null)
-                        .build()
-        );
+        String mySavedCastImagePath = castPlaylistRepository.findFirstByPlaylist_Member_IdOrderByCreatedAt(1L, pageable)
+                .getContent()
+                .stream()
+                .findFirst()
+                .orElse(DEFAULT_IMAGE_PATH);
 
-        playlistList.forEach(playlist ->
-                playlistDTOList.add(
-                        PlaylistResultDTO.builder()
-                                .name(playlist.getName())
-                                .imagePath(playlist.getImagePath())
-                                .playlistId(playlist.getId())
-                                .totalCast(castPlaylistRepository.countAllByPlaylist(playlist))
-                                .build()
-                )
-        );
+        playlistDTOList.add(convertToPlaylistResultDTO("내가 만든 캐스트", myCastImagePath, null, null));
+
+        playlistDTOList.add(convertToPlaylistResultDTO("담아온 캐스트", mySavedCastImagePath, null, null));
+
+        playlistList.forEach(playlist -> {
+
+            String playlistName = playlist.getName();
+            String playlistImagePath = getOldestCastFromPlaylist(playlist.getId())
+                    .map(Cast::getImagePath)
+                    .orElse("default/image/path");
+            Long playlistId = playlist.getId();
+            Long totalCast = castPlaylistRepository.countAllByPlaylist(playlist);
+            playlistDTOList.add(convertToPlaylistResultDTO(playlistName, playlistImagePath, playlistId, totalCast));
+
+        });
 
         return playlistDTOList;
+    }
+
+    private PlaylistResultDTO convertToPlaylistResultDTO(String name, String imagePath, Long playlistId, Long totalCast) {
+        return PlaylistResultDTO.builder()
+                .name(name)
+                .imagePath(imagePath)
+                .playlistId(playlistId)
+                .totalCast(totalCast)
+                .build();
+    }
+
+    @Override
+    public Optional<Cast> getOldestCastFromPlaylist(Long playlistId) {
+        Optional<CastPlaylist> optionalCast = castPlaylistRepository.findFirstByPlaylist_IdOrderByCreatedAt(playlistId);
+
+        return optionalCast.map(CastPlaylist::getCast);
     }
 
 
@@ -98,14 +111,30 @@ public class PlaylistServiceImpl implements PlaylistService {
     public DeletePlaylistDTO deletePlaylist(Long playlistId) {
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
+        Long memberId = 1L;
 
         Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, 1L);
         Playlist playlist;
+        List<CastPlaylist> castPlaylists;
 
         if (optionalPlaylist.isEmpty()) {
             throw new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND);
         } else {
             playlist = optionalPlaylist.get();
+
+            // cast_playlist 엔티티에서 해당 플레이리스트 id를 가진 캐스트를 가져와 삭제
+            castPlaylists = castPlaylistRepository.findAllByPlaylistId(playlistId);
+
+            for (CastPlaylist castPlaylist : castPlaylists) {
+                Long castMemberId = castPlaylist.getCast().getMember().getId();
+                if(castMemberId.equals(memberId)) {
+                    Cast cast = castPlaylist.getCast();
+                    // castPlaylist 와 관련된 모든 항목 삭제
+                    castPlaylistRepository.deleteAllByCastId(cast.getId());
+                    // 실제 cast 엔티티 삭제
+                    castRepository.delete(cast);
+                }
+            }
 
             // cast_playlist 엔티티에서 해당 플레이리스트 id를 가진 모든 행을 삭제
             castPlaylistRepository.deleteAllByPlaylistId(playlistId);
@@ -122,18 +151,16 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     @Transactional
     public GetPlaylistDTO getPlaylist(Long playlistId, int page, int size) {
+
         // Long memberId = 토큰으로 정보 받아오기
         //임시로 1L로 설정
 
         Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, 1L);
-        Playlist playlist;
         Page<CastPlaylist> castPlaylist;
 
         if (optionalPlaylist.isEmpty()) {
             throw new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND);
         } else {
-            playlist = optionalPlaylist.get();
-
             // 페이지 요청 객체 생성
             Pageable pageable = PageRequest.of(page, size);
             castPlaylist = castPlaylistRepository.findByPlaylistId(playlistId, pageable);

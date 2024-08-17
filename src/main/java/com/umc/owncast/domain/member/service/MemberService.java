@@ -3,13 +3,15 @@ package com.umc.owncast.domain.member.service;
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.jwt.JwtUtil;
 import com.umc.owncast.common.jwt.LoginService;
+import com.umc.owncast.common.jwt.SecurityUtils;
 import com.umc.owncast.common.response.status.ErrorCode;
+import com.umc.owncast.domain.category.entity.MainCategory;
 import com.umc.owncast.domain.category.entity.SubCategory;
 import com.umc.owncast.domain.category.repository.MainCategoryRepository;
 import com.umc.owncast.domain.category.repository.SubCategoryRepository;
 import com.umc.owncast.domain.language.entity.Language;
 import com.umc.owncast.domain.language.repository.LanguageRepository;
-import com.umc.owncast.domain.member.dto.MemberRequest;
+import com.umc.owncast.domain.member.dto.*;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.member.repository.MemberRepository;
 import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
@@ -19,6 +21,8 @@ import com.umc.owncast.domain.memberprefer.repository.SubPreferRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,9 +46,11 @@ public class MemberService {
 
     @Transactional
     public String insertMember(HttpServletResponse response, MemberRequest.joinLoginIdDto requestDto) {
+
         if (memberRepository.existsByNickname(requestDto.getNickname())) {
             throw new UserHandler(ErrorCode.NICKNAME_ALREADY_EXIST); // 사용자 정의 예외
         }
+
         if (memberRepository.existsByLoginId(requestDto.getLoginId())) {
             throw new UserHandler(ErrorCode.ID_ALREADY_EXIST); // 사용자 정의 예외
         }
@@ -53,6 +59,14 @@ public class MemberService {
         Member savedMember = memberRepository.save(newMember);
 
         return issueToken(savedMember.getId(), response);
+    }
+
+    public Boolean nickNameDuplicate(String nickName) {
+        return memberRepository.existsByNickname(nickName);
+    }
+
+    public Boolean memberIdDuplicate(String loginId) {
+        return memberRepository.existsByLoginId(loginId);
     }
 
 
@@ -145,5 +159,100 @@ public class MemberService {
         return member.getId();
     }
 
+    public MemberSettingResponseDTO languageSetting(Long languageId) {
 
+        Member member = memberRepository.findById(1L).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
+        Language language = languageRepository.findById(languageId).orElseThrow(() -> new UserHandler(ErrorCode.LANGUAGE_NOT_FOUND));
+        member.setLanguage(language);
+        memberRepository.save(member);
+
+        return MemberSettingResponseDTO.builder()
+                .memberId(1L)
+                .build();
+    }
+
+    public MemberSettingResponseDTO preferSetting(MemberPreferRequestDTO memberPreferRequestDTO) {
+
+        Member member = memberRepository.findById(1L)
+                .orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
+
+        MainCategory mainCategory = mainCategoryRepository.findById(memberPreferRequestDTO.getMainCategoryId())
+                .orElseThrow(() -> new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
+
+        SubCategory subCategory = subCategoryRepository.findById(memberPreferRequestDTO.getSubCategoryId())
+                .orElseGet(() -> {
+                    if (memberPreferRequestDTO.getEtc() == null) {
+                        throw new UserHandler(ErrorCode.SUBCATEGORY_ETC_REQUIRED);
+                    }
+                    return SubCategory.builder()
+                            .name(memberPreferRequestDTO.getEtc())
+                            .mainCategory(mainCategory)
+                            .isUserCreated(true)
+                            .build();
+                });
+
+        MainPrefer mainPrefer = mainPreferRepository.findByMember(member)
+                .orElseThrow(() -> new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
+
+        SubPrefer subPrefer = subPreferRepository.findByMember(member)
+                .orElseThrow(() -> new UserHandler(ErrorCode.SUBCATEGORY_NOT_EXIST));
+
+        mainPrefer.setMainCategory(mainCategory);
+        mainPreferRepository.save(mainPrefer);
+
+        SubCategory oldSubCategory = subPrefer.getSubCategory();
+        subPrefer.setSubCategory(subCategory);
+        subPreferRepository.save(subPrefer);
+
+        if (oldSubCategory.getIsUserCreated()) {
+            subCategoryRepository.delete(oldSubCategory);
+        }
+
+        return MemberSettingResponseDTO.builder()
+                .memberId(1L)
+                .build();
+    }
+
+    public MemberSettingResponseDTO profileSetting(MemberProfileRequestDTO memberProfileRequestDTO) {
+
+
+        Member member = memberRepository.findById(1L).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
+
+        if (memberRepository.existsByNickname(memberProfileRequestDTO.getNickname())) {
+            throw new UserHandler(ErrorCode.NICKNAME_ALREADY_EXIST);
+        }
+
+        if (memberRepository.existsByLoginId(memberProfileRequestDTO.getLoginId())) {
+            throw new UserHandler(ErrorCode.ID_ALREADY_EXIST);
+        }
+
+        member.setMember(
+                memberProfileRequestDTO.getLoginId(),
+                memberProfileRequestDTO.getUsername(),
+                memberProfileRequestDTO.getNickname());
+        memberRepository.save(member);
+
+        return MemberSettingResponseDTO.builder()
+                .memberId(1L)
+                .build();
+    }
+
+    public MemberSettingResponseDTO passwordSetting(MemberPasswordRequestDTO memberPasswordRequestDTO) {
+        Member member = memberRepository.findById(1L).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
+
+        member.setPassword(passwordEncoder.encode(memberPasswordRequestDTO.getPassword()));
+        memberRepository.save(member);
+
+        return MemberSettingResponseDTO.builder()
+                .memberId(1L)
+                .build();
+    }
+
+    public Member getCurrentMemberName() {
+
+        String userEmail = SecurityUtils.getCurrentUsername().orElseThrow(() -> new UserHandler(ErrorCode._UNAUTHORIZED));
+
+        return memberRepository.findByUsername(userEmail)
+                .orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
+    }
 }
