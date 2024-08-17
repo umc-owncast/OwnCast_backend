@@ -21,9 +21,9 @@ import com.umc.owncast.domain.memberprefer.repository.SubPreferRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +36,9 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final LoginService loginService;
     private final JwtUtil jwtUtil;
-    private final BCryptPasswordEncoder passwordEncoder;
+
+    private final PasswordEncoder passwordEncoder;
+
     private final LanguageRepository languageRepository;
     private final MainPreferRepository mainPreferRepository;
     private final SubPreferRepository subPreferRepository;

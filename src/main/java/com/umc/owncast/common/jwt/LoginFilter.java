@@ -7,6 +7,7 @@ import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.enums.Status;
 import com.umc.owncast.domain.member.dto.CustomUserDetails;
+import com.umc.owncast.domain.member.repository.MemberRepository;
 import com.umc.owncast.domain.member.service.MemberMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
@@ -25,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
+    private MemberRepository memberRepository;
     private final AuthenticationManager authenticationManager;
     private final LoginService loginService;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -58,7 +60,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         }
 
         String LoginId= loginDTO.getLoginId();
-        String Password = loginDTO.getPassword();
+        String Password =loginDTO.getPassword();
+
+
 
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(LoginId, Password);
 
