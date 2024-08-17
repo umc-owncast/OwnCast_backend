@@ -144,7 +144,7 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public CastDTO fetchCast(Long castId) {
+    public CastDTO findCast(Long castId) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
         return new CastDTO(cast);
     }

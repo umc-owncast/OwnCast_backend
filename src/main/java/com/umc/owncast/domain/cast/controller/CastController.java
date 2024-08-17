@@ -48,9 +48,6 @@ public class CastController {
     public ApiResponse<Object> saveCast(@PathVariable("castId") Long castId,
                                         @Valid @RequestPart(value = "saveInfo") CastSaveDTO saveRequest,
                                         @RequestPart(value = "image", required = false) MultipartFile image) {
-        System.out.println("CastController: save()");
-        System.out.println(saveRequest);
-        System.out.println(image);
         Cast cast = castService.saveCast(castId, saveRequest, image);
         return ApiResponse.of(SuccessCode._OK, "저장되었습니다");
     }
@@ -59,8 +56,8 @@ public class CastController {
     @CrossOrigin
     @GetMapping("/{castId}")
     @Operation(summary = "캐스트 재생 API")
-    public ApiResponse<Object> streamCast(@PathVariable("castId") Long castId) {
-        return ApiResponse.of(SuccessCode._OK, castService.fetchCast(castId));
+    public ApiResponse<Object> findCast(@PathVariable("castId") Long castId) {
+        return ApiResponse.of(SuccessCode._OK, castService.findCast(castId));
     }
 
     /* Cast 수정 API */

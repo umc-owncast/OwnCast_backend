@@ -28,7 +28,7 @@ public interface CastService {
     ResponseEntity<UrlResource> streamCast(Long castId, HttpHeaders headers);
 
     /** Cast 스크립트 검색 */
-    CastDTO fetchCast(Long castId);
+    CastDTO findCast(Long castId);
 
     SimpleCastDTO deleteCast(Long castId);
 
