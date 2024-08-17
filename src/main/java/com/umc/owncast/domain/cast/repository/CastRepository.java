@@ -9,18 +9,25 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CastRepository extends JpaRepository<Cast, Long> {
-    Cast findFirstByMemberIdOrderByCreatedAt(@Param("memberId") Long memberId);
+
+    @Query("SELECT c.imagePath FROM Cast c " +
+            "WHERE c.member.id = :memberId " +
+            "ORDER BY c.createdAt ASC ")
+    Optional<String> findFirstCastImage(@Param("memberId") Long memberId);
 
     List<Cast> findCastsByMember_Id(@Param("memberId") Long memberId);
 
-    @Query(value = "SELECT * FROM `cast` WHERE MATCH(title) AGAINST(?) AND `is_public` = true ", nativeQuery = true)
-    List<Cast> castSearch(@Param("text") String text);
+    @Query(value = "SELECT * FROM `cast` WHERE MATCH(title) AGAINST(:text) AND `is_public` = true AND `member_id` != :memberId ", nativeQuery = true)
+    List<Cast> castSearch(@Param("text") String text, @Param("memberId") Long memberId);
 
     @Query("SELECT c FROM Cast c " +
             "JOIN MainPrefer m ON m.member.id = c.member.id " +
-            "WHERE m.mainCategory.id = :mainCategoryId AND c.isPublic = true AND c.id != :memberId " +
-            "ORDER BY c.hits DESC")
-    Page<Cast> findTop5ByMainCategoryIdOrderByHitsDesc(@Param("mainCategoryId") Long mainCategoryId, @Param("pageable") Pageable pageable, @Param("memberId") long memberId);
+            "WHERE m.mainCategory.id = :mainCategoryId " +
+            "AND c.isPublic = true " +
+            "AND c.member.id != :memberId " +
+            "ORDER BY c.hits DESC ")
+    Page<Cast> findTop5ByMainCategoryIdOrderByHitsDesc(@Param("mainCategoryId") Long mainCategoryId, @Param("memberId") long memberId, Pageable pageable);
 }

@@ -13,43 +13,11 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class CastDTO {
-
-    @Builder
-    @Getter
-    public static class CastHomeDTO {
-        Long id;
-        String audioLength;
-        String title;
-        String memberName;
-        String playlistName;
-    }
-
-    @Builder
-    @Getter
-    public static class CastPlayDTO {
-        Long id;
-        String title;
-        String memberName;
-        String mainCategoryName;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CastSaveRequestDTO {
-        Long castId;
-        Long playlistId;
-    }
-
     private Long id;
     private String title;
     private String imagePath;
     private String audioLength;
-    private String voice;
-    private Formality formality;
-    private Boolean isPublic;
-    private Long hits;
+    private String fileUrl;
     private List<SentenceResponseDTO> sentences;
 
     public CastDTO(Cast cast) {
@@ -57,10 +25,7 @@ public class CastDTO {
         title = cast.getTitle();
         imagePath = cast.getImagePath();
         audioLength = cast.getAudioLength();
-        voice = cast.getVoice();
-        formality = cast.getFormality();
-        isPublic = cast.getIsPublic();
-        hits = cast.getHits();
+        fileUrl = cast.getFilePath();
         sentences = cast.getSentences().stream()
                 .map(SentenceResponseDTO::new)
                 .toList();

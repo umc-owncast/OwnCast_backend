@@ -1,5 +1,7 @@
 package com.umc.owncast.domain.sentence.service;
 
+import com.umc.owncast.common.exception.handler.UserHandler;
+import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.cast.dto.TTSResultDTO;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.service.ParsingService;
@@ -34,27 +36,8 @@ public class SentenceServiceImpl implements SentenceService {
                     .timePoint(timepoint)
                     .build();
             i++;
-            sentences.add(sentence);
-        }
-        return sentenceRepository.saveAll(sentences);
-    }
-
-    @Override
-    public List<Sentence> mapToSentence(String original, String korean, TTSResultDTO ttsResultDTO, Cast cast) {
-        // TODO 테스트 필요
-        int i = 0;
-        List<Sentence> sentences = new ArrayList<>();
-        String[] originalList = parsingService.parseSentences(original);
-        String[] koreanList = parsingService.parseSentences(korean);
-        for (Double timepoint : ttsResultDTO.getTimePointList()) {
-            sentences.add(Sentence.builder()
-                    .cast(cast)
-                    .originalSentence(originalList[i])
-                    .translatedSentence(koreanList[i])
-                    .timePoint(timepoint)
-                    .build()
-            );
-            i++;
+            Sentence savedSentence = sentenceRepository.save(sentence);
+            sentences.add(savedSentence);
         }
         return sentences;
     }
@@ -63,4 +46,11 @@ public class SentenceServiceImpl implements SentenceService {
     public List<Sentence> findCastSentence(Long castId) {
         return sentenceRepository.findAllByCastIdOrderByTimePointAsc(castId);
     }
+
+    @Override
+    public Sentence findById(Long sentenceId) {
+        return sentenceRepository.findById(sentenceId)
+                .orElseThrow(() -> new UserHandler(ErrorCode.SENTENCE_NOT_FOUND));
+    }
+
 }

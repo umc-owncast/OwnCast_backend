@@ -15,13 +15,14 @@ import java.util.Optional;
 public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long> {
 
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END " +
-            "FROM CastPlaylist c WHERE c.cast.id = :castId AND c.cast.member.id = :memberId ")
+            "FROM CastPlaylist c WHERE c.playlist.member.id = :memberId AND c.cast.id = :castId ")
     boolean existsByMemberIdAndCastId(@Param("memberId") Long memberId, @Param("castId") Long castId);
 
     @Query("SELECT cp FROM CastPlaylist cp JOIN cp.cast c JOIN Sentence s ON s.cast = c WHERE s.id = :sentenceId AND cp.playlist.member.id = :memberId")
     Optional<CastPlaylist> findBySentenceId(@Param("sentenceId") Long sentenceId, @Param("memberId") Long memberId);
 
-    CastPlaylist findFirstByPlaylist_Member_IdOrderByCreatedAt(@Param("memberId") long memberId);
+    @Query("SELECT cp.cast.imagePath FROM CastPlaylist cp WHERE cp.cast.member.id != :memberId AND cp.playlist.member.id = :memberId ORDER BY cp.createdAt ASC")
+    Page<String> findFirstByPlaylist_Member_IdOrderByCreatedAt(@Param("memberId") long memberId, Pageable pageable);
 
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END " +
             "FROM CastPlaylist c WHERE c.playlist.id = :playlistId AND c.cast.id = :castId")
@@ -31,10 +32,16 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
 
     void deleteAllByPlaylistId(Long playlistId);
 
+    void deleteAllByCastId(Long castId);
+
     @Query("SELECT cp.cast FROM CastPlaylist cp WHERE cp.playlist.member.id = :memberId AND cp.cast.member.id != :memberId")
     List<Cast> findSavedCast(@Param("memberId") long memberId);
 
     Optional<CastPlaylist> findByCastIdAndPlaylistId(Long castId, Long id);
 
     Page<CastPlaylist> findByPlaylistId(Long playlistId, Pageable pageable);
+
+    List<CastPlaylist> findAllByPlaylistId(Long playlistId);
+
+    Optional<CastPlaylist> findFirstByPlaylist_IdOrderByCreatedAt(@Param("playlistId") long playlistId);
 }

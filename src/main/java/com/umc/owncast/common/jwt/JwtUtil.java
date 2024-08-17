@@ -16,7 +16,7 @@ public class JwtUtil {
     private SecretKey secretKey;
 
     public JwtUtil(@Value("${jwt.secret.key}") String secret) {
-        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
     public String getCategory(String token) {

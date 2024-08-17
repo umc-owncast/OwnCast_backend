@@ -48,9 +48,15 @@ public enum ErrorCode implements BaseErrorCode {
     BOOKMARK_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "BOOKMARK4002", "이미 존재하는 북마크입니다."),
     REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "CAST4001", "캐스트 생성시간이 너무 오래 걸립니다."),
 
+    //Cast-Playlist 관련 에러
+    CAST_PLAYLIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "CASTPLAYLIST4001", "해당 캐스트가 저장된 플레이 리스트가 없습니다"),
+
     //Playlist 관련 에러
     PLAYLIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "PLAYLIST4001", "해당 플레이리스트가 없습니다."),
     PLAYLIST_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "PLAYLIST4002", "이미 존재하는 플레이리스트입니다."),
+
+    //Sentence 관련 에러
+    SENTENCE_NOT_FOUND(HttpStatus.BAD_REQUEST, "SENTENCE4001", "해당 문장이 없습니다."),
     // 기타 에러는 아래에 추가
     ;
 

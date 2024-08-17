@@ -7,6 +7,7 @@ import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.enums.Status;
 import com.umc.owncast.domain.member.dto.CustomUserDetails;
+import com.umc.owncast.domain.member.repository.MemberRepository;
 import com.umc.owncast.domain.member.service.MemberMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
@@ -25,9 +26,11 @@ import java.nio.charset.StandardCharsets;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
+    private MemberRepository memberRepository;
     private final AuthenticationManager authenticationManager;
     private final LoginService loginService;
     private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     public LoginFilter(AuthenticationManager authenticationManager, LoginService loginService) {
         this.authenticationManager = authenticationManager;
@@ -44,6 +47,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+
         LoginDTO loginDTO = new LoginDTO();
 
         try {
@@ -55,8 +59,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             return null;
         }
 
-        String LoginId = loginDTO.getLoginId();
-        String Password = loginDTO.getPassword();
+        String LoginId= loginDTO.getLoginId();
+        String Password =loginDTO.getPassword();
+
+
 
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(LoginId, Password);
 
@@ -64,8 +70,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         if (customUserDetails.getStatus() == Status.INACTIVE) {
             writeOutput(request, response, HttpServletResponse.SC_FORBIDDEN, ApiResponse.onSuccess(ErrorCode.INACTIVATE_FORBIDDEN));
@@ -75,9 +81,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Long userId = customUserDetails.getUserId();
 
         String accessToken = loginService.issueAccessToken(userId);
+        //Cookie refreshTokenCookie = loginService.issueRefreshToken(userId);
         String refreshToken = loginService.issueRefreshToken(userId);
 
         response.addHeader("Authorization", accessToken);
+        //response.addCookie(refreshTokenCookie);
         writeOutput(request, response, HttpServletResponse.SC_OK, ApiResponse.of(SuccessCode._OK, MemberMapper.toRefreshToken(refreshToken)));
     }
 

@@ -3,7 +3,7 @@ package com.umc.owncast.domain.cast.service;
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
 import com.umc.owncast.domain.cast.dto.TTSDTO;
 import com.umc.owncast.domain.cast.dto.TTSResultDTO;
-import com.umc.owncast.domain.cast.enums.VoiceCode;
+import com.umc.owncast.domain.enums.VoiceCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -51,7 +51,7 @@ public class TTSService {
 
         Map<String, Object> voice = new HashMap<>();
         voice.put("name", ttsdto.getVoice());
-        voice.put("languageCode", "en-US");
+        voice.put("languageCode", ttsdto.getLanguage());
         requestBody.put("voice", voice);
 
         Map<String, Object> audioConfig = new HashMap<>();
