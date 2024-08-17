@@ -36,9 +36,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final LoginService loginService;
     private final JwtUtil jwtUtil;
-
     private final PasswordEncoder passwordEncoder;
-
     private final LanguageRepository languageRepository;
     private final MainPreferRepository mainPreferRepository;
     private final SubPreferRepository subPreferRepository;

@@ -7,15 +7,13 @@ import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.enums.Status;
 import com.umc.owncast.domain.member.dto.CustomUserDetails;
-import com.umc.owncast.domain.member.repository.MemberRepository;
-import com.umc.owncast.domain.member.service.MemberMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -26,14 +24,13 @@ import java.nio.charset.StandardCharsets;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
-    private MemberRepository memberRepository;
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final LoginService loginService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
 
-    public LoginFilter(AuthenticationManager authenticationManager, LoginService loginService) {
-        this.authenticationManager = authenticationManager;
+    public LoginFilter(AuthenticationManagerBuilder authenticationManagerBuilder, LoginService loginService) {
+        this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.loginService = loginService;
 
         setFilterProcessesUrl("/api/users/login");
@@ -47,8 +44,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-
-        LoginDTO loginDTO = new LoginDTO();
+        LoginDTO loginDTO;
 
         try {
             ServletInputStream inputStream = request.getInputStream();
@@ -59,14 +55,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             return null;
         }
 
-        String LoginId= loginDTO.getLoginId();
-        String Password =loginDTO.getPassword();
+        String loginId= loginDTO.getLoginId();
+        String password =loginDTO.getPassword();
 
+         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginId, password);
 
-
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(LoginId, Password);
-
-        return authenticationManager.authenticate(authToken);
+        return authenticationManagerBuilder.getObject().authenticate(authToken);
     }
 
     @Override
@@ -86,7 +80,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         response.addHeader("Authorization", accessToken);
         //response.addCookie(refreshTokenCookie);
-        writeOutput(request, response, HttpServletResponse.SC_OK, ApiResponse.of(SuccessCode._OK, MemberMapper.toRefreshToken(refreshToken)));
+        writeOutput(request, response, HttpServletResponse.SC_OK, ApiResponse.of(SuccessCode._OK, accessToken));
     }
 
     @Override

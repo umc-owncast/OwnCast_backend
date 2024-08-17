@@ -39,7 +39,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return "{bcrypt}" + member.getPassword();
+        return member.getPassword();
     }
 
     @Override
