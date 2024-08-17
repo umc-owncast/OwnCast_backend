@@ -32,7 +32,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final LoginService loginService;
     private final JwtUtil jwtUtil;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
     private final LanguageRepository languageRepository;
     private final MainPreferRepository mainPreferRepository;
     private final SubPreferRepository subPreferRepository;
@@ -49,7 +49,7 @@ public class MemberService {
             throw new UserHandler(ErrorCode.ID_ALREADY_EXIST); // 사용자 정의 예외
         }
 
-        Member newMember = MemberMapper.toLoginIdMember(requestDto.getLoginId(), bCryptPasswordEncoder.encode(requestDto.getPassword()), requestDto.getNickname(), requestDto.getUsername());
+        Member newMember = MemberMapper.toLoginIdMember(requestDto.getLoginId(), passwordEncoder.encode(requestDto.getPassword()), requestDto.getNickname(), requestDto.getUsername());
         Member savedMember = memberRepository.save(newMember);
 
         return issueToken(savedMember.getId(), response);

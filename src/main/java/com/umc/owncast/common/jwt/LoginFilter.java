@@ -29,6 +29,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final LoginService loginService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+
     public LoginFilter(AuthenticationManager authenticationManager, LoginService loginService) {
         this.authenticationManager = authenticationManager;
         this.loginService = loginService;
