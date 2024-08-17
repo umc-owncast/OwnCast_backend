@@ -3,6 +3,7 @@ package com.umc.owncast.domain.cast.controller;
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.cast.dto.*;
+import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.service.*;
 import com.umc.owncast.domain.cast.service.chatGPT.keyword.KeywordService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,7 +51,8 @@ public class CastController {
         System.out.println("CastController: save()");
         System.out.println(saveRequest);
         System.out.println(image);
-        return ApiResponse.of(SuccessCode._OK, castService.saveCast(castId, saveRequest, image));
+        Cast cast = castService.saveCast(castId, saveRequest, image);
+        return ApiResponse.of(SuccessCode._OK, "저장되었습니다");
     }
 
     /* Cast 재생 API */
@@ -68,7 +70,8 @@ public class CastController {
                                           @Valid @RequestPart(value = "updateInfo") CastUpdateDTO updateRequest,
                                           @RequestPart(value = "image", required = false) MultipartFile image) {
         // TODO 캐스트 생성자 혹은 관리자여야 함
-        return ApiResponse.of(SuccessCode._OK, castService.updateCast(castId, updateRequest, image));
+        Cast cast = castService.updateCast(castId, updateRequest, image);
+        return ApiResponse.of(SuccessCode._OK, "수정되었습니다");
     }
 
     /* Cast 삭제 API */

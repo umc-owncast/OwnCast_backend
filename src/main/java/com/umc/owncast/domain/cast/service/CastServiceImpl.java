@@ -87,7 +87,7 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public String saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image) {
+    public Cast saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image) {
         // 제목, 커버이미지, 공개여부 등 저장
         updateCast(castId,
                 CastUpdateDTO.builder()
@@ -109,7 +109,7 @@ public class CastServiceImpl implements CastService {
                 });
 
         castPlaylistRepository.save(castPlaylist);
-        return "저장되었습니다.";
+        return cast;
     }
     
     /** Cast 커버 이미지 수정 */
@@ -121,13 +121,13 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public String updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image) {
+    public Cast updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
         setCastImage(cast, updateRequest, image);
         cast.update(updateRequest);
         castRepository.save(cast);
 
-        return "수정되었습니다.";
+        return cast;
     }
 
     @Override
