@@ -2,21 +2,31 @@ package com.umc.owncast.domain.cast.service;
 
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class ParsingService {
     private static final int MAX_LENGTH = 220;
 
     public String[] parseSentences(String script) {
-        String[] sentences = script.split("\\.|@|\n|!|\\?");
-        List<String> filteredSentences = Arrays.stream(sentences)
-                .map(sentence -> sentence.replace("\n", "").trim())
-                .filter(sentence -> !sentence.isEmpty())
-                .toList();
+        Pattern pattern = Pattern.compile("[^.!?@]+[.!?@]?");
 
-        return filteredSentences.toArray(new String[0]);
+        List<String> sentences = new ArrayList<>();
+        Matcher matcher = pattern.matcher(script);
+
+        while (matcher.find()) {
+            String sentence = matcher.group();
+            sentence = sentence.replace("@", "").trim();
+
+            if (!sentence.isEmpty()) {
+                sentences.add(sentence);
+            }
+        }
+
+        return sentences.toArray(new String[0]);
     }
 
     public String addMarks(String[] sentences) {
@@ -33,9 +43,9 @@ public class ParsingService {
                     processedScript.append(sentence, 0, splitIndex).append("\n");
                     sentence = sentence.substring(splitIndex).trim();
                 }
-                processedScript.append(sentence).append(String.format(".<break time=\"1s\"/><mark name=\"%d\"/>\n", i));
+                processedScript.append(sentence).append(String.format("<break time=\"0.3s\"/><mark name=\"%d\"/>\n", i));
             } else {
-                processedScript.append(sentence).append(String.format(".<break time=\"1s\"/><mark name=\"%d\"/>\n", i));
+                processedScript.append(sentence).append(String.format("<break time=\"0.3s\"/><mark name=\"%d\"/>\n", i));
             }
             i++;
         }
