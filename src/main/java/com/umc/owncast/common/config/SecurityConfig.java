@@ -50,7 +50,8 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers("**").permitAll() // TODO 일시적으로 허용해놓음 -> 배포할 때 삭제
-                        .requestMatchers("/favicon.ico", "/error", "/swagger-ui/**", "/swagger-ui.html/**", "/v3/api-docs/**", "/api/users/**").permitAll()
+                        .requestMatchers("/favicon.ico", "/error", "/swagger-ui/**", "/swagger-ui.html/**", "/v3/api-docs/**",
+                                "/api/users/signup", "/api/users/signup/**","api/users/login","api/users/check/**").permitAll()
                 )
                 .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManagerBuilder, loginService), UsernamePasswordAuthenticationFilter.class)

@@ -1,10 +1,9 @@
 package com.umc.owncast.domain.member.entity;
 
 import com.umc.owncast.common.entity.BaseTimeEntity;
+import com.umc.owncast.domain.enums.Language;
 import com.umc.owncast.domain.enums.Status;
-import com.umc.owncast.domain.language.entity.Language;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Getter
@@ -36,9 +35,7 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "language_id")
+    @Enumerated(EnumType.STRING)
     private Language language;
 
     public void setMember(String loginId, String username, String nickname){

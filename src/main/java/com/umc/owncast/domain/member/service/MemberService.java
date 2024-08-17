@@ -9,8 +9,6 @@ import com.umc.owncast.domain.category.entity.MainCategory;
 import com.umc.owncast.domain.category.entity.SubCategory;
 import com.umc.owncast.domain.category.repository.MainCategoryRepository;
 import com.umc.owncast.domain.category.repository.SubCategoryRepository;
-import com.umc.owncast.domain.language.entity.Language;
-import com.umc.owncast.domain.language.repository.LanguageRepository;
 import com.umc.owncast.domain.member.dto.*;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.member.repository.MemberRepository;
@@ -21,8 +19,6 @@ import com.umc.owncast.domain.memberprefer.repository.SubPreferRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +33,6 @@ public class MemberService {
     private final LoginService loginService;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-    private final LanguageRepository languageRepository;
     private final MainPreferRepository mainPreferRepository;
     private final SubPreferRepository subPreferRepository;
     private final MainCategoryRepository mainCategoryRepository;
@@ -104,12 +99,12 @@ public class MemberService {
         Member member = optionalMember.get();
 
         // Language 엔티티를 안전하게 조회
-        Language language = languageRepository.findById(languageId)
+        /*Language language = languageRepository.findById(languageId)
                 .orElseThrow(() -> new UserHandler(ErrorCode.LANGUAGE_NOT_FOUND));
 
         // 언어 설정
         member.setLanguage(language);
-
+*/
         // 변경된 엔티티를 저장
         memberRepository.saveAndFlush(member);
 
@@ -162,8 +157,8 @@ public class MemberService {
     public MemberSettingResponseDTO languageSetting(Long languageId) {
 
         Member member = memberRepository.findById(1L).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
-        Language language = languageRepository.findById(languageId).orElseThrow(() -> new UserHandler(ErrorCode.LANGUAGE_NOT_FOUND));
-        member.setLanguage(language);
+     /*   Language language = languageRepository.findById(languageId).orElseThrow(() -> new UserHandler(ErrorCode.LANGUAGE_NOT_FOUND));
+        member.setLanguage(language);*/
         memberRepository.save(member);
 
         return MemberSettingResponseDTO.builder()

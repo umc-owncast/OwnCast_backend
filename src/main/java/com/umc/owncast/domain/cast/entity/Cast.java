@@ -4,7 +4,7 @@ import com.umc.owncast.common.entity.BaseTimeEntity;
 import com.umc.owncast.common.util.StringUtil;
 import com.umc.owncast.domain.cast.dto.CastUpdateDTO;
 import com.umc.owncast.domain.enums.Formality;
-import com.umc.owncast.domain.language.entity.Language;
+import com.umc.owncast.domain.enums.Language;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import jakarta.persistence.*;
@@ -59,8 +59,7 @@ public class Cast extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "language_id")
+    @Enumerated(EnumType.STRING)
     private Language language;
 
     @Builder.Default
