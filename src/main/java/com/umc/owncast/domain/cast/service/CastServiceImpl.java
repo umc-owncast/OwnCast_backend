@@ -227,6 +227,7 @@ public class CastServiceImpl implements CastService {
             return CastHomeDTO.builder()
                     .id(cast.getId())
                     .title(cast.getTitle())
+                    .imagePath(cast.getImagePath())
                     .memberName(cast.getMember().getUsername())
                     .audioLength(cast.getAudioLength())
                     .playlistName(castPlaylistName)
