@@ -27,10 +27,14 @@ public class ChatGPTAnswerGenerator {
      * 이 경우 여러가지 Choice 중 첫 번째의 답변을 반환한다
      */
     public String generateAnswer(ChatCompletionRequest request) {
+        Long startTime = System.currentTimeMillis();
         ChatCompletionResult result = null;
         result = openAiService.createChatCompletion(request); // OpenAiHttpException 발생 가능
+        Long endTime = System.currentTimeMillis();
         // 첫 번째 Choice의 답변 반환
         ChatCompletionChoice targetChoice = result.getChoices().get(0);
+        System.out.printf("ChatGPTAnswerGenerator: generation took %.2f seconds, consumed %d tokens total (prompt %d, completion %d)%n"
+                , (double)(endTime - startTime)/1000, result.getUsage().getTotalTokens(), result.getUsage().getPromptTokens(), result.getUsage().getCompletionTokens());
         return targetChoice.getMessage().getContent();
     }
 }
