@@ -19,6 +19,7 @@ public class PapagoTranslationService implements TranslationService{
     @Value("${naver.cloud.secret}")
     String secret;
 
+    @Override
     public String translate(String script) {
         String clientId = id;
         String clientSecret = secret;
