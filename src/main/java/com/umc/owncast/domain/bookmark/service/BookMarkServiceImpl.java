@@ -10,6 +10,7 @@ import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
+import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import com.umc.owncast.domain.sentence.service.SentenceService;
 import lombok.RequiredArgsConstructor;
@@ -30,16 +31,16 @@ public class BookMarkServiceImpl implements BookmarkService {
     private final CastRepository castRepository;
 
     @Override
-    public List<BookmarkResultDTO> getMyCastBookmarks() {
+    public List<BookmarkResultDTO> getMyCastBookmarks(Member member) {
 
-        List<Cast> castList = castRepository.findCastsByMember_Id(1L);
+        List<Cast> castList = castRepository.findCastsByMember_Id(member.getId());
         return getBookMarkResultDTOs(castList);
     }
 
     @Override
-    public List<BookmarkResultDTO> getSavedBookmarks() {
+    public List<BookmarkResultDTO> getSavedBookmarks(Member member) {
 
-        List<Cast> castList = castPlaylistRepository.findSavedCast(1L);
+        List<Cast> castList = castPlaylistRepository.findSavedCast(member.getId());
 
         return getBookMarkResultDTOs(castList);
     }
@@ -67,7 +68,7 @@ public class BookMarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public List<BookmarkResultDTO> getBookmarks(Long playlistId) {
+    public List<BookmarkResultDTO> getBookmarks(Member member, Long playlistId) {
 
         List<Sentence> sentenceList = bookmarkRepository.findSentencesByPlaylistId(playlistId);
 
@@ -81,11 +82,11 @@ public class BookMarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public BookmarkSaveResultDTO saveBookmark(Long sentenceId) {
+    public BookmarkSaveResultDTO saveBookmark(Member member, Long sentenceId) {
 
-        CastPlaylist castPlaylist = castPlaylistRepository.findBySentenceId(sentenceId, 1L).orElseThrow(() -> new UserHandler(ErrorCode.CAST_PLAYLIST_NOT_FOUND));
+        CastPlaylist castPlaylist = castPlaylistRepository.findBySentenceId(sentenceId, member.getId()).orElseThrow(() -> new UserHandler(ErrorCode.CAST_PLAYLIST_NOT_FOUND));
 
-        if (bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, 1L).isPresent()) {
+        if (bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, member.getId()).isPresent()) {
             throw new UserHandler(ErrorCode.BOOKMARK_ALREADY_EXIST);
         }
 
@@ -102,9 +103,9 @@ public class BookMarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public BookmarkSaveResultDTO deleteBookmark(Long sentenceId) {
+    public BookmarkSaveResultDTO deleteBookmark(Member member, Long sentenceId) {
 
-        Bookmark bookmark = bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, 1L).orElseThrow(() -> new UserHandler(ErrorCode.BOOKMARK_NOT_EXIST));
+        Bookmark bookmark = bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, member.getId()).orElseThrow(() -> new UserHandler(ErrorCode.BOOKMARK_NOT_EXIST));
 
         bookmarkRepository.delete(bookmark);
 

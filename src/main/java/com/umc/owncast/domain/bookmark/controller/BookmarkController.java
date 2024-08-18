@@ -4,6 +4,8 @@ import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.domain.bookmark.dto.BookmarkResultDTO;
 import com.umc.owncast.domain.bookmark.dto.BookmarkSaveResultDTO;
 import com.umc.owncast.domain.bookmark.service.BookmarkService;
+import com.umc.owncast.domain.member.annotation.AuthUser;
+import com.umc.owncast.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,35 +26,35 @@ public class BookmarkController {
     @CrossOrigin
     @Operation(summary = "북마크된 문장 불러오기")
     @GetMapping("/study/{playlistId}")
-    public ApiResponse<List<BookmarkResultDTO>> getBookmarks(@PathVariable("playlistId") Long playlistId) {
-        return ApiResponse.onSuccess(bookmarkService.getBookmarks(playlistId));
+    public ApiResponse<List<BookmarkResultDTO>> getBookmarks(@AuthUser Member member, @PathVariable("playlistId") Long playlistId) {
+        return ApiResponse.onSuccess(bookmarkService.getBookmarks(member, playlistId));
     }
 
     @CrossOrigin
     @Operation(summary = "내가 저장한 캐스트의 북마크된 문장 불러오기")
     @GetMapping("/study/mycast")
-    public ApiResponse<List<BookmarkResultDTO>> getMyCastBookmarks() {
-        return ApiResponse.onSuccess(bookmarkService.getMyCastBookmarks());
+    public ApiResponse<List<BookmarkResultDTO>> getMyCastBookmarks(@AuthUser Member member) {
+        return ApiResponse.onSuccess(bookmarkService.getMyCastBookmarks(member));
     }
 
     @CrossOrigin
     @Operation(summary = "내가 저장한 남의 캐스트의 북마크된 문장 불러오기")
     @GetMapping("/study/savedcast")
-    public ApiResponse<List<BookmarkResultDTO>> getSavedBookmarks() {
-        return ApiResponse.onSuccess(bookmarkService.getSavedBookmarks());
+    public ApiResponse<List<BookmarkResultDTO>> getSavedBookmarks(@AuthUser Member member) {
+        return ApiResponse.onSuccess(bookmarkService.getSavedBookmarks(member));
     }
 
     @CrossOrigin
     @Operation(summary = "문장 북마크 하기")
     @PostMapping("/bookmark")
-    public ApiResponse<BookmarkSaveResultDTO> saveBookmark(@RequestParam("sentenceId") Long sentenceId) {
-        return ApiResponse.onSuccess(bookmarkService.saveBookmark(sentenceId));
+    public ApiResponse<BookmarkSaveResultDTO> saveBookmark(@AuthUser Member member, @RequestParam("sentenceId") Long sentenceId) {
+        return ApiResponse.onSuccess(bookmarkService.saveBookmark(member, sentenceId));
     }
 
     @CrossOrigin
     @Operation(summary = "문장 북마크 취소하기")
     @DeleteMapping("/bookmark")
-    public ApiResponse<BookmarkSaveResultDTO> deleteBookmark(@RequestParam("sentenceId") Long sentenceId) {
-        return ApiResponse.onSuccess(bookmarkService.deleteBookmark(sentenceId));
+    public ApiResponse<BookmarkSaveResultDTO> deleteBookmark(@AuthUser Member member, @RequestParam("sentenceId") Long sentenceId) {
+        return ApiResponse.onSuccess(bookmarkService.deleteBookmark(member, sentenceId));
     }
 }
