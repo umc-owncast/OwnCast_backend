@@ -68,8 +68,8 @@ public class MemberController {
     @CrossOrigin
     @Operation(summary = "언어 설정 바꾸기")
     @PostMapping("/setting/language")
-    public ApiResponse<MemberSettingResponseDTO> language(@AuthUser Member member, @RequestParam("languageId") Long languageId) {
-        return ApiResponse.onSuccess(memberService.languageSetting(member, "us"));
+    public ApiResponse<MemberSettingResponseDTO> language(@AuthUser Member member, @RequestBody LanguageDTO languageDTO) {
+        return ApiResponse.onSuccess(memberService.languageSetting(member, languageDTO.getLanguage()));
     }
 
     @CrossOrigin
@@ -82,21 +82,15 @@ public class MemberController {
     @CrossOrigin
     @Operation(summary = "닉네임, 이름, 아이디 바꾸기")
     @PostMapping("/setting")
-    public ApiResponse<MemberSettingResponseDTO> profileSetting(@Valid @RequestBody MemberProfileRequestDTO memberProfileRequestDTO) {
-        return ApiResponse.onSuccess(memberService.profileSetting(memberProfileRequestDTO));
+    public ApiResponse<MemberSettingResponseDTO> profileSetting(@AuthUser Member member, @Valid @RequestBody MemberProfileRequestDTO memberProfileRequestDTO) {
+        return ApiResponse.onSuccess(memberService.profileSetting(member, memberProfileRequestDTO));
     }
 
     @CrossOrigin
     @Operation(summary = "비밀번호 바꾸기")
     @PostMapping("/setting/password")
-    public ApiResponse<MemberSettingResponseDTO> passwordSetting(@Valid @RequestBody MemberPasswordRequestDTO memberPasswordRequestDTO) {
-        return ApiResponse.onSuccess(memberService.passwordSetting(memberPasswordRequestDTO));
-    }
-
-    @Operation(summary = "임시")
-    @GetMapping("/temp")
-    public ApiResponse<Member> temp() {
-        return ApiResponse.onSuccess(memberService.getCurrentMemberName());
+    public ApiResponse<MemberSettingResponseDTO> passwordSetting(@AuthUser Member member, @Valid @RequestBody MemberPasswordRequestDTO memberPasswordRequestDTO) {
+        return ApiResponse.onSuccess(memberService.passwordSetting(member, memberPasswordRequestDTO));
     }
 
 }

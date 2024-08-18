@@ -3,7 +3,6 @@ package com.umc.owncast.domain.member.service;
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.jwt.JwtUtil;
 import com.umc.owncast.common.jwt.LoginService;
-import com.umc.owncast.common.jwt.SecurityUtils;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.category.entity.MainCategory;
 import com.umc.owncast.domain.category.entity.SubCategory;
@@ -95,7 +94,7 @@ public class MemberService {
     }
 
     public MemberSettingResponseDTO languageSetting(Member member, String language) {
-        language = language.toUpperCase(Locale.ROOT);
+        language = language.toUpperCase(Locale.ROOT).trim();
         member.setLanguage(Language.valueOf(language));
         memberRepository.save(member);
 
@@ -147,50 +146,40 @@ public class MemberService {
         }
 
         return MemberSettingResponseDTO.builder()
-                .memberId(1L)
+                .memberId(member.getId())
                 .build();
     }
 
-    public MemberSettingResponseDTO profileSetting(MemberProfileRequestDTO memberProfileRequestDTO) {
-
-
-        Member member = memberRepository.findById(1L).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
-
+    public MemberSettingResponseDTO profileSetting(Member member, MemberProfileRequestDTO memberProfileRequestDTO) {
         if (memberRepository.existsByNickname(memberProfileRequestDTO.getNickname())) {
-            throw new UserHandler(ErrorCode.NICKNAME_ALREADY_EXIST);
+            if(!member.getNickname().equals(memberProfileRequestDTO.getNickname())) {
+                throw new UserHandler(ErrorCode.NICKNAME_ALREADY_EXIST);
+            }
         }
 
         if (memberRepository.existsByLoginId(memberProfileRequestDTO.getLoginId())) {
-            throw new UserHandler(ErrorCode.ID_ALREADY_EXIST);
+            if(!member.getLoginId().equals(memberProfileRequestDTO.getLoginId())) {
+                throw new UserHandler(ErrorCode.ID_ALREADY_EXIST);
+            }
         }
 
-        member.setMember(
+        member.updateMember(
                 memberProfileRequestDTO.getLoginId(),
                 memberProfileRequestDTO.getUsername(),
                 memberProfileRequestDTO.getNickname());
         memberRepository.save(member);
 
         return MemberSettingResponseDTO.builder()
-                .memberId(1L)
+                .memberId(member.getId())
                 .build();
     }
 
-    public MemberSettingResponseDTO passwordSetting(MemberPasswordRequestDTO memberPasswordRequestDTO) {
-        Member member = memberRepository.findById(1L).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
-
+    public MemberSettingResponseDTO passwordSetting(Member member, MemberPasswordRequestDTO memberPasswordRequestDTO) {
         member.setPassword(passwordEncoder.encode(memberPasswordRequestDTO.getPassword()));
         memberRepository.save(member);
 
         return MemberSettingResponseDTO.builder()
-                .memberId(1L)
+                .memberId(member.getId())
                 .build();
-    }
-
-    public Member getCurrentMemberName() {
-
-        String userEmail = SecurityUtils.getCurrentUsername().orElseThrow(() -> new UserHandler(ErrorCode._UNAUTHORIZED));
-
-        return memberRepository.findByUsername(userEmail)
-                .orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
     }
 }

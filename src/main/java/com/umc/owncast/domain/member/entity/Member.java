@@ -39,7 +39,7 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Language language;
 
-    public void setMember(String loginId, String username, String nickname){
+    public void updateMember(String loginId, String username, String nickname){
         this.loginId = loginId;
         this.username = username;
         this.nickname = nickname;

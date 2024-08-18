@@ -1,6 +1,6 @@
 package com.umc.owncast.domain.member.service;
 
-import com.umc.owncast.domain.member.dto.MemberResponse;
+import com.umc.owncast.domain.member.dto.RefreshTokenDto;
 import com.umc.owncast.domain.member.entity.Member;
 
 public class MemberMapper {
@@ -13,8 +13,8 @@ public class MemberMapper {
                 .build();
     }
 
-    public static MemberResponse.refreshTokenDto toRefreshToken(String refreshToken) {
-        return MemberResponse.refreshTokenDto.builder()
+    public static RefreshTokenDto toRefreshToken(String refreshToken) {
+        return RefreshTokenDto.builder()
                 .refreshToken(refreshToken)
                 .build();
     }
