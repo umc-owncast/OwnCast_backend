@@ -22,13 +22,7 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         Collection<GrantedAuthority> collection = new ArrayList<>();
-        collection.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-
-                return "ROLE_USER";
-            }
-        });
+        collection.add((GrantedAuthority) () -> "ROLE_USER");
 
         return collection;
     }
@@ -39,7 +33,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return "{bcrypt}" + member.getPassword();
+        return member.getPassword();
     }
 
     @Override

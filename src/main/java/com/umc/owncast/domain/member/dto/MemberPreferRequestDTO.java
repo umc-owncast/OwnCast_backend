@@ -1,14 +1,15 @@
 package com.umc.owncast.domain.member.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-@Setter
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberPreferRequestDTO {
-    long mainCategoryId;
-    long subCategoryId;
-    String etc;
+    @NotBlank
+    String mainCategory;
+    @NotBlank
+    String subCategory;
 }

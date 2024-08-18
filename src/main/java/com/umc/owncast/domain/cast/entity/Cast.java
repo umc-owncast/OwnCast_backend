@@ -4,7 +4,7 @@ import com.umc.owncast.common.entity.BaseTimeEntity;
 import com.umc.owncast.common.util.StringUtil;
 import com.umc.owncast.domain.cast.dto.CastUpdateDTO;
 import com.umc.owncast.domain.enums.Formality;
-import com.umc.owncast.domain.language.entity.Language;
+import com.umc.owncast.domain.enums.Language;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import jakarta.persistence.*;
@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,19 +58,12 @@ public class Cast extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "language_id")
+    @Enumerated(EnumType.STRING)
     private Language language;
 
     @Builder.Default
     @OneToMany(mappedBy = "cast", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sentence> sentences = new ArrayList<>();
-
-
-    public void addSentences(Collection<Sentence> s) {
-        sentences.addAll(s);
-        for (Sentence sentence : s) sentence.setCast(this);
-    }
 
     public void update(CastUpdateDTO updateRequest) {
         if (!StringUtil.isBlank(updateRequest.getTitle()))

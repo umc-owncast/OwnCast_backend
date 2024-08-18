@@ -1,6 +1,5 @@
 package com.umc.owncast.common.jwt;
 
-
 import com.umc.owncast.common.exception.GeneralException;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.member.entity.Refresh;
@@ -32,8 +31,7 @@ public class LoginService {
     private Long refreshExpirationTime;
 
     public String issueAccessToken(Long userId) {
-        String accessToken = jwtUtil.createJwt("access", userId, accessExpirationTime * 1000L);
-        return "Bearer " + accessToken;
+        return jwtUtil.createJwt("access", userId, accessExpirationTime * 1000L);
     }
 
     @Transactional

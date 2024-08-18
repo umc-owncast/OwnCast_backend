@@ -18,6 +18,12 @@ public class MemberRequest {
         @NotBlank
         @Size(min = 8, max = 16)
         String password;
+        @NotBlank
+        String language;
+        @NotBlank
+        String mainCategory;
+        @NotBlank
+        String subCategory;
     }
 
     @Getter
@@ -29,9 +35,10 @@ public class MemberRequest {
     @Getter
     public static class memberPreferDto {
         @NotBlank
+        String language;
+        @NotBlank
         Long mainCategoryId;
         Long subCategoryId;
         String etc;
     }
-
 }
