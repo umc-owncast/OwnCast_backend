@@ -2,17 +2,17 @@ package com.umc.owncast.domain.cast.service.chatGPT.script;
 
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
-import com.umc.owncast.domain.cast.service.chatGPT.ChatGPTAnswerGenerator;
-import com.umc.owncast.domain.cast.service.chatGPT.ChatGPTPromptGenerator;
+import com.umc.owncast.domain.cast.service.chatGPT.ChatGptAnswerGenerator;
+import com.umc.owncast.domain.cast.service.chatGPT.ChatGptPromptGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class ChatGPTScriptService implements ScriptService {
+public class ChatGptScriptService implements ScriptService {
 
-    private final ChatGPTPromptGenerator promptGenerator;
-    private final ChatGPTAnswerGenerator answerGenerator;
+    private final ChatGptPromptGenerator promptGenerator;
+    private final ChatGptAnswerGenerator answerGenerator;
 
     public String createScript(KeywordCastCreationDTO castRequest) {
         String script = "";

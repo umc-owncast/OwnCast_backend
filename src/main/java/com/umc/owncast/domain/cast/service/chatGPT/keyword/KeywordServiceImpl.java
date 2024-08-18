@@ -5,8 +5,8 @@ import com.google.gson.reflect.TypeToken;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
-import com.umc.owncast.domain.cast.service.chatGPT.ChatGPTAnswerGenerator;
-import com.umc.owncast.domain.cast.service.chatGPT.ChatGPTPromptGenerator;
+import com.umc.owncast.domain.cast.service.chatGPT.ChatGptAnswerGenerator;
+import com.umc.owncast.domain.cast.service.chatGPT.ChatGptPromptGenerator;
 import com.umc.owncast.domain.category.repository.MainCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,8 +19,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class KeywordServiceImpl implements KeywordService {
 
-    private final ChatGPTPromptGenerator chatGPTPromptGenerator;
-    private final ChatGPTAnswerGenerator answerGenerator;
+    private final ChatGptPromptGenerator chatGPTPromptGenerator;
+    private final ChatGptAnswerGenerator answerGenerator;
     private final MainCategoryRepository mainCategoryRepository;
 
     @Override
