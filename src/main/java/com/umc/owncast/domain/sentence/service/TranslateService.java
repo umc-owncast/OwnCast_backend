@@ -33,7 +33,10 @@ public class TranslateService {
         requestHeaders.put("X-NCP-APIGW-API-KEY-ID", clientId);
         requestHeaders.put("X-NCP-APIGW-API-KEY", clientSecret);
 
+        long startTime = System.currentTimeMillis();
         String responseBody = post(requestHeaders, text);
+        long endTime = System.currentTimeMillis();
+        System.out.printf("PapagoTranslationService: Translation took %.2f seconds%n", (double)(endTime - startTime)/1000);
         JSONObject jsonObject = new JSONObject(responseBody);
 
         String translatedText = jsonObject.getJSONObject("message").getJSONObject("result").getString("translatedText");
