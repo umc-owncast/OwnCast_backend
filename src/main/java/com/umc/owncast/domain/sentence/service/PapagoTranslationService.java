@@ -12,7 +12,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
+//@Service
 public class PapagoTranslationService implements TranslationService{
     @Value("${naver.cloud.id}")
     String id;
