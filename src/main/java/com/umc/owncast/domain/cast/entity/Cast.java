@@ -66,12 +66,6 @@ public class Cast extends BaseTimeEntity {
     @OneToMany(mappedBy = "cast", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sentence> sentences = new ArrayList<>();
 
-
-    public void addSentences(Collection<Sentence> s) {
-        sentences.addAll(s);
-        for (Sentence sentence : s) sentence.setCast(this);
-    }
-
     public void update(CastUpdateDTO updateRequest) {
         if (!StringUtil.isBlank(updateRequest.getTitle()))
             this.title = updateRequest.getTitle();

@@ -35,6 +35,7 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private Language language;
 
