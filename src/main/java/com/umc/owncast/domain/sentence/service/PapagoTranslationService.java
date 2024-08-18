@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class TranslateService {
+public class PapagoTranslationService implements TranslationService{
     @Value("${naver.cloud.id}")
     String id;
     @Value("${naver.cloud.secret}")
