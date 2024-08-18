@@ -66,7 +66,7 @@ public class ChatGptTranslationService implements TranslationService{
         Long startTime = System.currentTimeMillis();
         ChatCompletionResult result = openAiService.createChatCompletion(request);
         Long endTime = System.currentTimeMillis();
-        System.out.printf("GPTTranslationService: chat took %d seconds, and consumed %d tokens total (prompt %d, completion %d)%n", (endTime-startTime)/1000, result.getUsage().getTotalTokens(), result.getUsage().getPromptTokens(), result.getUsage().getCompletionTokens());
+        System.out.printf("GPTTranslationService: translation took %d seconds, consumed %d tokens total (prompt %d, completion %d)%n", (endTime-startTime)/1000, result.getUsage().getTotalTokens(), result.getUsage().getPromptTokens(), result.getUsage().getCompletionTokens());
         return result.getChoices().get(0).getMessage().getContent();
     }
 
