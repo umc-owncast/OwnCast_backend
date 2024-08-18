@@ -9,7 +9,9 @@ import com.umc.owncast.domain.category.entity.MainCategory;
 import com.umc.owncast.domain.category.entity.SubCategory;
 import com.umc.owncast.domain.category.repository.MainCategoryRepository;
 import com.umc.owncast.domain.category.repository.SubCategoryRepository;
+import com.umc.owncast.domain.enums.Language;
 import com.umc.owncast.domain.member.dto.*;
+import com.umc.owncast.domain.member.dto.MemberRequest.joinLoginIdDto;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.member.repository.MemberRepository;
 import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
@@ -23,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -40,20 +43,28 @@ public class MemberService {
 
 
     @Transactional
-    public String insertMember(HttpServletResponse response, MemberRequest.joinLoginIdDto requestDto) {
+    public RefreshTokenDto insertMember(HttpServletResponse response, joinLoginIdDto requestDto) {
 
         if (memberRepository.existsByNickname(requestDto.getNickname())) {
-            throw new UserHandler(ErrorCode.NICKNAME_ALREADY_EXIST); // 사용자 정의 예외
+            throw new UserHandler(ErrorCode.NICKNAME_ALREADY_EXIST);
         }
 
         if (memberRepository.existsByLoginId(requestDto.getLoginId())) {
-            throw new UserHandler(ErrorCode.ID_ALREADY_EXIST); // 사용자 정의 예외
+            throw new UserHandler(ErrorCode.ID_ALREADY_EXIST);
         }
 
         Member newMember = MemberMapper.toLoginIdMember(requestDto.getLoginId(), passwordEncoder.encode(requestDto.getPassword()), requestDto.getNickname(), requestDto.getUsername());
         Member savedMember = memberRepository.save(newMember);
+        languageSetting(savedMember, requestDto.getLanguage());
+        preferSetting(savedMember, MemberPreferRequestDTO.builder()
+                .mainCategory(requestDto.getMainCategory())
+                .subCategory(requestDto.getSubCategory())
+                .build());
 
-        return issueToken(savedMember.getId(), response);
+        return RefreshTokenDto.builder()
+                .memberId(savedMember.getId())
+                .refreshToken(issueToken(savedMember.getId(), response))
+                .build();
     }
 
     public Boolean nickNameDuplicate(String nickName) {
@@ -63,7 +74,6 @@ public class MemberService {
     public Boolean memberIdDuplicate(String loginId) {
         return memberRepository.existsByLoginId(loginId);
     }
-
 
     @Transactional
     public String reissueToken(HttpServletRequest request, HttpServletResponse response) {
@@ -84,123 +94,56 @@ public class MemberService {
         return newRefreshToken;
     }
 
-
-    @Transactional
-    public Long addLanguage(Long languageId) {
-        // 토큰을 이용해서 사용자 정보 받기 (현재는 1L로 설정)
-        Optional<Member> optionalMember = memberRepository.findById(1002L);
-
-        System.out.println(optionalMember);
-
-        if (optionalMember.isEmpty()) {
-            throw new UserHandler(ErrorCode.MEMBER_NOT_FOUND);
-        }
-
-        Member member = optionalMember.get();
-
-        // Language 엔티티를 안전하게 조회
-        /*Language language = languageRepository.findById(languageId)
-                .orElseThrow(() -> new UserHandler(ErrorCode.LANGUAGE_NOT_FOUND));
-
-        // 언어 설정
-        member.setLanguage(language);
-*/
-        // 변경된 엔티티를 저장
-        memberRepository.saveAndFlush(member);
-
-        return member.getId();
-    }
-
-
-    @Transactional
-    public Long addPreferSetting(Long memberId, MemberRequest.memberPreferDto request) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
-
-        MainPrefer mainPrefer = mainPreferRepository.findById(request.getMainCategoryId())
-                .orElseThrow(() -> new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
-
-        SubPrefer subPrefer;
-
-        if (request.getSubCategoryId() != null) {
-            subPrefer = subPreferRepository.findById(request.getSubCategoryId())
-                    .orElseThrow(() -> new UserHandler(ErrorCode.SUBCATEGORY_NOT_EXIST));
-        } else {
-            if (request.getEtc() == null || request.getEtc().isEmpty()) {
-                throw new UserHandler(ErrorCode.SUBCATEGORY_ETC_REQUIRED);
-            }
-            SubCategory newSubCategory = SubCategory.builder()
-                    .name(request.getEtc())
-                    .mainCategory(mainPrefer.getMainCategory())
-                    .isUserCreated(true)
-                    .build();
-            subCategoryRepository.save(newSubCategory);
-
-            subPrefer = SubPrefer.builder()
-                    .member(member)
-                    .subCategory(newSubCategory)
-                    .build();
-        }
-
-        // Save new MainPrefer if needed
-        MainPrefer newMainPrefer = MainPrefer.builder()
-                .member(member)
-                .mainCategory(mainPrefer.getMainCategory())
-                .build();
-        mainPreferRepository.save(newMainPrefer);
-
-        subPreferRepository.save(subPrefer);
-
-        return member.getId();
-    }
-
-    public MemberSettingResponseDTO languageSetting(Long languageId) {
-
-        Member member = memberRepository.findById(1L).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
-     /*   Language language = languageRepository.findById(languageId).orElseThrow(() -> new UserHandler(ErrorCode.LANGUAGE_NOT_FOUND));
-        member.setLanguage(language);*/
+    public MemberSettingResponseDTO languageSetting(Member member, String language) {
+        language = language.toUpperCase(Locale.ROOT);
+        member.setLanguage(Language.valueOf(language));
         memberRepository.save(member);
 
         return MemberSettingResponseDTO.builder()
-                .memberId(1L)
+                .memberId(member.getId())
                 .build();
     }
 
-    public MemberSettingResponseDTO preferSetting(MemberPreferRequestDTO memberPreferRequestDTO) {
-
-        Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
-
-        MainCategory mainCategory = mainCategoryRepository.findById(memberPreferRequestDTO.getMainCategoryId())
+    public MemberSettingResponseDTO preferSetting(Member member, MemberPreferRequestDTO memberPreferRequestDTO) {
+        MainCategory mainCategory = mainCategoryRepository.findByName(memberPreferRequestDTO.getMainCategory())
                 .orElseThrow(() -> new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
 
-        SubCategory subCategory = subCategoryRepository.findById(memberPreferRequestDTO.getSubCategoryId())
+        SubCategory subCategory = subCategoryRepository.findByName(memberPreferRequestDTO.getSubCategory())
                 .orElseGet(() -> {
-                    if (memberPreferRequestDTO.getEtc() == null) {
+                    if (memberPreferRequestDTO.getSubCategory() == null) {
                         throw new UserHandler(ErrorCode.SUBCATEGORY_ETC_REQUIRED);
                     }
-                    return SubCategory.builder()
-                            .name(memberPreferRequestDTO.getEtc())
+                    SubCategory newSubCategory =  SubCategory.builder()
+                            .name(memberPreferRequestDTO.getSubCategory())
                             .mainCategory(mainCategory)
                             .isUserCreated(true)
                             .build();
+                    subCategoryRepository.save(newSubCategory);
+                    return newSubCategory;
                 });
 
-        MainPrefer mainPrefer = mainPreferRepository.findByMember(member)
-                .orElseThrow(() -> new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
+        Optional<MainPrefer> mainPrefer = mainPreferRepository.findByMember(member);
+        if(mainPrefer.isPresent()) {
+            mainPrefer.get().setMainCategory(mainCategory);
+            mainPreferRepository.save(mainPrefer.get());
+        } else {
+            MainPrefer newMainPrefer = MainPrefer.builder()
+                    .member(member)
+                    .mainCategory(mainCategory)
+                    .build();
+            mainPreferRepository.save(newMainPrefer);
+        }
 
-        SubPrefer subPrefer = subPreferRepository.findByMember(member)
-                .orElseThrow(() -> new UserHandler(ErrorCode.SUBCATEGORY_NOT_EXIST));
-
-        mainPrefer.setMainCategory(mainCategory);
-        mainPreferRepository.save(mainPrefer);
-
-        SubCategory oldSubCategory = subPrefer.getSubCategory();
-        subPrefer.setSubCategory(subCategory);
-        subPreferRepository.save(subPrefer);
-
-        if (oldSubCategory.getIsUserCreated()) {
-            subCategoryRepository.delete(oldSubCategory);
+        Optional<SubPrefer> subPrefer = subPreferRepository.findByMember(member);
+        if(subPrefer.isPresent()) {
+            subPrefer.get().setSubCategory(subCategory);
+            subPreferRepository.save(subPrefer.get());
+        } else {
+            SubPrefer newSubPrefer = SubPrefer.builder()
+                    .member(member)
+                    .subCategory(subCategory)
+                    .build();
+            subPreferRepository.save(newSubPrefer);
         }
 
         return MemberSettingResponseDTO.builder()

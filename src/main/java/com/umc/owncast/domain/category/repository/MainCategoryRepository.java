@@ -13,4 +13,6 @@ public interface MainCategoryRepository extends JpaRepository<MainCategory, Long
             " JOIN MainPrefer mp ON m.id = mp.mainCategory.id " +
             " WHERE mp.member.id = :memberId ")
     Optional<String> getMainCategoryNameByMemberId(@Param("memberId") long memberId);
+
+    Optional<MainCategory> findByName(String name);
 }
