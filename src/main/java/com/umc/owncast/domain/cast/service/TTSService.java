@@ -58,10 +58,14 @@ public class TTSService {
         audioConfig.put("audioEncoding", "MP3");
         requestBody.put("audioConfig", audioConfig);
 
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+        Long startTime = System.currentTimeMillis();
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
+        Long endTime = System.currentTimeMillis();
+        System.out.printf("TTSService: TTS took %.2f seconds%n", (double)(endTime - startTime)/1000);
         String audioContent = (String) response.getBody().get("audioContent");
 
         List<Map<String, Object>> timepoints = (List<Map<String, Object>>) response.getBody().get("timepoints");
