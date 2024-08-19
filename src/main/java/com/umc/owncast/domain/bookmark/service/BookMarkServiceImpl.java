@@ -57,6 +57,7 @@ public class BookMarkServiceImpl implements BookmarkService {
 
                 sentences.forEach(sentence -> sentenceList.add(BookmarkResultDTO.builder()
                         .castId(sentence.getCast().getId())
+                        .sentenceId(sentence.getId())
                         .originalSentence(sentence.getOriginalSentence())
                         .translatedSentence(sentence.getTranslatedSentence())
                         .build()));
@@ -74,6 +75,7 @@ public class BookMarkServiceImpl implements BookmarkService {
         return sentenceList.stream().map(sentence ->
                 BookmarkResultDTO.builder()
                         .castId(sentence.getCast().getId())
+                        .sentenceId(sentence.getId())
                         .originalSentence(sentence.getOriginalSentence())
                         .translatedSentence(sentence.getTranslatedSentence())
                         .build()
