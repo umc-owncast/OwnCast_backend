@@ -6,6 +6,8 @@ import com.umc.owncast.domain.cast.dto.*;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.service.*;
 import com.umc.owncast.domain.cast.service.chatGPT.keyword.KeywordService;
+import com.umc.owncast.domain.member.annotation.AuthUser;
+import com.umc.owncast.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -81,28 +83,28 @@ public class CastController {
 
     @GetMapping("/home")
     @Operation(summary = "홈 화면 키워드 6개 받아오기")
-    public ApiResponse<List<String>> getHomeKeyword() {
-        return ApiResponse.onSuccess(keywordService.createKeyword());
+    public ApiResponse<List<String>> getHomeKeyword(@AuthUser Member member) {
+        return ApiResponse.onSuccess(keywordService.createKeyword(member));
     }
 
     @CrossOrigin
     @Operation(summary = "검색 홈 API")
     @GetMapping("/search/home")
-    public ApiResponse<List<CastHomeDTO>> searchHome() {
-        return ApiResponse.onSuccess(castService.getHomeCast());
+    public ApiResponse<List<CastHomeDTO>> searchHome(@AuthUser Member member) {
+        return ApiResponse.onSuccess(castService.getHomeCast(member));
     }
 
     @CrossOrigin
     @Operation(summary = "다른 사람의 플레이리스트 가져오기")
     @PostMapping("/other")
-    public ApiResponse<OtherCastResponseDTO> getOtherCast(@RequestBody OtherCastRequestDTO castDTO) {
-        return ApiResponse.onSuccess(castService.getOtherCast(castDTO));
+    public ApiResponse<OtherCastResponseDTO> getOtherCast(@AuthUser Member member, @RequestBody OtherCastRequestDTO castDTO) {
+        return ApiResponse.onSuccess(castService.getOtherCast(member, castDTO));
     }
 
     @CrossOrigin
     @Operation(summary = "검색 API")
     @PostMapping("/search")
-    public ApiResponse<List<CastHomeDTO>> saveCast(@RequestParam("keyword") String keyword) {
-        return ApiResponse.onSuccess(castService.getCast(keyword));
+    public ApiResponse<List<CastHomeDTO>> saveCast(@AuthUser Member member, @RequestParam("keyword") String keyword) {
+        return ApiResponse.onSuccess(castService.getCast(member, keyword));
     }
 }

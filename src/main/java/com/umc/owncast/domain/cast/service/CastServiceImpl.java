@@ -8,6 +8,9 @@ import com.umc.owncast.domain.cast.repository.CastRepository;
 import com.umc.owncast.domain.cast.service.chatGPT.script.ScriptService;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
+import com.umc.owncast.domain.category.entity.MainCategory;
+import com.umc.owncast.domain.enums.Language;
+import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
 import com.umc.owncast.domain.memberprefer.repository.MemberPreferRepository;
 import com.umc.owncast.domain.playlist.entity.Playlist;
@@ -156,35 +159,35 @@ public class CastServiceImpl implements CastService {
         return new SimpleCastDTO(cast);
     }
 
-    @Override
-    public MainPrefer getMemberPrefer(Long memberId) {
-        return memberPreferRepository.findByMemberId(memberId)
+    private MainPrefer getMemberPrefer(Member member) {
+        return memberPreferRepository.findByMember(member)
                 .orElseThrow(() -> new UserHandler(ErrorCode.CAST_NOT_FOUND));
 
     }
 
     @Override
-    public List<CastHomeDTO> getHomeCast() {
+    public List<CastHomeDTO> getHomeCast(Member member) {
 
         final int TOP_CASTS_LIMIT = 5;
-
-        MainPrefer userMainCategory = getMemberPrefer(1L);
-        Long userCategoryId = userMainCategory.getMainCategory().getId();
         Pageable pageable = PageRequest.of(0, TOP_CASTS_LIMIT);
-        List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategoryId, 1L, pageable).getContent();
+
+        MainCategory userCategory = getMemberPrefer(member).getMainCategory();
+        Language userLanguage = member.getLanguage();
+
+        List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategory, member, userLanguage, pageable).getContent();
 
         return convertToCastHomeDTO(castMainCategories);
     }
 
     @Override
-    public List<CastHomeDTO> getCast(String keyword) {
-        List<Cast> castList = castRepository.castSearch(keyword, 1L);
+    public List<CastHomeDTO> getCast(Member member, String keyword) {
 
+        List<Cast> castList = castRepository.castSearch(keyword, member.getId(), member.getLanguage().name());
         return convertToCastHomeDTO(castList);
     }
 
     @Override
-    public OtherCastResponseDTO getOtherCast(OtherCastRequestDTO castSaveRequestDTO) {
+    public OtherCastResponseDTO getOtherCast(Member member, OtherCastRequestDTO castSaveRequestDTO) {
 
         Playlist playlist = playlistRepository.findById(castSaveRequestDTO.getPlaylistId())
                 .orElseThrow(() -> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
@@ -192,7 +195,7 @@ public class CastServiceImpl implements CastService {
         Cast cast = castRepository.findById(castSaveRequestDTO.getCastId())
                 .orElseThrow(() -> new UserHandler(ErrorCode.CAST_NOT_FOUND));
 
-        if (castPlaylistRepository.existsByMemberIdAndCastId(1L, cast.getId())) { // 해당 캐스트가 유저의 플레이리스트에 이미 저장한 경우
+        if (castPlaylistRepository.existsByMemberIdAndCastId(member.getId(), cast.getId())) { // 해당 캐스트가 유저의 플레이리스트에 이미 저장한 경우
             throw new UserHandler(ErrorCode.CAST_ALREADY_EXIST);
         }
 
@@ -210,7 +213,7 @@ public class CastServiceImpl implements CastService {
 
         return OtherCastResponseDTO.builder()
                 .castPlaylistId(newCastPlaylist.getId())
-                .memberId(1L)
+                .memberId(member.getId())
                 .build();
     }
 
