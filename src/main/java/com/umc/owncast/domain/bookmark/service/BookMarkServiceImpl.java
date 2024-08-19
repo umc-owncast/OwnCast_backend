@@ -34,23 +34,22 @@ public class BookMarkServiceImpl implements BookmarkService {
     public List<BookmarkResultDTO> getMyCastBookmarks(Member member) {
 
         List<Cast> castList = castRepository.findCastsByMember_Id(member.getId());
-        return getBookMarkResultDTOs(castList);
+        return getBookMarkResultDTOs(member, castList);
     }
 
     @Override
     public List<BookmarkResultDTO> getSavedBookmarks(Member member) {
 
         List<Cast> castList = castPlaylistRepository.findSavedCast(member.getId());
-
-        return getBookMarkResultDTOs(castList);
+        return getBookMarkResultDTOs(member, castList);
     }
 
     @NotNull
-    private List<BookmarkResultDTO> getBookMarkResultDTOs(List<Cast> castList) {
+    private List<BookmarkResultDTO> getBookMarkResultDTOs(Member member, List<Cast> castList) {
         List<BookmarkResultDTO> sentenceList = new ArrayList<>(List.of());
 
         castList.forEach(cast -> {
-            List<Bookmark> bookmarks = bookmarkRepository.findBookmarksByCastPlaylist_Cast_Id(cast.getId());
+            List<Bookmark> bookmarks = bookmarkRepository.findBookmarksByCastPlaylist_Cast_Id(member, cast.getId());
 
             bookmarks.forEach(bookmark -> {
 

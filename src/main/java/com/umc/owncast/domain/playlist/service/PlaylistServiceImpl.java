@@ -196,6 +196,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     private CastDTO convertToCastDTO(CastPlaylist castPlaylist) {
         return CastDTO.builder()
                 .castId(castPlaylist.getCast().getId())
+                .playlistId(castPlaylist.getPlaylist().getId())
                 .castTitle(castPlaylist.getCast().getTitle())
                 .isPublic(castPlaylist.getCast().getIsPublic())
                 .castCreator(castPlaylist.getCast().getMember().getUsername())

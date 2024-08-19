@@ -42,7 +42,6 @@ public class KeywordServiceImpl implements KeywordService {
             keywords = gson.fromJson(script, listType);
 
         } catch (Exception e) {
-            // 출력만 하고 전파 -> CastService에서 처리??
             System.out.println("CastServiceImpl: Exception on createScript - " + e.getMessage());
             System.out.println("Exception class : " + e.getClass());
             System.out.println("Exception cause : " + e.getCause());
