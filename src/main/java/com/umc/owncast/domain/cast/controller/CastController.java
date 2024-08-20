@@ -48,7 +48,8 @@ public class CastController {
     public ApiResponse<Object> saveCast(@PathVariable("castId") Long castId,
                                         @Valid @RequestPart(value = "saveInfo") CastUpdateDTO saveRequest,
                                         @RequestPart(value = "image", required = false) MultipartFile image) {
-        Cast cast = castService.saveCast(castId, saveRequest, image);
+//        Cast cast = castService.saveCast(castId, saveRequest, image);
+
         return ApiResponse.of(SuccessCode._OK, "저장되었습니다");
     }
 
@@ -68,8 +69,8 @@ public class CastController {
                                           /*@Valid @RequestPart(value = "updateInfo") CastUpdateRequestDTO updateRequest,
                                           @RequestPart(value = "image", required = false) MultipartFile image*/) {
         // TODO 캐스트 생성자 혹은 관리자여야 함
-        Cast cast = castService.updateCast(castId, updateRequest);
-        return ApiResponse.of(SuccessCode._OK, "수정되었습니다");
+        SimpleCastDTO castDTO = castService.updateCast(castId, updateRequest);
+        return ApiResponse.of(SuccessCode._OK, castDTO);
     }
 
     /* Cast 삭제 API */

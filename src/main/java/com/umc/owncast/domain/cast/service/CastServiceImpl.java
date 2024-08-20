@@ -27,6 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -125,13 +127,35 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public Cast updateCast(Long castId, CastUpdateRequestDTO updateRequest) {
+    public SimpleCastDTO updateCast(Long castId, CastUpdateRequestDTO updateRequest) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
+        // 이미지 설정
         CastUpdateDTO updateDTO = setCastImage(cast, updateRequest);
+        // 플레이리스트 변경
+        changePlaylist(cast, updateRequest.getPlaylistId());
+        // cast 필드 수정
         cast.update(updateDTO);
         castRepository.save(cast);
 
-        return cast;
+        return new SimpleCastDTO(cast);
+    }
+
+    /** 캐스트가 속한 플레이리스트 변경 */
+    private void changePlaylist(Cast cast, Long playlistId){
+        if(cast == null || playlistId == null) return;
+        Optional<CastPlaylist> optionalOldCp = castPlaylistRepository.findByPlaylistMemberIdAndCastId(1L, cast.getId()); // TODO 회원 기능 연동
+        if(optionalOldCp.isPresent()){
+            CastPlaylist oldCp = optionalOldCp.get();
+            if(Objects.equals(oldCp.getPlaylist().getId(), playlistId)) return; // 동일한 플레이리스트인 경우 스킵
+            else {
+                castPlaylistRepository.delete(oldCp); // 이전 castPlaylist 삭제
+            }
+        }
+        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
+        castPlaylistRepository.save(CastPlaylist.builder() // 새 castPlaylist 추가
+                .cast(cast)
+                .playlist(playlist)
+                .build());
     }
 
     @Override

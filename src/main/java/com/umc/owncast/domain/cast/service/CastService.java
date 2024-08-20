@@ -22,7 +22,7 @@ public interface CastService {
     Cast saveCast(Long castId, CastUpdateDTO saveRequest, MultipartFile image);
 
     /** Cast 수정 */
-    Cast updateCast(Long castId, CastUpdateRequestDTO updateRequest);
+    SimpleCastDTO updateCast(Long castId, CastUpdateRequestDTO updateRequest);
 
     /** Cast 오디오파일 스트리밍 */
     ResponseEntity<UrlResource> streamCast(Long castId, HttpHeaders headers);
