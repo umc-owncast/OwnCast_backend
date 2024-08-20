@@ -41,7 +41,9 @@ public class ChatGptTranslationService implements TranslationService{
 
         List<ChatMessage> chatPrompt = List.of(
                 new ChatMessage(USER, "Welcome to today's episode of our financial news podcast, where we delve into the latest developments in the S&P 500. "),
-                new ChatMessage(ASSISTANT, "오늘의 팟캐스트에 오신 걸 환영합니다, 오늘은 가장 최근의 S&P 500 근황에 대해 알아보겠습니다."),
+                new ChatMessage(ASSISTANT, "오늘의 팟캐스트에 오신 걸 환영합니다 - 오늘은 가장 최근의 S&P 500 근황에 대해 알아보겠습니다."),
+                new ChatMessage(USER, "Welcome to today's episode of our podcast, where we explore the vibrant world of higher education institutions around the globe. "),
+                new ChatMessage(ASSISTANT, "오늘의 팟캐스트에 오신 것을 환영합니다, 오늘은 전 세계 고등 교육 기관의 활기찬 세계를 탐구해 보겠습니다."),
                 new ChatMessage(USER, "A Farewell To Arms"),
                 new ChatMessage(ASSISTANT, "무기여 잘 있거라"),
                 new ChatMessage(USER, "Welcome, This is a test script! @ Thank you! @"),
