@@ -46,11 +46,9 @@ public class CastController {
     @PostMapping(value = "/{castId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "캐스트 저장 API (저장 화면에서 호출)")
     public ApiResponse<Object> saveCast(@PathVariable("castId") Long castId,
-                                        @Valid @RequestPart(value = "saveInfo") CastUpdateDTO saveRequest,
-                                        @RequestPart(value = "image", required = false) MultipartFile image) {
-//        Cast cast = castService.saveCast(castId, saveRequest, image);
-
-        return ApiResponse.of(SuccessCode._OK, "저장되었습니다");
+                                        @ModelAttribute CastUpdateRequestDTO saveRequest) {
+        SimpleCastDTO castDTO = castService.saveCast(castId, saveRequest);
+        return ApiResponse.of(SuccessCode._CAST_SAVED, castDTO);
     }
 
     /* Cast 재생 API */
@@ -70,7 +68,7 @@ public class CastController {
                                           @RequestPart(value = "image", required = false) MultipartFile image*/) {
         // TODO 캐스트 생성자 혹은 관리자여야 함
         SimpleCastDTO castDTO = castService.updateCast(castId, updateRequest);
-        return ApiResponse.of(SuccessCode._OK, castDTO);
+        return ApiResponse.of(SuccessCode._CAST_UPDATED, castDTO);
     }
 
     /* Cast 삭제 API */

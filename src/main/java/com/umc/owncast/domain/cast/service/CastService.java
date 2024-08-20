@@ -19,7 +19,7 @@ public interface CastService {
     CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest);
 
     /** Cast 제목, 커버이미지, 공개여부, 플레이리스트 저장 */
-    Cast saveCast(Long castId, CastUpdateDTO saveRequest, MultipartFile image);
+    SimpleCastDTO saveCast(Long castId, CastUpdateRequestDTO saveRequest);
 
     /** Cast 수정 */
     SimpleCastDTO updateCast(Long castId, CastUpdateRequestDTO updateRequest);

@@ -89,28 +89,8 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public Cast saveCast(Long castId, CastUpdateDTO saveRequest, MultipartFile image) {
-        // 제목, 커버이미지, 공개여부 등 저장
-        updateCast(castId,
-                CastUpdateRequestDTO.builder()
-                        .title(saveRequest.getTitle())
-                        .isPublic(saveRequest.getIsPublic())
-                        .build()
-        );
-        // 플레이리스트 저장
-        Playlist playlist = playlistRepository.findById(saveRequest.getPlaylistId()).orElseThrow(() -> new NoSuchElementException("플레이리스트가 존재하지 않습니다."));
-        Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다."));
-        CastPlaylist castPlaylist = CastPlaylist.builder()
-                .cast(cast)
-                .playlist(playlist)
-                .build();
-        castPlaylistRepository.findByCastIdAndPlaylistId(castId, playlist.getId())
-                .ifPresent(cp -> {
-                    throw new RuntimeException("캐스트가 이미 해당 플레이리스트에 저장되어 있습니다.");
-                });
-
-        castPlaylistRepository.save(castPlaylist);
-        return cast;
+    public SimpleCastDTO saveCast(Long castId, CastUpdateRequestDTO saveRequest) {
+        return updateCast(castId, saveRequest);
     }
     
     /** Cast 커버 이미지 교체 */
