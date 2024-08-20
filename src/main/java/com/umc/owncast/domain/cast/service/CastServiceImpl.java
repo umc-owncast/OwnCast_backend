@@ -87,14 +87,13 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public Cast saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image) {
+    public Cast saveCast(Long castId, CastUpdateDTO saveRequest, MultipartFile image) {
         // 제목, 커버이미지, 공개여부 등 저장
         updateCast(castId,
-                CastUpdateDTO.builder()
+                CastUpdateRequestDTO.builder()
                         .title(saveRequest.getTitle())
                         .isPublic(saveRequest.getIsPublic())
-                        .build(),
-                image
+                        .build()
         );
         // 플레이리스트 저장
         Playlist playlist = playlistRepository.findById(saveRequest.getPlaylistId()).orElseThrow(() -> new NoSuchElementException("플레이리스트가 존재하지 않습니다."));
@@ -112,19 +111,24 @@ public class CastServiceImpl implements CastService {
         return cast;
     }
     
-    /** Cast 커버 이미지 수정 */
-    private void setCastImage(Cast cast, CastUpdateDTO updateRequest, MultipartFile image) {
-        if (image == null) return;
-        String imagePath = fileService.uploadFile(image);
+    /** Cast 커버 이미지 교체 */
+    private CastUpdateDTO setCastImage(Cast cast, CastUpdateRequestDTO updateRequest) {
+        if (updateRequest.getImage() == null) return null;
+        String imagePath = fileService.uploadFile(updateRequest.getImage());
         fileService.deleteFile(cast.getImagePath());
-        updateRequest.setImagePath(imagePath);
+        return CastUpdateDTO.builder()
+                .title(updateRequest.getTitle())
+                .imagePath(imagePath)
+                .isPublic(updateRequest.getIsPublic())
+                .playlistId(updateRequest.getPlaylistId())
+                .build();
     }
 
     @Override
-    public Cast updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image) {
+    public Cast updateCast(Long castId, CastUpdateRequestDTO updateRequest) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
-        setCastImage(cast, updateRequest, image);
-        cast.update(updateRequest);
+        CastUpdateDTO updateDTO = setCastImage(cast, updateRequest);
+        cast.update(updateDTO);
         castRepository.save(cast);
 
         return cast;

@@ -46,7 +46,7 @@ public class CastController {
     @PostMapping(value = "/{castId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "캐스트 저장 API (저장 화면에서 호출)")
     public ApiResponse<Object> saveCast(@PathVariable("castId") Long castId,
-                                        @Valid @RequestPart(value = "saveInfo") CastSaveDTO saveRequest,
+                                        @Valid @RequestPart(value = "saveInfo") CastUpdateDTO saveRequest,
                                         @RequestPart(value = "image", required = false) MultipartFile image) {
         Cast cast = castService.saveCast(castId, saveRequest, image);
         return ApiResponse.of(SuccessCode._OK, "저장되었습니다");
@@ -64,10 +64,11 @@ public class CastController {
     @PatchMapping("/{castId}")
     @Operation(summary = "캐스트 수정 API")
     public ApiResponse<Object> updateCast(@PathVariable("castId") Long castId,
-                                          @Valid @RequestPart(value = "updateInfo") CastUpdateDTO updateRequest,
-                                          @RequestPart(value = "image", required = false) MultipartFile image) {
+                                          @ModelAttribute CastUpdateRequestDTO updateRequest
+                                          /*@Valid @RequestPart(value = "updateInfo") CastUpdateRequestDTO updateRequest,
+                                          @RequestPart(value = "image", required = false) MultipartFile image*/) {
         // TODO 캐스트 생성자 혹은 관리자여야 함
-        Cast cast = castService.updateCast(castId, updateRequest, image);
+        Cast cast = castService.updateCast(castId, updateRequest);
         return ApiResponse.of(SuccessCode._OK, "수정되었습니다");
     }
 
