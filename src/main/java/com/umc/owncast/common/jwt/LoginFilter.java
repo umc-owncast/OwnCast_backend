@@ -2,6 +2,8 @@ package com.umc.owncast.common.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.owncast.common.exception.GeneralException;
+import com.umc.owncast.common.jwt.dto.LoginDTO;
+import com.umc.owncast.common.jwt.dto.LoginResponseDTO;
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.common.response.status.SuccessCode;
@@ -11,8 +13,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -37,18 +37,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         setFilterProcessesUrl("/api/users/login");
     }
 
-    @Getter
-    static class LoginDTO {
-        private String loginId;
-        private String password;
-    }
 
-    @Getter
-    @AllArgsConstructor
-    static class LoginResponseDTO {
-        private String accessToken;
-        private String refreshToken;
-    }
+
+
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
