@@ -107,12 +107,12 @@ public class ChatGPTPromptGenerator {
         return WPM * (audioTime / 60);
     }
 
-    public ChatCompletionRequest generateKeywordPrompt(String categoryName) {
-        return generateKeywordPrompt(categoryName, DEFAULT_MODEL);
+    public ChatCompletionRequest generateKeywordPrompt(String mainCategoryName, String subCategoryName) {
+        return generateKeywordPrompt(mainCategoryName, subCategoryName, DEFAULT_MODEL);
     }
 
-    public ChatCompletionRequest generateKeywordPrompt(String categoryName, String modelName) {
-        List<ChatMessage> promptMessage = createKeywordPromptMessage(categoryName);
+    public ChatCompletionRequest generateKeywordPrompt(String mainCategoryName, String subCategoryName, String modelName) {
+        List<ChatMessage> promptMessage = createKeywordPromptMessage(mainCategoryName, subCategoryName);
 
         ChatCompletionRequest prompt = ChatCompletionRequest.builder()
                 .model(modelName)
@@ -125,22 +125,23 @@ public class ChatGPTPromptGenerator {
         return prompt;
     }
 
-    public List<ChatMessage> createKeywordPromptMessage(String keyword) {
+    public List<ChatMessage> createKeywordPromptMessage(String keyword1, String keyword2) {
         // 현재 사용자의 언어 설정에 맞춘다 TODO: 회원 기능으로 언어 설정 가져오기
         String language = "Korean";
-        return createKeywordPromptMessage(keyword, language);
+        return createKeywordPromptMessage(keyword1, keyword2, language);
     }
 
-    public List<ChatMessage> createKeywordPromptMessage(String keyword, String language) {
+    public List<ChatMessage> createKeywordPromptMessage(String keyword1, String keyword2,String language) {
         List<ChatMessage> systemPrompts;
         List<ChatMessage> chatPrompts;
 
         // 시스템 프롬프트
         String system = ChatMessageRole.SYSTEM.value();
         systemPrompts = List.of(
-                new ChatMessage(system, "You should give answers that are popular to people"), // 역할 부여
                 new ChatMessage(system, "Answer should only contain what you have to say (no markdowns or background musics)"),
-                new ChatMessage(system, "Answer should be familiar to people and recent keywords"),
+                new ChatMessage(system, "The words should not be too generic; instead, they should include specific terms, names of people, team names, specific events, or technical terms that many people like"),
+                new ChatMessage(system, "For example, if the keyword is 'baseball,' words like 'MLB,' 'Ryu Hyun-jin,' 'KBO League,' 'World Series,' 'baseball legend Babe Ruth,' and 'Cy Young Award' would be appropriate."),
+                new ChatMessage(system, "For example, if the keyword is 'soccer,' words like 'Premier League,' 'Messi,' 'UEFA Champions League,' 'Golden Boot,' 'El Clasico,' and 'VAR' would be appropriate."),
                 new ChatMessage(system, "The answer should be in " + language.toLowerCase()) // 언어 설정 (English, Spanish, Japanese, ...)
         );
 
@@ -149,7 +150,7 @@ public class ChatGPTPromptGenerator {
         String assistant = ChatMessageRole.ASSISTANT.value();
 
         chatPrompts = List.of(
-                new ChatMessage(user, "Give me six keywords in array format about " + keyword)
+                new ChatMessage(user, "Give me six keywords in array format about " + keyword1 + "and" + keyword2)
         );
 
         // 반환

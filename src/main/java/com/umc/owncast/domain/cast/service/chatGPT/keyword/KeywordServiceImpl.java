@@ -8,6 +8,7 @@ import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.cast.service.chatGPT.ChatGPTAnswerGenerator;
 import com.umc.owncast.domain.cast.service.chatGPT.ChatGPTPromptGenerator;
 import com.umc.owncast.domain.category.repository.MainCategoryRepository;
+import com.umc.owncast.domain.category.repository.SubCategoryRepository;
 import com.umc.owncast.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class KeywordServiceImpl implements KeywordService {
     private final ChatGPTPromptGenerator chatGPTPromptGenerator;
     private final ChatGPTAnswerGenerator answerGenerator;
     private final MainCategoryRepository mainCategoryRepository;
+    private final SubCategoryRepository subCategoryRepository;
 
     @Override
     public List<String> createKeyword(Member member) {
@@ -30,10 +32,13 @@ public class KeywordServiceImpl implements KeywordService {
         String script = "";
         List<String> keywords = null;
 
-        String categoryName = mainCategoryRepository.getMainCategoryNameByMember(member).orElseThrow(()->new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
+        String mainCategoryName = mainCategoryRepository.getMainCategoryNameByMember(member).orElseThrow(()->new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
+        String subCategoryName = subCategoryRepository.getSubCategoryNameByMember(member).orElseThrow(()->new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
+
+        if(mainCategoryName.equals("직접 입력")) mainCategoryName = subCategoryName;
 
         try {
-            ChatCompletionRequest prompt = chatGPTPromptGenerator.generateKeywordPrompt(categoryName);
+            ChatCompletionRequest prompt = chatGPTPromptGenerator.generateKeywordPrompt(mainCategoryName, subCategoryName);
             script = answerGenerator.generateAnswer(prompt);
 
             Gson gson = new Gson();
