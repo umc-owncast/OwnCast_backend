@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public class BookmarkResultDTO {
     Long castId;
+    Long sentenceId;
     String originalSentence;
     String translatedSentence;
 }
