@@ -13,6 +13,7 @@ import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +32,9 @@ public class PlaylistServiceImpl implements PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final CastRepository castRepository;
     private final CastPlaylistRepository castPlaylistRepository;
-    private static final String DEFAULT_IMAGE_PATH = "default/image/path";
+
+    @Value("${app.image.default-path}")
+    private String DEFAULT_IMAGE_PATH;
 
     @Override
     public List<PlaylistResultDTO> getAllPlaylists(Member member) {
@@ -58,7 +61,7 @@ public class PlaylistServiceImpl implements PlaylistService {
             String playlistName = playlist.getName();
             String playlistImagePath = getOldestCastFromPlaylist(playlist.getId())
                     .map(Cast::getImagePath)
-                    .orElse("default/image/path");
+                    .orElse(DEFAULT_IMAGE_PATH);
             Long playlistId = playlist.getId();
             Long totalCast = castPlaylistRepository.countAllByPlaylist(playlist);
             playlistDTOList.add(convertToPlaylistResultDTO(playlistName, playlistImagePath, playlistId, totalCast));
@@ -202,6 +205,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                 .castCreator(castPlaylist.getCast().getMember().getUsername())
                 .castCategory(castPlaylist.getPlaylist().getName())
                 .audioLength(castPlaylist.getCast().getAudioLength())
+                .imagePath(castPlaylist.getCast().getImagePath())
                 .build();
     }
 }

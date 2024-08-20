@@ -15,4 +15,5 @@ public class CastDTO {
     String castCreator;
     String castCategory;
     String audioLength;
+    String imagePath;
 }
