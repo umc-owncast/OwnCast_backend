@@ -43,7 +43,10 @@ public class PlaylistServiceImpl implements PlaylistService {
         List<PlaylistResultDTO> playlistDTOList = new ArrayList<>();
         Pageable pageable = PageRequest.of(0, 1);
 
-        String myCastImagePath = castRepository.findFirstCastImage(member.getId())
+        String myCastImagePath = castRepository.findFirstCastImage(member.getId(), pageable)
+                .getContent()
+                .stream()
+                .findFirst()
                 .orElse(DEFAULT_IMAGE_PATH);
 
         String mySavedCastImagePath = castPlaylistRepository.findFirstByPlaylist_Member_IdOrderByCreatedAt(member.getId(), pageable)
@@ -57,13 +60,13 @@ public class PlaylistServiceImpl implements PlaylistService {
         playlistDTOList.add(convertToPlaylistResultDTO("담아온 캐스트", mySavedCastImagePath, null, null));
 
         playlistList.forEach(playlist -> {
-
             String playlistName = playlist.getName();
             String playlistImagePath = getOldestCastFromPlaylist(playlist.getId())
                     .map(Cast::getImagePath)
                     .orElse(DEFAULT_IMAGE_PATH);
             Long playlistId = playlist.getId();
             Long totalCast = castPlaylistRepository.countAllByPlaylist(playlist);
+
             playlistDTOList.add(convertToPlaylistResultDTO(playlistName, playlistImagePath, playlistId, totalCast));
 
         });
@@ -202,7 +205,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                 .playlistId(castPlaylist.getPlaylist().getId())
                 .castTitle(castPlaylist.getCast().getTitle())
                 .isPublic(castPlaylist.getCast().getIsPublic())
-                .castCreator(castPlaylist.getCast().getMember().getUsername())
+                .castCreator(castPlaylist.getCast().getMember().getNickname())
                 .castCategory(castPlaylist.getPlaylist().getName())
                 .audioLength(castPlaylist.getCast().getAudioLength())
                 .imagePath(castPlaylist.getCast().getImagePath())

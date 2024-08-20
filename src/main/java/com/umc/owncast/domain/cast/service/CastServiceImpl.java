@@ -247,7 +247,7 @@ public class CastServiceImpl implements CastService {
                     .id(cast.getId())
                     .title(cast.getTitle())
                     .imagePath(cast.getImagePath())
-                    .memberName(cast.getMember().getUsername())
+                    .memberName(cast.getMember().getNickname())
                     .audioLength(cast.getAudioLength())
                     .playlistName(castPlaylistName)
                     .build();
