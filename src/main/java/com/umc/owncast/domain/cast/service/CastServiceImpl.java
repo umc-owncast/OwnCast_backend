@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -45,23 +46,23 @@ public class CastServiceImpl implements CastService {
     private final MemberPreferRepository memberPreferRepository;
 
     @Override
-    public CastScriptDTO createCastByKeyword(KeywordCastCreationDTO castRequest) {
+    public CastScriptDTO createCastByKeyword(KeywordCastCreationDTO castRequest, Member member) {
         String script = scriptService.createScript(castRequest);
-        return handleCastCreation(castRequest, script);
+        return handleCastCreation(castRequest, script, member);
     }
 
     @Override
-    public CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest) {
+    public CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest, Member member) {
         String script = castRequest.getScript().strip();
         KeywordCastCreationDTO request = KeywordCastCreationDTO.builder()
                 .voice(castRequest.getVoice())
                 .formality(castRequest.getFormality())
                 .build();
-        return handleCastCreation(request, script);
+        return handleCastCreation(request, script, member);
     }
 
     /** Cast와 Sentence 저장 후 CastScriptDTO로 묶어 반환 */
-    private CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script) {
+    private CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script, Member member) {
         TTSResultDTO ttsResult = ttsService.createSpeech(script, castRequest);
         Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
         int minutes = (int) (audioLength / 60);
@@ -72,7 +73,7 @@ public class CastServiceImpl implements CastService {
                 .audioLength(String.format("%02d:%02d", minutes, seconds))
                 .filePath(ttsResult.getMp3Path())
                 .formality(castRequest.getFormality())
-                .member(null) // TODO 회원 기능 만들어지면 자기자신 넣기
+                .member(member)
                 .language(null) // TODO 회원 기능 만들어지면 언어 설정 넣기
                 .isPublic(false)
                 .hits(0L)
@@ -90,18 +91,21 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public Cast saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image) {
+    public Cast saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image, Member member) {
         // 제목, 커버이미지, 공개여부 등 저장
-        updateCast(castId,
+        Cast cast = updateCast(castId,
                 CastUpdateDTO.builder()
                         .title(saveRequest.getTitle())
                         .isPublic(saveRequest.getIsPublic())
                         .build(),
-                image
+                image,
+                member
         );
+        if(!Objects.equals(cast.getMember().getId(), member.getId())){
+            throw new UserHandler(ErrorCode.NO_AUTHORITY);
+        }
         // 플레이리스트 저장
         Playlist playlist = playlistRepository.findById(saveRequest.getPlaylistId()).orElseThrow(() -> new NoSuchElementException("플레이리스트가 존재하지 않습니다."));
-        Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다."));
         CastPlaylist castPlaylist = CastPlaylist.builder()
                 .cast(cast)
                 .playlist(playlist)
@@ -124,8 +128,11 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public Cast updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image) {
+    public Cast updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image, Member member) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
+        if(!Objects.equals(cast.getMember().getId(), member.getId())){
+            throw new UserHandler(ErrorCode.NO_AUTHORITY);
+        }
         setCastImage(cast, updateRequest, image);
         cast.update(updateRequest);
         castRepository.save(cast);
@@ -147,14 +154,23 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public CastDTO findCast(Long castId) {
+    public CastDTO findCast(Long castId, Member member) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
+        if(cast.getIsPublic().equals(false) && !Objects.equals(cast.getMember().getId(), member.getId())){
+            // 비공개인데 제작자 외의 회원이 접근하는 경우 예외 처리
+            throw new UserHandler(ErrorCode.NO_AUTHORITY);
+        }
         return new CastDTO(cast);
     }
 
     @Override
-    public SimpleCastDTO deleteCast(Long castId) {
+    public SimpleCastDTO deleteCast(Long castId, Member member) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
+        if(!Objects.equals(cast.getMember(), member)){
+            throw new UserHandler(ErrorCode.NO_AUTHORITY);
+        }
+        fileService.deleteFile(cast.getImagePath());
+        fileService.deleteFile(cast.getFilePath());
         castRepository.delete(cast);
         return new SimpleCastDTO(cast);
     }

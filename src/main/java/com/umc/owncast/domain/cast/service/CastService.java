@@ -3,7 +3,6 @@ package com.umc.owncast.domain.cast.service;
 import com.umc.owncast.domain.cast.dto.*;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.member.entity.Member;
-import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -14,24 +13,24 @@ import java.util.List;
 public interface CastService {
 
     /** keyword로 cast 생성 */
-    CastScriptDTO createCastByKeyword(KeywordCastCreationDTO castRequest);
+    CastScriptDTO createCastByKeyword(KeywordCastCreationDTO castRequest, Member member);
 
     /** script로 cast 생성 */
-    CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest);
+    CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest, Member member);
 
     /** Cast 제목, 커버이미지, 공개여부, 플레이리스트 저장 */
-    Cast saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image);
+    Cast saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image, Member member);
 
     /** Cast 수정 */
-    Cast updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image);
+    Cast updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image, Member member);
 
     /** Cast 오디오파일 스트리밍 */
     ResponseEntity<UrlResource> streamCast(Long castId, HttpHeaders headers);
 
     /** Cast 스크립트 검색 */
-    CastDTO findCast(Long castId);
+    CastDTO findCast(Long castId, Member member);
 
-    SimpleCastDTO deleteCast(Long castId);
+    SimpleCastDTO deleteCast(Long castId, Member member);
 
     /** 사용자의 관심사 설정에 따른 Cast 추천 */
     List<CastHomeDTO> getHomeCast(Member member);

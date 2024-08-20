@@ -33,15 +33,17 @@ public class CastController {
     /* Cast 생성 API (keyword) */
     @PostMapping("/keyword")
     @Operation(summary = "키워드로 캐스트를 생성하는 API")
-    public ApiResponse<Object> createCastByKeyword(@Valid @RequestBody KeywordCastCreationDTO castRequest) {
-        return ApiResponse.of(SuccessCode._OK, castService.createCastByKeyword(castRequest));
+    public ApiResponse<Object> createCastByKeyword(@Valid @RequestBody KeywordCastCreationDTO castRequest,
+                                                   @AuthUser Member member) {
+        return ApiResponse.of(SuccessCode._OK, castService.createCastByKeyword(castRequest, member));
     }
 
     /* Cast 생성 API (script) */
     @PostMapping("/script")
     @Operation(summary = "스크립트로 캐스트를 생성하는 API.")
-    public ApiResponse<Object> createCastByScript(@Valid @RequestBody ScriptCastCreationDTO castRequest) {
-        return ApiResponse.of(SuccessCode._OK, castService.createCastByScript(castRequest));
+    public ApiResponse<Object> createCastByScript(@Valid @RequestBody ScriptCastCreationDTO castRequest,
+                                                  @AuthUser Member member) {
+        return ApiResponse.of(SuccessCode._OK, castService.createCastByScript(castRequest, member));
     }
 
     /* Cast 저장 API */
@@ -49,8 +51,9 @@ public class CastController {
     @Operation(summary = "캐스트 저장 API (저장 화면에서 호출)")
     public ApiResponse<Object> saveCast(@PathVariable("castId") Long castId,
                                         @Valid @RequestPart(value = "saveInfo") CastSaveDTO saveRequest,
-                                        @RequestPart(value = "image", required = false) MultipartFile image) {
-        Cast cast = castService.saveCast(castId, saveRequest, image);
+                                        @RequestPart(value = "image", required = false) MultipartFile image,
+                                        @AuthUser Member member) {
+        Cast cast = castService.saveCast(castId, saveRequest, image, member);
         return ApiResponse.of(SuccessCode._OK, "저장되었습니다");
     }
 
@@ -58,8 +61,9 @@ public class CastController {
     @CrossOrigin
     @GetMapping("/{castId}")
     @Operation(summary = "캐스트 재생 API")
-    public ApiResponse<Object> findCast(@PathVariable("castId") Long castId) {
-        return ApiResponse.of(SuccessCode._OK, castService.findCast(castId));
+    public ApiResponse<Object> findCast(@PathVariable("castId") Long castId,
+                                        @AuthUser Member member) {
+        return ApiResponse.of(SuccessCode._OK, castService.findCast(castId, member));
     }
 
     /* Cast 수정 API */
@@ -67,18 +71,18 @@ public class CastController {
     @Operation(summary = "캐스트 수정 API")
     public ApiResponse<Object> updateCast(@PathVariable("castId") Long castId,
                                           @Valid @RequestPart(value = "updateInfo") CastUpdateDTO updateRequest,
-                                          @RequestPart(value = "image", required = false) MultipartFile image) {
-        // TODO 캐스트 생성자 혹은 관리자여야 함
-        Cast cast = castService.updateCast(castId, updateRequest, image);
+                                          @RequestPart(value = "image", required = false) MultipartFile image,
+                                          @AuthUser Member member) {
+        Cast cast = castService.updateCast(castId, updateRequest, image, member);
         return ApiResponse.of(SuccessCode._OK, "수정되었습니다");
     }
 
     /* Cast 삭제 API */
     @DeleteMapping("/{castId}")
     @Operation(summary = "캐스트 삭제 API")
-    public ApiResponse<Object> deleteCast(@PathVariable("castId") Long castId) {
-        // TODO 캐스트 생성자 혹은 관리자여야 함
-        return ApiResponse.of(SuccessCode._OK, castService.deleteCast(castId));
+    public ApiResponse<Object> deleteCast(@PathVariable("castId") Long castId,
+                                          @AuthUser Member member) {
+        return ApiResponse.of(SuccessCode._OK, castService.deleteCast(castId, member));
     }
 
     @GetMapping("/home")
