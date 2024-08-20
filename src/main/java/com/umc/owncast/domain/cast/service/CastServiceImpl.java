@@ -43,6 +43,10 @@ public class CastServiceImpl implements CastService {
     private final CastPlaylistRepository castPlaylistRepository;
     private final MemberPreferRepository memberPreferRepository;
 
+    private final String CAST_IMAGE_DEFAULT_PATH =
+            "https://owncast-s3.s3.ap-northeast-2.amazonaws.com/25917d00-803a-4ebc-bc8a-b566cbc60c09"; // 캐스트 기본 이미지
+
+
     @Override
     public CastScriptDTO createCastByKeyword(KeywordCastCreationDTO castRequest) {
         String script = scriptService.createScript(castRequest);
@@ -71,6 +75,7 @@ public class CastServiceImpl implements CastService {
                 .audioLength(String.format("%02d:%02d", minutes, seconds))
                 .filePath(ttsResult.getMp3Path())
                 .formality(castRequest.getFormality())
+                .imagePath(CAST_IMAGE_DEFAULT_PATH)
                 .member(null) // TODO 회원 기능 만들어지면 자기자신 넣기
                 .language(null) // TODO 회원 기능 만들어지면 언어 설정 넣기
                 .isPublic(false)
