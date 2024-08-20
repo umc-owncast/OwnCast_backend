@@ -140,8 +140,15 @@ public class ChatGPTPromptGenerator {
         systemPrompts = List.of(
                 new ChatMessage(system, "Answer should only contain what you have to say (no markdowns or background musics)"),
                 new ChatMessage(system, "The words should not be too generic; instead, they should include specific terms, names of people, team names, specific events, or technical terms that many people like"),
-                new ChatMessage(system, "For example, if the keyword is 'baseball,' words like 'MLB,' 'Ryu Hyun-jin,' 'KBO League,' 'World Series,' 'baseball legend Babe Ruth,' and 'Cy Young Award' would be appropriate."),
-                new ChatMessage(system, "For example, if the keyword is 'soccer,' words like 'Premier League,' 'Messi,' 'UEFA Champions League,' 'Golden Boot,' 'El Clasico,' and 'VAR' would be appropriate."),
+                new ChatMessage(system, "The words should be updated to reflect the latest trends and current prominent figures or events"),
+                new ChatMessage(system, "Provide 6 unique words related to each of the following keywords, ensuring that they are different from previously given words. Reflect current trends and popular terms or figures in each category: News, Food, Books, Drama/Movies, Art, Sports, Music. For example:"),
+                new ChatMessage(system, "For News: Use terms like 'AI breakthroughs,' 'Social media regulations,' 'Global warming debates,' 'Political scandals,' 'Tech company lawsuits,' 'Emerging economies.'"),
+                new ChatMessage(system, "For Food: Include trends such as 'Vegan cheese,' 'Craft cocktails,' 'Fusion cuisine,' 'Plant-based meat,' 'Sourdough starter,' 'Artisanal ice cream.'"),
+                new ChatMessage(system, "For Books: Use recent influential works or authors like 'The Invisible Life of Addie LaRue,' 'A Promised Land,' 'Educated,' 'The Tattooist of Auschwitz,' 'Circe,' 'Normal People.'"),
+                new ChatMessage(system, "For Drama/Movies: Include contemporary films or shows like 'Dune Part 2,' 'The Last of Us,' 'Spider-Man: Across the Spider-Verse,' 'Succession Season 4,' 'The Whale,' 'Avatar: The Way of Water.'"),
+                new ChatMessage(system, "For Art: Include recent art trends or notable figures like 'Beeple,' 'NFT art,' 'Yayoi Kusama,' 'Banksy's new works,' 'Virtual reality art,' 'Documenta 15.'"),
+                new ChatMessage(system, "For Sports: Use current trends or figures such as 'Live betting,' 'Esports tournaments,' 'Neymar Jr.,' 'Formula 1 regulations,' '2024 Olympics,' 'Team USA basketball.'"),
+                new ChatMessage(system, "For Music: Include popular or emerging artists and trends like 'Bad Bunny,' 'Lo-fi beats,' 'Music NFTs,' 'Adele's latest album,' 'Travis Scott collaborations,' 'Billboard Hot 100 hits.'"),
                 new ChatMessage(system, "The answer should be in " + language.toLowerCase()) // 언어 설정 (English, Spanish, Japanese, ...)
         );
 
