@@ -16,11 +16,6 @@ import java.util.Optional;
 
 public interface CastRepository extends JpaRepository<Cast, Long> {
 
-    @Query("SELECT c.imagePath FROM Cast c " +
-            "WHERE c.member.id = :memberId " +
-            "ORDER BY c.createdAt ASC ")
-    Page<String> findFirstCastImage(@Param("memberId") Long memberId, Pageable pageable);
-
     List<Cast> findCastsByMember_Id(@Param("memberId") Long memberId);
 
     @Query(value = "SELECT * FROM `cast` " +

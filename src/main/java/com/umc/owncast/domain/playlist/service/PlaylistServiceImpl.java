@@ -43,21 +43,23 @@ public class PlaylistServiceImpl implements PlaylistService {
         List<PlaylistResultDTO> playlistDTOList = new ArrayList<>();
         Pageable pageable = PageRequest.of(0, 1);
 
-        String myCastImagePath = castRepository.findFirstCastImage(member.getId(), pageable)
+        Cast myCastImagePath = castPlaylistRepository.findFirstSavedCast(member.getId(), pageable)
                 .getContent()
                 .stream()
                 .findFirst()
-                .orElse(DEFAULT_IMAGE_PATH);
+                .orElse(Cast.builder().imagePath(DEFAULT_IMAGE_PATH).build());
 
-        String mySavedCastImagePath = castPlaylistRepository.findFirstByPlaylist_Member_IdOrderByCreatedAt(member.getId(), pageable)
+        Cast mySavedCastImagePath = castPlaylistRepository.findFirstOtherCast(member.getId(), pageable)
                 .getContent()
                 .stream()
                 .findFirst()
-                .orElse(DEFAULT_IMAGE_PATH);
+                .orElse(Cast.builder().imagePath(DEFAULT_IMAGE_PATH).build());
 
-        playlistDTOList.add(convertToPlaylistResultDTO("내가 만든 캐스트", myCastImagePath, null, null));
+        /* CAST 이미지 경로 값 자체가 null인 경우를 해결해야 함 */
 
-        playlistDTOList.add(convertToPlaylistResultDTO("담아온 캐스트", mySavedCastImagePath, null, null));
+        playlistDTOList.add(convertToPlaylistResultDTO("내가 만든 캐스트", myCastImagePath.getImagePath(), null, null));
+
+        playlistDTOList.add(convertToPlaylistResultDTO("담아온 캐스트", mySavedCastImagePath.getImagePath(), null, null));
 
         playlistList.forEach(playlist -> {
             String playlistName = playlist.getName();
