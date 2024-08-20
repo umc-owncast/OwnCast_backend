@@ -33,8 +33,10 @@ public class ChatGptTranslationService implements TranslationService{
     public String translate(String script) {
         List<ChatMessage> systemPrompt = List.of(
                 new ChatMessage(SYSTEM, "You are a translator which translates given script to korean."),
-                new ChatMessage(SYSTEM, "Translation result should look natural"),
+                new ChatMessage(SYSTEM, "Translation result should look natural."),
+                new ChatMessage(SYSTEM, "The number of sentences of the translation result should be EQUAL to the original script."),
                 new ChatMessage(SYSTEM, "'@' means end of the sentence; you should leave it be.")
+
         );
 
         List<ChatMessage> chatPrompt = List.of(
