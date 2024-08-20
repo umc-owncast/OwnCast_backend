@@ -11,6 +11,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -42,6 +43,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         private String password;
     }
 
+    @Getter
+    @AllArgsConstructor
+    static class LoginResponseDTO {
+        private String accessToken;
+        private String refreshToken;
+    }
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         LoginDTO loginDTO;
@@ -55,8 +63,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             return null;
         }
 
-        String loginId= loginDTO.getLoginId();
-        String password =loginDTO.getPassword();
+        String loginId = loginDTO.getLoginId();
+        String password = loginDTO.getPassword();
 
          UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginId, password);
 
@@ -80,7 +88,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         response.addHeader("Authorization", accessToken);
         //response.addCookie(refreshTokenCookie);
-        writeOutput(request, response, HttpServletResponse.SC_OK, ApiResponse.of(SuccessCode._OK, accessToken));
+        writeOutput(request, response, HttpServletResponse.SC_OK, ApiResponse.of(SuccessCode._OK, new LoginResponseDTO(accessToken, refreshToken)));
     }
 
     @Override
