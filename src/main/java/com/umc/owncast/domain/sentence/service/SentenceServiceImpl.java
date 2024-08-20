@@ -24,7 +24,7 @@ public class SentenceServiceImpl implements SentenceService {
     @Override
     public List<Sentence> save(String original, TTSResultDTO ttsResultDTO, Cast cast) {
         int i = 0;
-        String koreanScript = translationService.translate(original);
+        String koreanScript = translationService.translateToKorean(original);
         String[] originalList = parsingService.parseSentences(original);
         String[] koreanList = parsingService.parseSentences(koreanScript);
         List<Sentence> sentences = new ArrayList<>();

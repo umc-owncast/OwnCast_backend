@@ -30,7 +30,7 @@ public class ChatGptTranslationService implements TranslationService{
     }
 
     @Override
-    public String translate(String script) {
+    public String translateToKorean(String script) {
         List<ChatMessage> systemPrompt = List.of(
                 new ChatMessage(SYSTEM, "You are a translator which translates given script to korean."),
                 new ChatMessage(SYSTEM, "Translation result should look natural."),
@@ -46,6 +46,38 @@ public class ChatGptTranslationService implements TranslationService{
                 new ChatMessage(ASSISTANT, "무기여 잘 있거라"),
                 new ChatMessage(USER, "Welcome, This is a test script! @ Thank you! @"),
                 new ChatMessage(ASSISTANT, "환영합니다, 이건 테스트용 스크립트에요! @ 감사합니다! @"),
+                new ChatMessage(USER, script)
+        );
+
+        return getOpenAiResult(generatePrompt(systemPrompt, chatPrompt));
+    }
+
+    @Override
+    public String translateToMemberLanguage(String script) {
+        String memberLanguage = "english";
+
+        List<ChatMessage> systemPrompt = List.of(
+                new ChatMessage(SYSTEM, "You are a translator which translates given script to " + memberLanguage), // TODO 회원 기능 연동
+                new ChatMessage(SYSTEM, "Translation result should look natural."),
+                new ChatMessage(SYSTEM, "The number of sentences of the translation result should be EQUAL to the original script."),
+                new ChatMessage(SYSTEM, "'@' means end of the sentence; you should leave it be.")
+
+        );
+
+        // TODO 언어에 따라 프롬프트 조정?
+        List<ChatMessage> chatPrompt = List.of(
+                new ChatMessage(USER, "오늘의 팟캐스트에 오신 걸 환영합니다, 오늘은 가장 최근의 S&P 500 근황에 대해 알아보겠습니다."),
+                new ChatMessage(ASSISTANT, "Welcome to today's episode of our financial news podcast, where we delve into the latest developments in the S&P 500. "),
+                new ChatMessage(USER, "무기여 잘 있거라"),
+                new ChatMessage(ASSISTANT, "A Farewell To Arms"),
+                new ChatMessage(USER, "올림픽"),
+                new ChatMessage(ASSISTANT, "オリンピック"),
+                new ChatMessage(USER, "최근 자바스크립트 근황"),
+                new ChatMessage(ASSISTANT, "Recent JavaScript updates"),
+                new ChatMessage(USER, "coffee"),
+                new ChatMessage(ASSISTANT, "coffee"),
+                new ChatMessage(USER, "커피 맛있게 마시는 법"),
+                new ChatMessage(ASSISTANT, "Cómo disfrutar del café"),
                 new ChatMessage(USER, script)
         );
 
