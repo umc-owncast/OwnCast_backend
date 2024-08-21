@@ -18,6 +18,10 @@ public enum SuccessCode implements BaseCode {
     _SIGNUP_SUCCESS(HttpStatus.OK, "SIGNUP200", "회원가입 성공입니다."),
     _LOGIN_SUCCESS(HttpStatus.OK, "LOGIN200", "로그인 성공입니다."),
 
+    // 캐스트 관련
+    _CAST_SAVED(HttpStatus.OK, "CAST200", "저장되었습니다."),
+    _CAST_UPDATED(HttpStatus.OK, "CAST201", "수정되었습니다."),
+
     // 기타 응답은 아래에 추가
     ;
 

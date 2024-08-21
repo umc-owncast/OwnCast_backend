@@ -12,14 +12,15 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
-public class TranslateService {
+//@Service
+public class PapagoTranslationService implements TranslationService{
     @Value("${naver.cloud.id}")
     String id;
     @Value("${naver.cloud.secret}")
     String secret;
 
-    public String translate(String script) {
+    @Override
+    public String translateToKorean(String script) {
         String clientId = id;
         String clientSecret = secret;
         String text;
@@ -42,6 +43,11 @@ public class TranslateService {
         String translatedText = jsonObject.getJSONObject("message").getJSONObject("result").getString("translatedText");
         System.out.println(translatedText);
         return translatedText;
+    }
+
+    @Override
+    public String translateToMemberLanguage(String script) {
+        return null;
     }
 
     private static String post(Map<String, String> requestHeaders, String text) {

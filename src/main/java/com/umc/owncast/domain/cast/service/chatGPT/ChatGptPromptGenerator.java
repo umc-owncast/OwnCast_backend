@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 /* 사용자 입력 정보를 바탕으로 ChatGPT에 건넬 프롬프트를 생성 */
-public class ChatGPTPromptGenerator {
+public class ChatGptPromptGenerator {
 
     /* GPT 모델 : "gpt-4o" 혹은 "gpt-4o-mini" 중 선택 */
     private final String DEFAULT_MODEL = "gpt-4o-mini";
@@ -40,7 +40,7 @@ public class ChatGPTPromptGenerator {
                 .temperature(DEFAULT_TEMPERATURE)
                 .build();
 
-        System.out.println("ChatGPTPromptGenerator - generated prompt:");
+        System.out.println("ChatGptPromptGenerator - generated prompt:");
         System.out.println(prompt);
         return prompt;
     }
@@ -121,7 +121,7 @@ public class ChatGPTPromptGenerator {
                 .temperature(DEFAULT_TEMPERATURE)
                 .build();
 
-        System.out.println("ChatGPTPromptGenerator - generated prompt:");
+        System.out.println("ChatGptPromptGenerator - generated prompt:");
         System.out.println(prompt);
         return prompt;
     }

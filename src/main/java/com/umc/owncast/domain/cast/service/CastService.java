@@ -19,10 +19,10 @@ public interface CastService {
     CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest, Member member);
 
     /** Cast 제목, 커버이미지, 공개여부, 플레이리스트 저장 */
-    Cast saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image, Member member);
+    SimpleCastDTO saveCast(Long castId, CastUpdateRequestDTO saveRequest, Member member);
 
     /** Cast 수정 */
-    Cast updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image, Member member);
+    SimpleCastDTO updateCast(Long castId, CastUpdateRequestDTO updateRequest, Member member);
 
     /** Cast 오디오파일 스트리밍 */
     ResponseEntity<UrlResource> streamCast(Long castId, HttpHeaders headers);

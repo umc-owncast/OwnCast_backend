@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +46,10 @@ public class CastServiceImpl implements CastService {
     private final PlaylistRepository playlistRepository;
     private final CastPlaylistRepository castPlaylistRepository;
     private final MemberPreferRepository memberPreferRepository;
+
+    private final String CAST_IMAGE_DEFAULT_PATH =
+            "https://owncast-s3.s3.ap-northeast-2.amazonaws.com/25917d00-803a-4ebc-bc8a-b566cbc60c09"; // 캐스트 기본 이미지
+
 
     @Override
     public CastScriptDTO createCastByKeyword(KeywordCastCreationDTO castRequest, Member member) {
@@ -73,6 +79,7 @@ public class CastServiceImpl implements CastService {
                 .audioLength(String.format("%02d:%02d", minutes, seconds))
                 .filePath(ttsResult.getMp3Path())
                 .formality(castRequest.getFormality())
+                .imagePath(CAST_IMAGE_DEFAULT_PATH)
                 .member(member)
                 .language(member.getLanguage())
                 .isPublic(false)
@@ -91,7 +98,8 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public Cast saveCast(Long castId, CastSaveDTO saveRequest, MultipartFile image, Member member) {
+    public SimpleCastDTO saveCast(Long castId, CastUpdateRequestDTO saveRequest, Member member) {
+        /*
         // 제목, 커버이미지, 공개여부 등 저장
         Cast cast = updateCast(castId,
                 CastUpdateDTO.builder()
@@ -116,28 +124,62 @@ public class CastServiceImpl implements CastService {
                 });
 
         castPlaylistRepository.save(castPlaylist);
-        return cast;
+        return cast;*/
+        return updateCast(castId, saveRequest, member);
     }
     
-    /** Cast 커버 이미지 수정 */
-    private void setCastImage(Cast cast, CastUpdateDTO updateRequest, MultipartFile image) {
-        if (image == null) return;
-        String imagePath = fileService.uploadFile(image);
+    /** Cast 커버 이미지 교체 */
+    private CastUpdateDTO setCastImage(Cast cast, CastUpdateRequestDTO updateRequest) {
+        if (updateRequest.getImage() == null) return null;
+        String imagePath = fileService.uploadFile(updateRequest.getImage());
         fileService.deleteFile(cast.getImagePath());
-        updateRequest.setImagePath(imagePath);
+        return CastUpdateDTO.builder()
+                .title(updateRequest.getTitle())
+                .imagePath(imagePath)
+                .isPublic(updateRequest.getIsPublic())
+                .playlistId(updateRequest.getPlaylistId())
+                .build();
     }
 
     @Override
-    public Cast updateCast(Long castId, CastUpdateDTO updateRequest, MultipartFile image, Member member) {
+    public SimpleCastDTO updateCast(Long castId, CastUpdateRequestDTO updateRequest, Member member) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
         if(!Objects.equals(cast.getMember().getId(), member.getId())){
             throw new UserHandler(ErrorCode.NO_AUTHORITY);
         }
-        setCastImage(cast, updateRequest, image);
+        // 이미지 설정
+        CastUpdateDTO updateDTO = setCastImage(cast, updateRequest);
+        // 플레이리스트 변경
+        changePlaylist(cast, updateRequest.getPlaylistId());
+        // cast 필드 수정
+        cast.update(updateDTO);
+        castRepository.save(cast);
+
+        return new SimpleCastDTO(cast);
+        /*setCastImage(cast, updateRequest, image);
         cast.update(updateRequest);
         castRepository.save(cast);
 
         return cast;
+        */
+    }
+
+    /** 캐스트가 속한 플레이리스트 변경 */
+    private void changePlaylist(Cast cast, Long playlistId){
+        if(cast == null || playlistId == null) return;
+        Optional<CastPlaylist> optionalOldCp = castPlaylistRepository.findByPlaylistMemberIdAndCastId(1L, cast.getId()); // TODO 회원 기능 연동
+        if(optionalOldCp.isPresent()){
+            CastPlaylist oldCp = optionalOldCp.get();
+            if(Objects.equals(oldCp.getPlaylist().getId(), playlistId)) return; // 동일한 플레이리스트인 경우 스킵
+            else {
+                castPlaylistRepository.delete(oldCp); // 이전 castPlaylist 삭제
+            }
+        }
+        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
+        castPlaylistRepository.save(CastPlaylist.builder() // 새 castPlaylist 추가
+                .cast(cast)
+                .playlist(playlist)
+                .build());
     }
 
     @Override
