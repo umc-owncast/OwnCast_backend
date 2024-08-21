@@ -40,7 +40,7 @@ public class KeywordServiceImpl implements KeywordService {
         try {
             ChatCompletionRequest prompt = chatGPTPromptGenerator.generateKeywordPrompt(mainCategoryName, subCategoryName);
             script = answerGenerator.generateAnswer(prompt);
-
+            System.out.println("KeywordServiceImpl : keyword = " + script);
             Gson gson = new Gson();
             Type listType = new TypeToken<List<String>>() {
             }.getType();
