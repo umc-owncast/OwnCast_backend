@@ -2,6 +2,8 @@ package com.umc.owncast.common.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.owncast.common.exception.GeneralException;
+import com.umc.owncast.common.jwt.dto.LoginDTO;
+import com.umc.owncast.common.jwt.dto.LoginResponseDTO;
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.common.response.status.SuccessCode;
@@ -11,7 +13,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -36,12 +37,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         setFilterProcessesUrl("/api/users/login");
     }
 
-    @Getter
-    static class LoginDTO {
-        private String loginId;
-        private String password;
-    }
-
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         LoginDTO loginDTO;
@@ -55,8 +50,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             return null;
         }
 
-        String loginId= loginDTO.getLoginId();
-        String password =loginDTO.getPassword();
+        String loginId = loginDTO.getLoginId();
+        String password = loginDTO.getPassword();
 
          UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginId, password);
 
@@ -80,7 +75,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         response.addHeader("Authorization", accessToken);
         //response.addCookie(refreshTokenCookie);
-        writeOutput(request, response, HttpServletResponse.SC_OK, ApiResponse.of(SuccessCode._OK, accessToken));
+        writeOutput(request, response, HttpServletResponse.SC_OK, ApiResponse.of(SuccessCode._OK, new LoginResponseDTO(accessToken, refreshToken)));
     }
 
     @Override

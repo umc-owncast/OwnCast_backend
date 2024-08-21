@@ -9,9 +9,11 @@ import lombok.Setter;
 @Getter
 public class CastDTO {
     Long castId;
+    Long playlistId;
     String castTitle;
     Boolean isPublic;
     String castCreator;
     String castCategory;
     String audioLength;
+    String imagePath;
 }

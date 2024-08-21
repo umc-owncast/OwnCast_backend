@@ -8,6 +8,8 @@ import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.cast.service.chatGPT.ChatGptAnswerGenerator;
 import com.umc.owncast.domain.cast.service.chatGPT.ChatGptPromptGenerator;
 import com.umc.owncast.domain.category.repository.MainCategoryRepository;
+import com.umc.owncast.domain.category.repository.SubCategoryRepository;
+import com.umc.owncast.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,33 +24,29 @@ public class KeywordServiceImpl implements KeywordService {
     private final ChatGptPromptGenerator chatGPTPromptGenerator;
     private final ChatGptAnswerGenerator answerGenerator;
     private final MainCategoryRepository mainCategoryRepository;
+    private final SubCategoryRepository subCategoryRepository;
 
     @Override
-    public List<String> createKeyword() {
+    public List<String> createKeyword(Member member) {
+
         String script = "";
         List<String> keywords = null;
 
-        // 멤버 토큰으로 id 가져오기
-        Optional<String> optionalCategoryName = mainCategoryRepository.getMainCategoryNameByMemberId(2L);
-        String categoryName = null;
+        String mainCategoryName = mainCategoryRepository.getMainCategoryNameByMember(member).orElseThrow(()->new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
+        String subCategoryName = subCategoryRepository.getSubCategoryNameByMember(member).orElseThrow(()->new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
 
-        if (optionalCategoryName.isEmpty()) {
-            throw new UserHandler(ErrorCode._BAD_REQUEST);
-        } else {
-            categoryName = optionalCategoryName.get();
-        }
+        if(mainCategoryName.equals("직접 입력")) mainCategoryName = subCategoryName;
 
         try {
-            ChatCompletionRequest prompt = chatGPTPromptGenerator.generateKeywordPrompt(categoryName);
+            ChatCompletionRequest prompt = chatGPTPromptGenerator.generateKeywordPrompt(mainCategoryName, subCategoryName);
             script = answerGenerator.generateAnswer(prompt);
-
+            System.out.println("KeywordServiceImpl : keyword = " + script);
             Gson gson = new Gson();
             Type listType = new TypeToken<List<String>>() {
             }.getType();
             keywords = gson.fromJson(script, listType);
 
         } catch (Exception e) {
-            // 출력만 하고 전파 -> CastService에서 처리??
             System.out.println("CastServiceImpl: Exception on createScript - " + e.getMessage());
             System.out.println("Exception class : " + e.getClass());
             System.out.println("Exception cause : " + e.getCause());

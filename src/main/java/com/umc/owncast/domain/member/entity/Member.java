@@ -6,6 +6,8 @@ import com.umc.owncast.domain.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
+
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -45,7 +47,11 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
     }
 
-
+    @Override
+    public boolean equals(Object m) {
+        if(!(m instanceof Member)) return false;
+        return Objects.equals(((Member) m).getId(), getId());
+    }
 
     /*@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberPrefer> memberPreferList = new ArrayList<>();

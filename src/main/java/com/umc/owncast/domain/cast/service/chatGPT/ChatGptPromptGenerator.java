@@ -4,6 +4,7 @@ import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.umc.owncast.domain.enums.Formality;
+import com.umc.owncast.domain.member.entity.Member;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,12 +27,12 @@ public class ChatGptPromptGenerator {
     private final double DEFAULT_TEMPERATURE = 0.1;
 
     /* 사용자의 keyword를 바탕으로 프롬프트 생성 */
-    public ChatCompletionRequest generatePrompt(String keyword, Formality formality, int audioTime) {
-        return generatePrompt(keyword, formality, audioTime, DEFAULT_MODEL);
+    public ChatCompletionRequest generatePrompt(String keyword, Formality formality, int audioTime, Member member) {
+        return generatePrompt(keyword, formality, audioTime, DEFAULT_MODEL, member);
     }
 
-    public ChatCompletionRequest generatePrompt(String keyword, Formality formality, int audioTime, String modelName) {
-        List<ChatMessage> promptMessage = createPromptMessage(keyword, formality, audioTime);
+    public ChatCompletionRequest generatePrompt(String keyword, Formality formality, int audioTime, String modelName, Member member) {
+        List<ChatMessage> promptMessage = createPromptMessage(keyword, formality, audioTime, member);
 
         ChatCompletionRequest prompt = ChatCompletionRequest.builder()
                 .model(modelName)
@@ -44,9 +45,9 @@ public class ChatGptPromptGenerator {
         return prompt;
     }
 
-    public List<ChatMessage> createPromptMessage(String keyword, Formality formality, int audioTime) {
+    public List<ChatMessage> createPromptMessage(String keyword, Formality formality, int audioTime, Member member) {
         // 현재 사용자의 언어 설정에 맞춘다 TODO: 회원 기능으로 언어 설정 가져오기
-        String language = "English";
+        String language = member.getLanguage().getRealLanguage();
         return createPromptMessage(keyword, formality, audioTime, language);
     }
 
@@ -64,7 +65,7 @@ public class ChatGptPromptGenerator {
                 new ChatMessage(system, "Answer should be " + audioTime / 60 + " minutes long."), // 분량 설정 3
                 new ChatMessage(system, "You should add " + SENTENCE_DELIMITER + " at each end of sentences."), // 문장 분리
                 new ChatMessage(system, "Answer in " + formality.name() + " manner."), // 격식 설정 (official, casual)
-                new ChatMessage(system, "The answer should be in " + language.toLowerCase()) // 언어 설정 (English, Spanish, Japanese, ...)
+                new ChatMessage(system, "The answer should be in " + language) // 언어 설정 (English, Spanish, Japanese, ...)
         );
 
         // 채팅 메시지
@@ -107,12 +108,12 @@ public class ChatGptPromptGenerator {
         return WPM * (audioTime / 60);
     }
 
-    public ChatCompletionRequest generateKeywordPrompt(String categoryName) {
-        return generateKeywordPrompt(categoryName, DEFAULT_MODEL);
+    public ChatCompletionRequest generateKeywordPrompt(String mainCategoryName, String subCategoryName) {
+        return generateKeywordPrompt(mainCategoryName, subCategoryName, DEFAULT_MODEL);
     }
 
-    public ChatCompletionRequest generateKeywordPrompt(String categoryName, String modelName) {
-        List<ChatMessage> promptMessage = createKeywordPromptMessage(categoryName);
+    public ChatCompletionRequest generateKeywordPrompt(String mainCategoryName, String subCategoryName, String modelName) {
+        List<ChatMessage> promptMessage = createKeywordPromptMessage(mainCategoryName, subCategoryName);
 
         ChatCompletionRequest prompt = ChatCompletionRequest.builder()
                 .model(modelName)
@@ -125,22 +126,29 @@ public class ChatGptPromptGenerator {
         return prompt;
     }
 
-    public List<ChatMessage> createKeywordPromptMessage(String keyword) {
-        // 현재 사용자의 언어 설정에 맞춘다 TODO: 회원 기능으로 언어 설정 가져오기
+    public List<ChatMessage> createKeywordPromptMessage(String keyword1, String keyword2) {
         String language = "Korean";
-        return createKeywordPromptMessage(keyword, language);
+        return createKeywordPromptMessage(keyword1, keyword2, language);
     }
 
-    public List<ChatMessage> createKeywordPromptMessage(String keyword, String language) {
+    public List<ChatMessage> createKeywordPromptMessage(String keyword1, String keyword2,String language) {
         List<ChatMessage> systemPrompts;
         List<ChatMessage> chatPrompts;
 
         // 시스템 프롬프트
         String system = ChatMessageRole.SYSTEM.value();
         systemPrompts = List.of(
-                new ChatMessage(system, "You should give answers that are popular to people"), // 역할 부여
                 new ChatMessage(system, "Answer should only contain what you have to say (no markdowns or background musics)"),
-                new ChatMessage(system, "Answer should be familiar to people and recent keywords"),
+                new ChatMessage(system, "The words should not be too generic; instead, they should include specific terms, names of people, team names, specific events, or technical terms that many people like"),
+                new ChatMessage(system, "The words should be updated to reflect the latest trends and current prominent figures or events"),
+                new ChatMessage(system, "Provide 6 unique words related to each of the following keywords, ensuring that they are different from previously given words. Reflect current trends and popular terms or figures in each category: News, Food, Books, Drama/Movies, Art, Sports, Music. For example:"),
+                new ChatMessage(system, "For News: Use terms like 'AI breakthroughs,' 'Social media regulations,' 'Global warming debates,' 'Political scandals,' 'Tech company lawsuits,' 'Emerging economies.'"),
+                new ChatMessage(system, "For Food: Include trends such as 'Vegan cheese,' 'Craft cocktails,' 'Fusion cuisine,' 'Plant-based meat,' 'Sourdough starter,' 'Artisanal ice cream.'"),
+                new ChatMessage(system, "For Books: Use recent influential works or authors like 'The Invisible Life of Addie LaRue,' 'A Promised Land,' 'Educated,' 'The Tattooist of Auschwitz,' 'Circe,' 'Normal People.'"),
+                new ChatMessage(system, "For Drama/Movies: Include contemporary films or shows like 'Dune Part 2,' 'The Last of Us,' 'Spider-Man: Across the Spider-Verse,' 'Succession Season 4,' 'The Whale,' 'Avatar: The Way of Water.'"),
+                new ChatMessage(system, "For Art: Include recent art trends or notable figures like 'Beeple,' 'NFT art,' 'Yayoi Kusama,' 'Banksy's new works,' 'Virtual reality art,' 'Documenta 15.'"),
+                new ChatMessage(system, "For Sports: Use current trends or figures such as 'Live betting,' 'Esports tournaments,' 'Neymar Jr.,' 'Formula 1 regulations,' '2024 Olympics,' 'Team USA basketball.'"),
+                new ChatMessage(system, "For Music: Include popular or emerging artists and trends like 'Bad Bunny,' 'Lo-fi beats,' 'Music NFTs,' 'Adele's latest album,' 'Travis Scott collaborations,' 'Billboard Hot 100 hits.'"),
                 new ChatMessage(system, "The answer should be in " + language.toLowerCase()) // 언어 설정 (English, Spanish, Japanese, ...)
         );
 
@@ -149,7 +157,7 @@ public class ChatGptPromptGenerator {
         String assistant = ChatMessageRole.ASSISTANT.value();
 
         chatPrompts = List.of(
-                new ChatMessage(user, "Give me six keywords in array format about " + keyword)
+                new ChatMessage(user, "Give me six keywords in one array format about " + keyword1 + "and" + keyword2)
         );
 
         // 반환
