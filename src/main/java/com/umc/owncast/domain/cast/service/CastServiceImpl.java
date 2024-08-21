@@ -19,18 +19,17 @@ import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import com.umc.owncast.domain.sentence.service.SentenceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -47,9 +46,8 @@ public class CastServiceImpl implements CastService {
     private final CastPlaylistRepository castPlaylistRepository;
     private final MemberPreferRepository memberPreferRepository;
 
-    private final String CAST_IMAGE_DEFAULT_PATH =
-            "https://owncast-s3.s3.ap-northeast-2.amazonaws.com/25917d00-803a-4ebc-bc8a-b566cbc60c09"; // 캐스트 기본 이미지
-
+    @Value("${app.image.default-path}")
+    private String CAST_DEFAULT_IMAGE_PATH;
 
     @Override
     public CastScriptDTO createCastByKeyword(KeywordCastCreationDTO castRequest, Member member) {
@@ -79,7 +77,7 @@ public class CastServiceImpl implements CastService {
                 .audioLength(String.format("%02d:%02d", minutes, seconds))
                 .filePath(ttsResult.getMp3Path())
                 .formality(castRequest.getFormality())
-                .imagePath(CAST_IMAGE_DEFAULT_PATH)
+                .imagePath(CAST_DEFAULT_IMAGE_PATH)
                 .member(member)
                 .language(member.getLanguage())
                 .isPublic(false)
