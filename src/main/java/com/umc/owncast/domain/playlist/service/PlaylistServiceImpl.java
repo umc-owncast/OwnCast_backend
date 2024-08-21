@@ -96,83 +96,76 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Transactional
     public AddPlaylistDTO addPlaylist(Member member, String playlistName) {
 
-        if (playlistRepository.existsByNameAndMemberId(playlistName, member.getId())) {
-            throw new UserHandler(ErrorCode.PLAYLIST_ALREADY_EXIST);  //에러
-        } else {
-            Playlist newPlaylist = Playlist.builder()
-                    .name(playlistName)
-                    .member(member)
-                    .build();
+        if (playlistRepository.existsByNameAndMemberId(playlistName, member.getId()))
+            throw new UserHandler(ErrorCode.PLAYLIST_ALREADY_EXIST);
 
-            playlistRepository.save(newPlaylist);
+        Playlist newPlaylist = Playlist.builder()
+                .name(playlistName)
+                .member(member)
+                .build();
 
-            return AddPlaylistDTO.builder()
-                    .playlistId(newPlaylist.getId())
-                    .build();
-        }
+        playlistRepository.save(newPlaylist);
+
+        return AddPlaylistDTO.builder()
+                .playlistId(newPlaylist.getId())
+                .build();
+
     }
 
     @Override
     @Transactional
     public DeletePlaylistDTO deletePlaylist(Member member, Long playlistId) {
 
-        Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, member.getId());
-        Playlist playlist;
+        Playlist playlist = playlistRepository.findByIdAndMemberId(playlistId, member.getId()).orElseThrow(() ->
+                new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
         List<CastPlaylist> castPlaylists;
 
-        if (optionalPlaylist.isEmpty()) {
-            throw new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND);
-        } else {
-            playlist = optionalPlaylist.get();
+        // cast_playlist 엔티티에서 해당 플레이리스트 id를 가진 캐스트를 가져와 삭제
+        castPlaylists = castPlaylistRepository.findAllByPlaylistId(playlistId);
 
-            // cast_playlist 엔티티에서 해당 플레이리스트 id를 가진 캐스트를 가져와 삭제
-            castPlaylists = castPlaylistRepository.findAllByPlaylistId(playlistId);
+        for (CastPlaylist castPlaylist : castPlaylists) {
+            Long castMemberId = castPlaylist.getCast().getMember().getId();
+            if(!castMemberId.equals(member.getId()))
+                throw new UserHandler(ErrorCode.PLAYLIST_UNAUTHORIZED_ACCESS);
 
-            for (CastPlaylist castPlaylist : castPlaylists) {
-                Long castMemberId = castPlaylist.getCast().getMember().getId();
-                if(castMemberId.equals(member.getId())) {
-                    Cast cast = castPlaylist.getCast();
-                    // castPlaylist 와 관련된 모든 항목 삭제
-                    castPlaylistRepository.deleteAllByCastId(cast.getId());
-                    // 실제 cast 엔티티 삭제
-                    castRepository.delete(cast);
-                }
-            }
-
-            // cast_playlist 엔티티에서 해당 플레이리스트 id를 가진 모든 행을 삭제
-            castPlaylistRepository.deleteAllByPlaylistId(playlistId);
-
-            // playlist 엔티티에서 해당 플레이리스트 삭제
-            playlistRepository.delete(playlist);
-
-            return DeletePlaylistDTO.builder()
-                    .playlistId(playlist.getId())
-                    .build();
+            Cast cast = castPlaylist.getCast();
+            castPlaylistRepository.deleteAllByCastId(cast.getId());
+            castRepository.delete(cast);
         }
+
+        // cast_playlist 엔티티에서 해당 플레이리스트 id를 가진 모든 행을 삭제
+        castPlaylistRepository.deleteAllByPlaylistId(playlistId);
+
+        // playlist 엔티티에서 해당 플레이리스트 삭제
+        playlistRepository.delete(playlist);
+
+        return DeletePlaylistDTO.builder()
+                .playlistId(playlist.getId())
+                .build();
+
     }
+
 
     @Override
     @Transactional
     public GetPlaylistDTO getPlaylist(Member member, Long playlistId, int page, int size) {
 
-        Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, member.getId());
+        Playlist playlist = playlistRepository.findByIdAndMemberId(playlistId, member.getId()).orElseThrow(() ->
+                new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
         Page<CastPlaylist> castPlaylist;
 
-        if (optionalPlaylist.isEmpty()) {
-            throw new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND);
-        } else {
-            // 페이지 요청 객체 생성
-            Pageable pageable = PageRequest.of(page, size);
-            castPlaylist = castPlaylistRepository.findByPlaylistId(playlistId, pageable);
+        // 페이지 요청 객체 생성
+        Pageable pageable = PageRequest.of(page, size);
+        castPlaylist = castPlaylistRepository.findByPlaylistId(playlistId, pageable);
 
-            List<CastDTO> castDTOList = castPlaylist.getContent().stream()
-                    .map(this::convertToCastDTO)
-                    .collect(Collectors.toList());
+        List<CastDTO> castDTOList = castPlaylist.getContent().stream()
+                .map(this::convertToCastDTO)
+                .collect(Collectors.toList());
 
-            return GetPlaylistDTO.builder()
-                    .castList(castDTOList)
-                    .build();
-        }
+        return GetPlaylistDTO.builder()
+                .castList(castDTOList)
+                .build();
+
     }
 
     @Override
@@ -201,31 +194,26 @@ public class PlaylistServiceImpl implements PlaylistService {
                 .build();
     }
 
-
     @Override
     @Transactional
     public ModifyPlaylistDTO modifyPlaylist(Member member, Long playlistId, String playlistName) {
 
-        Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, member.getId());
-        Playlist playlist;
+        Playlist playlist = playlistRepository.findByIdAndMemberId(playlistId, member.getId()).orElseThrow(() ->
+                new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
 
-        if (optionalPlaylist.isEmpty()) {
-            throw new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND);
-        } else {
-            playlist = optionalPlaylist.get();
+        if(!playlist.getMember().getId().equals(member.getId()))
+            throw new UserHandler(ErrorCode.PLAYLIST_UNAUTHORIZED_ACCESS);
 
-            if (playlistRepository.existsByNameAndMemberId(playlistName, member.getId())) {
-                throw new UserHandler(ErrorCode.PLAYLIST_ALREADY_EXIST);
-            } else {
-                playlist.setName(playlistName);
-                playlistRepository.save(playlist);
+        if (playlistRepository.existsByNameAndMemberId(playlistName, member.getId()))
+            throw new UserHandler(ErrorCode.PLAYLIST_ALREADY_EXIST);
 
-                return ModifyPlaylistDTO.builder()
-                        .playlistId(playlist.getId())
-                        .playlistName(playlist.getName())
-                        .build();
-            }
-        }
+        playlist.setName(playlistName);
+        playlistRepository.save(playlist);
+
+        return ModifyPlaylistDTO.builder()
+                .playlistId(playlist.getId())
+                .playlistName(playlist.getName())
+                .build();
     }
 
     private CastDTO convertToCastDTO(CastPlaylist castPlaylist) {
