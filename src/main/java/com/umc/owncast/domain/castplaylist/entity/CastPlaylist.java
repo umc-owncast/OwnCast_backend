@@ -33,6 +33,7 @@ public class CastPlaylist extends BaseTimeEntity {
     @JoinColumn(name = "cast_id")
     private Cast cast;
 
+    @Builder.Default
     @OneToMany(mappedBy = "castPlaylist", cascade = CascadeType.ALL)
     private List<Bookmark> bookmarkList = new ArrayList<>();
 }
