@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 
 @Service
-public class ChatGPTAnswerGenerator {
+public class ChatGptAnswerGenerator {
     @Value("${open-ai.secret-key}")
     private String SECRET_KEY;
     private OpenAiService openAiService;

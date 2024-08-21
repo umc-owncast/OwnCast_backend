@@ -17,14 +17,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SentenceServiceImpl implements SentenceService {
 
-    private final TranslateService translateService;
+    private final TranslationService translationService;
     private final SentenceRepository sentenceRepository;
     private final ParsingService parsingService;
 
     @Override
     public List<Sentence> save(String original, TTSResultDTO ttsResultDTO, Cast cast) {
         int i = 0;
-        String koreanScript = translateService.translate(original);
+        String koreanScript = translationService.translateToKorean(original);
         String[] originalList = parsingService.parseSentences(original);
         String[] koreanList = parsingService.parseSentences(koreanScript);
         List<Sentence> sentences = new ArrayList<>();
