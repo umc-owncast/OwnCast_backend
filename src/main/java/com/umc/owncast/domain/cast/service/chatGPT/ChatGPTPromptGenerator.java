@@ -127,7 +127,6 @@ public class ChatGPTPromptGenerator {
     }
 
     public List<ChatMessage> createKeywordPromptMessage(String keyword1, String keyword2) {
-        // 현재 사용자의 언어 설정에 맞춘다 TODO: 회원 기능으로 언어 설정 가져오기
         String language = "Korean";
         return createKeywordPromptMessage(keyword1, keyword2, language);
     }
