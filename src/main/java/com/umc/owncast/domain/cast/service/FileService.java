@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.umc.owncast.common.exception.GeneralException;
 import com.umc.owncast.common.response.status.ErrorCode;
+import com.umc.owncast.common.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,7 +47,7 @@ public class FileService {
     }
 
     public void deleteFile(String filePath) {
-        if (filePath == null || filePath.isEmpty()) {
+        if (StringUtil.isNullOrBlank(filePath)) {
             return;
         }
         try {

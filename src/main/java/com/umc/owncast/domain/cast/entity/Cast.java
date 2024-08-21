@@ -66,11 +66,12 @@ public class Cast extends BaseTimeEntity {
     private List<Sentence> sentences = new ArrayList<>();
 
     public void update(CastUpdateDTO updateRequest) {
-        if (!StringUtil.isBlank(updateRequest.getTitle()))
+        if(updateRequest == null) return;
+        if (!StringUtil.isNullOrBlank(updateRequest.getTitle()))
             this.title = updateRequest.getTitle();
         if (Objects.nonNull(updateRequest.getIsPublic()))
             this.isPublic = updateRequest.getIsPublic();
-        if (!StringUtil.isBlank(updateRequest.getImagePath()))
+        if (!StringUtil.isNullOrBlank(updateRequest.getImagePath()))
             this.imagePath = updateRequest.getImagePath();
     }
 
