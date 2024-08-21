@@ -122,6 +122,7 @@ public class MemberService {
                 });
 
         Optional<MainPrefer> mainPrefer = mainPreferRepository.findByMember(member);
+
         if(mainPrefer.isPresent()) {
             mainPrefer.get().setMainCategory(mainCategory);
             mainPreferRepository.save(mainPrefer.get());

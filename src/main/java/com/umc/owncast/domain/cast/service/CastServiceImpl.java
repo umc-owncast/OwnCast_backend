@@ -8,6 +8,9 @@ import com.umc.owncast.domain.cast.repository.CastRepository;
 import com.umc.owncast.domain.cast.service.chatGPT.script.ScriptService;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
+import com.umc.owncast.domain.category.entity.MainCategory;
+import com.umc.owncast.domain.enums.Language;
+import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
 import com.umc.owncast.domain.memberprefer.repository.MemberPreferRepository;
 import com.umc.owncast.domain.playlist.entity.Playlist;
@@ -16,13 +19,13 @@ import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import com.umc.owncast.domain.sentence.service.SentenceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,28 +46,27 @@ public class CastServiceImpl implements CastService {
     private final CastPlaylistRepository castPlaylistRepository;
     private final MemberPreferRepository memberPreferRepository;
 
-    private final String CAST_IMAGE_DEFAULT_PATH =
-            "https://owncast-s3.s3.ap-northeast-2.amazonaws.com/25917d00-803a-4ebc-bc8a-b566cbc60c09"; // 캐스트 기본 이미지
-
+    @Value("${app.image.default-path}")
+    private String CAST_DEFAULT_IMAGE_PATH;
 
     @Override
-    public CastScriptDTO createCastByKeyword(KeywordCastCreationDTO castRequest) {
-        String script = scriptService.createScript(castRequest);
-        return handleCastCreation(castRequest, script);
+    public CastScriptDTO createCastByKeyword(KeywordCastCreationDTO castRequest, Member member) {
+        String script = scriptService.createScript(member, castRequest);
+        return handleCastCreation(castRequest, script, member);
     }
 
     @Override
-    public CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest) {
+    public CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest, Member member) {
         String script = castRequest.getScript().strip();
         KeywordCastCreationDTO request = KeywordCastCreationDTO.builder()
                 .voice(castRequest.getVoice())
                 .formality(castRequest.getFormality())
                 .build();
-        return handleCastCreation(request, script);
+        return handleCastCreation(request, script, member);
     }
 
     /** Cast와 Sentence 저장 후 CastScriptDTO로 묶어 반환 */
-    private CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script) {
+    private CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script, Member member) {
         TTSResultDTO ttsResult = ttsService.createSpeech(script, castRequest);
         Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
         int minutes = (int) (audioLength / 60);
@@ -75,9 +77,9 @@ public class CastServiceImpl implements CastService {
                 .audioLength(String.format("%02d:%02d", minutes, seconds))
                 .filePath(ttsResult.getMp3Path())
                 .formality(castRequest.getFormality())
-                .imagePath(CAST_IMAGE_DEFAULT_PATH)
-                .member(null) // TODO 회원 기능 만들어지면 자기자신 넣기
-                .language(null) // TODO 회원 기능 만들어지면 언어 설정 넣기
+                .imagePath(CAST_DEFAULT_IMAGE_PATH)
+                .member(member)
+                .language(member.getLanguage())
                 .isPublic(false)
                 .hits(0L)
                 .build();
@@ -94,8 +96,34 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public SimpleCastDTO saveCast(Long castId, CastUpdateRequestDTO saveRequest) {
-        return updateCast(castId, saveRequest);
+    public SimpleCastDTO saveCast(Long castId, CastUpdateRequestDTO saveRequest, Member member) {
+        /*
+        // 제목, 커버이미지, 공개여부 등 저장
+        Cast cast = updateCast(castId,
+                CastUpdateDTO.builder()
+                        .title(saveRequest.getTitle())
+                        .isPublic(saveRequest.getIsPublic())
+                        .build(),
+                image,
+                member
+        );
+        if(!Objects.equals(cast.getMember().getId(), member.getId())){
+            throw new UserHandler(ErrorCode.NO_AUTHORITY);
+        }
+        // 플레이리스트 저장
+        Playlist playlist = playlistRepository.findById(saveRequest.getPlaylistId()).orElseThrow(() -> new NoSuchElementException("플레이리스트가 존재하지 않습니다."));
+        CastPlaylist castPlaylist = CastPlaylist.builder()
+                .cast(cast)
+                .playlist(playlist)
+                .build();
+        castPlaylistRepository.findByCastIdAndPlaylistId(castId, playlist.getId())
+                .ifPresent(cp -> {
+                    throw new RuntimeException("캐스트가 이미 해당 플레이리스트에 저장되어 있습니다.");
+                });
+
+        castPlaylistRepository.save(castPlaylist);
+        return cast;*/
+        return updateCast(castId, saveRequest, member);
     }
     
     /** Cast 커버 이미지 교체 */
@@ -112,8 +140,11 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public SimpleCastDTO updateCast(Long castId, CastUpdateRequestDTO updateRequest) {
+    public SimpleCastDTO updateCast(Long castId, CastUpdateRequestDTO updateRequest, Member member) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
+        if(!Objects.equals(cast.getMember().getId(), member.getId())){
+            throw new UserHandler(ErrorCode.NO_AUTHORITY);
+        }
         // 이미지 설정
         CastUpdateDTO updateDTO = setCastImage(cast, updateRequest);
         // 플레이리스트 변경
@@ -123,6 +154,12 @@ public class CastServiceImpl implements CastService {
         castRepository.save(cast);
 
         return new SimpleCastDTO(cast);
+        /*setCastImage(cast, updateRequest, image);
+        cast.update(updateRequest);
+        castRepository.save(cast);
+
+        return cast;
+        */
     }
 
     /** 캐스트가 속한 플레이리스트 변경 */
@@ -157,47 +194,56 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public CastDTO findCast(Long castId) {
+    public CastDTO findCast(Long castId, Member member) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
+        if(cast.getIsPublic().equals(false) && !Objects.equals(cast.getMember().getId(), member.getId())){
+            // 비공개인데 제작자 외의 회원이 접근하는 경우 예외 처리
+            throw new UserHandler(ErrorCode.NO_AUTHORITY);
+        }
         return new CastDTO(cast);
     }
 
     @Override
-    public SimpleCastDTO deleteCast(Long castId) {
+    public SimpleCastDTO deleteCast(Long castId, Member member) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
+        if(!Objects.equals(cast.getMember(), member)){
+            throw new UserHandler(ErrorCode.NO_AUTHORITY);
+        }
+        fileService.deleteFile(cast.getImagePath());
+        fileService.deleteFile(cast.getFilePath());
         castRepository.delete(cast);
         return new SimpleCastDTO(cast);
     }
 
-    @Override
-    public MainPrefer getMemberPrefer(Long memberId) {
-        return memberPreferRepository.findByMemberId(memberId)
+    private MainPrefer getMemberPrefer(Member member) {
+        return memberPreferRepository.findByMember(member)
                 .orElseThrow(() -> new UserHandler(ErrorCode.CAST_NOT_FOUND));
 
     }
 
     @Override
-    public List<CastHomeDTO> getHomeCast() {
+    public List<CastHomeDTO> getHomeCast(Member member) {
 
         final int TOP_CASTS_LIMIT = 5;
-
-        MainPrefer userMainCategory = getMemberPrefer(1L);
-        Long userCategoryId = userMainCategory.getMainCategory().getId();
         Pageable pageable = PageRequest.of(0, TOP_CASTS_LIMIT);
-        List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategoryId, 1L, pageable).getContent();
+
+        MainCategory userCategory = getMemberPrefer(member).getMainCategory();
+        Language userLanguage = member.getLanguage();
+
+        List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategory, member, userLanguage, pageable).getContent();
 
         return convertToCastHomeDTO(castMainCategories);
     }
 
     @Override
-    public List<CastHomeDTO> getCast(String keyword) {
-        List<Cast> castList = castRepository.castSearch(keyword, 1L);
+    public List<CastHomeDTO> getCast(Member member, String keyword) {
 
+        List<Cast> castList = castRepository.castSearch(keyword, member.getId(), member.getLanguage().name());
         return convertToCastHomeDTO(castList);
     }
 
     @Override
-    public OtherCastResponseDTO getOtherCast(OtherCastRequestDTO castSaveRequestDTO) {
+    public OtherCastResponseDTO getOtherCast(Member member, OtherCastRequestDTO castSaveRequestDTO) {
 
         Playlist playlist = playlistRepository.findById(castSaveRequestDTO.getPlaylistId())
                 .orElseThrow(() -> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
@@ -205,7 +251,7 @@ public class CastServiceImpl implements CastService {
         Cast cast = castRepository.findById(castSaveRequestDTO.getCastId())
                 .orElseThrow(() -> new UserHandler(ErrorCode.CAST_NOT_FOUND));
 
-        if (castPlaylistRepository.existsByMemberIdAndCastId(1L, cast.getId())) { // 해당 캐스트가 유저의 플레이리스트에 이미 저장한 경우
+        if (castPlaylistRepository.existsByMemberIdAndCastId(member.getId(), cast.getId())) { // 해당 캐스트가 유저의 플레이리스트에 이미 저장한 경우
             throw new UserHandler(ErrorCode.CAST_ALREADY_EXIST);
         }
 
@@ -223,7 +269,7 @@ public class CastServiceImpl implements CastService {
 
         return OtherCastResponseDTO.builder()
                 .castPlaylistId(newCastPlaylist.getId())
-                .memberId(1L)
+                .memberId(member.getId())
                 .build();
     }
 
@@ -241,7 +287,7 @@ public class CastServiceImpl implements CastService {
                     .id(cast.getId())
                     .title(cast.getTitle())
                     .imagePath(cast.getImagePath())
-                    .memberName(cast.getMember().getUsername())
+                    .memberName(cast.getMember().getNickname())
                     .audioLength(cast.getAudioLength())
                     .playlistName(castPlaylistName)
                     .build();

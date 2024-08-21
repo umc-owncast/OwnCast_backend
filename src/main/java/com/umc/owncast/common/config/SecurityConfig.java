@@ -1,6 +1,7 @@
 package com.umc.owncast.common.config;
 
 import com.umc.owncast.common.jwt.*;
+import com.umc.owncast.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,7 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final AuthenticationEntryPoint entryPoint;
     private final LoginService loginService;
+    private final MemberRepository memberRepository;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -53,7 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/favicon.ico", "/error", "/swagger-ui/**", "/swagger-ui.html/**", "/v3/api-docs/**",
                                 "/api/users/signup", "/api/users/signup/**","api/users/login","api/users/check/**").permitAll()
                 )
-                .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class)
+                .addFilterBefore(new JwtFilter(jwtUtil, memberRepository), LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManagerBuilder, loginService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new LogoutFilter(loginService), org.springframework.security.web.authentication.logout.LogoutFilter.class)
                 .build();

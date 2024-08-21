@@ -2,6 +2,7 @@ package com.umc.owncast.domain.cast.service.chatGPT.script;
 
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
+import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.cast.service.chatGPT.ChatGptAnswerGenerator;
 import com.umc.owncast.domain.cast.service.chatGPT.ChatGptPromptGenerator;
 import com.umc.owncast.domain.sentence.service.TranslationService;
@@ -16,7 +17,7 @@ public class ChatGptScriptService implements ScriptService {
     private final ChatGptAnswerGenerator answerGenerator;
     private final TranslationService translationService;
 
-    public String createScript(KeywordCastCreationDTO castRequest) {
+    public String createScript(Member member, KeywordCastCreationDTO castRequest) {
         String script = "";
         try {
             String translatedKeyword = translationService.translateToMemberLanguage(castRequest.getKeyword());
@@ -24,7 +25,7 @@ public class ChatGptScriptService implements ScriptService {
             ChatCompletionRequest prompt = promptGenerator.generatePrompt(
                     castRequest.getKeyword(),
                     castRequest.getFormality(),
-                    castRequest.getAudioTime()
+                    castRequest.getAudioTime(), member
             );
             script = answerGenerator.generateAnswer(prompt);
         } catch (Exception e) {

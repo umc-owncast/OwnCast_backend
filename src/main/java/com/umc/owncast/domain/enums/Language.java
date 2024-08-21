@@ -6,10 +6,18 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Language {
-    US,
-    UK,
-    AUS,
-    IND,
-    JA,
-    ES
+    US("english"),
+    UK("english"),
+    AUS("english"),
+    IND("english"),
+    JA("japanese"),
+    ES("spanish"),
+    ES_US("spanish");
+
+    private final String language;
+
+    public String getRealLanguage() {
+        return this.language;
+    }
+
 }

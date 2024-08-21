@@ -1,6 +1,8 @@
 package com.umc.owncast.domain.playlist.controller;
 
 import com.umc.owncast.common.response.ApiResponse;
+import com.umc.owncast.domain.member.annotation.AuthUser;
+import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.playlist.dto.*;
 import com.umc.owncast.domain.playlist.service.PlaylistService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,37 +25,39 @@ public class PlaylistController {
     @CrossOrigin
     @Operation(summary = "플레이리스트 추가")
     @PostMapping("/playlist")
-    public ApiResponse<AddPlaylistDTO> addPlaylist(@RequestParam("playlistName") String playlistName) {
-        return ApiResponse.onSuccess(playlistService.addPlaylist(playlistName));
+    public ApiResponse<AddPlaylistDTO> addPlaylist(@AuthUser Member member, @RequestParam("playlistName") String playlistName) {
+        return ApiResponse.onSuccess(playlistService.addPlaylist(member, playlistName));
     }
 
     @CrossOrigin
     @Operation(summary = "사용자의 플레이리스트 불러오기")
     @GetMapping("/playlist/view")
-    public ApiResponse<List<PlaylistResultDTO>> getPlaylists() {
-        return ApiResponse.onSuccess(playlistService.getAllPlaylists());
+    public ApiResponse<List<PlaylistResultDTO>> getPlaylists(@AuthUser Member member) {
+        return ApiResponse.onSuccess(playlistService.getAllPlaylists(member));
     }
 
     @Operation(summary = "플레이리스트 수정")
     @PatchMapping("/playlist/{playlistId}")
-    public ApiResponse<ModifyPlaylistDTO> modifyPlaylist(@RequestParam("playlistId") Long playlistId,
-                                                                     @RequestParam("playlistName") String playlistName) {
-        return ApiResponse.onSuccess(playlistService.modifyPlaylist(playlistId, playlistName));
+    public ApiResponse<ModifyPlaylistDTO> modifyPlaylist(@AuthUser Member member,
+                                                         @RequestParam("playlistId") Long playlistId,
+                                                         @RequestParam("playlistName") String playlistName) {
+        return ApiResponse.onSuccess(playlistService.modifyPlaylist(member, playlistId, playlistName));
     }
 
     @CrossOrigin
     @Operation(summary = "플레이리스트 삭제")
     @DeleteMapping("/playlist/{playlistId}")
-    public ApiResponse<DeletePlaylistDTO> deletePlaylist(@RequestParam("playlistId") Long playlistId) {
-        return ApiResponse.onSuccess(playlistService.deletePlaylist(playlistId));
+    public ApiResponse<DeletePlaylistDTO> deletePlaylist(@AuthUser Member member, @RequestParam("playlistId") Long playlistId) {
+        return ApiResponse.onSuccess(playlistService.deletePlaylist(member, playlistId));
     }
 
     @CrossOrigin
     @Operation(summary = "플레이리스트 조회")
     @GetMapping("/playlist/{playlistId}")
-    public ApiResponse<GetPlaylistDTO> getPlaylist(@RequestParam("playlistId") Long playlistId,
-                                                               @RequestParam("page") Integer page,
-                                                               @RequestParam("size") Integer size) {
-        return ApiResponse.onSuccess(playlistService.getPlaylist(playlistId, page, size));
+    public ApiResponse<GetPlaylistDTO> getPlaylist(@AuthUser Member member,
+                                                    @RequestParam("playlistId") Long playlistId,
+                                                    @RequestParam("page") Integer page,
+                                                    @RequestParam("size") Integer size) {
+        return ApiResponse.onSuccess(playlistService.getPlaylist(member, playlistId, page, size));
     }
 }

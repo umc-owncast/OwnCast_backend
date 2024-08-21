@@ -39,13 +39,17 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        Map<String, String> errors = new LinkedHashMap<>();
+        log.error("IllegalArgumentException - " + e.getMessage());
+        ApiResponse<String> body = ApiResponse.ofFailure(ErrorCode._BAD_REQUEST, "잘못된 요청입니다.");
+        return this.handleExceptionInternal(e, body, headers, status, request);
+        /*
         e.getBindingResult().getFieldErrors().forEach(fieldError -> {
             String fieldName = fieldError.getField();
             String errorMessage = Optional.ofNullable(fieldError.getDefaultMessage()).orElse("");
             errors.merge(fieldName, errorMessage, (existingErrorMessage, newErrorMessage) -> existingErrorMessage + ", " + newErrorMessage);
         });
         return handleExceptionInternalArgs(e, HttpHeaders.EMPTY, ErrorCode.valueOf("BAD_REQUEST"), request, errors);
+        */
     }
 
     @Override

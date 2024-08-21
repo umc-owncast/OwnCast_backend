@@ -6,12 +6,14 @@ import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
+import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.playlist.dto.*;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,36 +32,43 @@ public class PlaylistServiceImpl implements PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final CastRepository castRepository;
     private final CastPlaylistRepository castPlaylistRepository;
-    private static final String DEFAULT_IMAGE_PATH = "default/image/path";
+
+    @Value("${app.image.default-path}")
+    private String DEFAULT_IMAGE_PATH;
 
     @Override
-    public List<PlaylistResultDTO> getAllPlaylists() {
+    public List<PlaylistResultDTO> getAllPlaylists(Member member) {
 
-        List<Playlist> playlistList = playlistRepository.findAllByMemberIdOrderByCreatedAt(1L);
+        List<Playlist> playlistList = playlistRepository.findAllByMemberIdOrderByCreatedAt(member.getId());
         List<PlaylistResultDTO> playlistDTOList = new ArrayList<>();
         Pageable pageable = PageRequest.of(0, 1);
 
-        String myCastImagePath = castRepository.findFirstCastImage(1L)
-                .orElse(DEFAULT_IMAGE_PATH);
-
-        String mySavedCastImagePath = castPlaylistRepository.findFirstByPlaylist_Member_IdOrderByCreatedAt(1L, pageable)
+        Cast myCastImagePath = castPlaylistRepository.findFirstSavedCast(member.getId(), pageable)
                 .getContent()
                 .stream()
                 .findFirst()
-                .orElse(DEFAULT_IMAGE_PATH);
+                .orElse(Cast.builder().imagePath(DEFAULT_IMAGE_PATH).build());
 
-        playlistDTOList.add(convertToPlaylistResultDTO("내가 만든 캐스트", myCastImagePath, null, null));
+        Cast mySavedCastImagePath = castPlaylistRepository.findFirstOtherCast(member.getId(), pageable)
+                .getContent()
+                .stream()
+                .findFirst()
+                .orElse(Cast.builder().imagePath(DEFAULT_IMAGE_PATH).build());
 
-        playlistDTOList.add(convertToPlaylistResultDTO("담아온 캐스트", mySavedCastImagePath, null, null));
+        /* CAST 이미지 경로 값 자체가 null인 경우를 해결해야 함 */
+
+        playlistDTOList.add(convertToPlaylistResultDTO("내가 만든 캐스트", myCastImagePath.getImagePath(), null, null));
+
+        playlistDTOList.add(convertToPlaylistResultDTO("담아온 캐스트", mySavedCastImagePath.getImagePath(), null, null));
 
         playlistList.forEach(playlist -> {
-
             String playlistName = playlist.getName();
             String playlistImagePath = getOldestCastFromPlaylist(playlist.getId())
                     .map(Cast::getImagePath)
-                    .orElse("default/image/path");
+                    .orElse(DEFAULT_IMAGE_PATH);
             Long playlistId = playlist.getId();
             Long totalCast = castPlaylistRepository.countAllByPlaylist(playlist);
+
             playlistDTOList.add(convertToPlaylistResultDTO(playlistName, playlistImagePath, playlistId, totalCast));
 
         });
@@ -76,8 +85,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                 .build();
     }
 
-    @Override
-    public Optional<Cast> getOldestCastFromPlaylist(Long playlistId) {
+    private Optional<Cast> getOldestCastFromPlaylist(Long playlistId) {
         Optional<CastPlaylist> optionalCast = castPlaylistRepository.findFirstByPlaylist_IdOrderByCreatedAt(playlistId);
 
         return optionalCast.map(CastPlaylist::getCast);
@@ -86,16 +94,14 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     @Transactional
-    public AddPlaylistDTO addPlaylist(String playlistName) {
-        // Long memberId = 토큰으로 정보 받아오기
-        //임시로 1L로 설정
+    public AddPlaylistDTO addPlaylist(Member member, String playlistName) {
 
-        if (playlistRepository.existsByNameAndMemberId(playlistName, 1L)) {
+        if (playlistRepository.existsByNameAndMemberId(playlistName, member.getId())) {
             throw new UserHandler(ErrorCode.PLAYLIST_ALREADY_EXIST);  //에러
         } else {
             Playlist newPlaylist = Playlist.builder()
                     .name(playlistName)
-//                    .member()
+                    .member(member)
                     .build();
 
             playlistRepository.save(newPlaylist);
@@ -108,12 +114,9 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     @Transactional
-    public DeletePlaylistDTO deletePlaylist(Long playlistId) {
-        // Long memberId = 토큰으로 정보 받아오기
-        //임시로 1L로 설정
-        Long memberId = 1L;
+    public DeletePlaylistDTO deletePlaylist(Member member, Long playlistId) {
 
-        Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, 1L);
+        Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, member.getId());
         Playlist playlist;
         List<CastPlaylist> castPlaylists;
 
@@ -127,7 +130,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
             for (CastPlaylist castPlaylist : castPlaylists) {
                 Long castMemberId = castPlaylist.getCast().getMember().getId();
-                if(castMemberId.equals(memberId)) {
+                if(castMemberId.equals(member.getId())) {
                     Cast cast = castPlaylist.getCast();
                     // castPlaylist 와 관련된 모든 항목 삭제
                     castPlaylistRepository.deleteAllByCastId(cast.getId());
@@ -150,12 +153,9 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     @Transactional
-    public GetPlaylistDTO getPlaylist(Long playlistId, int page, int size) {
+    public GetPlaylistDTO getPlaylist(Member member, Long playlistId, int page, int size) {
 
-        // Long memberId = 토큰으로 정보 받아오기
-        //임시로 1L로 설정
-
-        Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, 1L);
+        Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, member.getId());
         Page<CastPlaylist> castPlaylist;
 
         if (optionalPlaylist.isEmpty()) {
@@ -177,11 +177,9 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     @Transactional
-    public ModifyPlaylistDTO modifyPlaylist(Long playlistId, String playlistName) {
-        // Long memberId = 토큰으로 정보 받아오기
-        //임시로 1L로 설정
+    public ModifyPlaylistDTO modifyPlaylist(Member member, Long playlistId, String playlistName) {
 
-        Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, 1L);
+        Optional<Playlist> optionalPlaylist = playlistRepository.findByIdAndMemberId(playlistId, member.getId());
         Playlist playlist;
 
         if (optionalPlaylist.isEmpty()) {
@@ -189,7 +187,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         } else {
             playlist = optionalPlaylist.get();
 
-            if (playlistRepository.existsByNameAndMemberId(playlistName, 1L)) {
+            if (playlistRepository.existsByNameAndMemberId(playlistName, member.getId())) {
                 throw new UserHandler(ErrorCode.PLAYLIST_ALREADY_EXIST);
             } else {
                 playlist.setName(playlistName);
@@ -206,11 +204,13 @@ public class PlaylistServiceImpl implements PlaylistService {
     private CastDTO convertToCastDTO(CastPlaylist castPlaylist) {
         return CastDTO.builder()
                 .castId(castPlaylist.getCast().getId())
+                .playlistId(castPlaylist.getPlaylist().getId())
                 .castTitle(castPlaylist.getCast().getTitle())
                 .isPublic(castPlaylist.getCast().getIsPublic())
-                .castCreator(castPlaylist.getCast().getMember().getUsername())
+                .castCreator(castPlaylist.getCast().getMember().getNickname())
                 .castCategory(castPlaylist.getPlaylist().getName())
                 .audioLength(castPlaylist.getCast().getAudioLength())
+                .imagePath(castPlaylist.getCast().getImagePath())
                 .build();
     }
 }
