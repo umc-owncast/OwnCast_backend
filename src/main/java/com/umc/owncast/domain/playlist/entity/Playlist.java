@@ -36,6 +36,7 @@ public class Playlist extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean isPublic;
 
+    @Builder.Default
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL)
     private List<CastPlaylist> castPlaylistList = new ArrayList<>();
 
