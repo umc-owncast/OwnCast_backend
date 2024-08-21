@@ -4,6 +4,7 @@ import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.umc.owncast.domain.enums.Formality;
+import com.umc.owncast.domain.member.entity.Member;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,12 +27,12 @@ public class ChatGPTPromptGenerator {
     private final double DEFAULT_TEMPERATURE = 0.1;
 
     /* 사용자의 keyword를 바탕으로 프롬프트 생성 */
-    public ChatCompletionRequest generatePrompt(String keyword, Formality formality, int audioTime) {
-        return generatePrompt(keyword, formality, audioTime, DEFAULT_MODEL);
+    public ChatCompletionRequest generatePrompt(String keyword, Formality formality, int audioTime, Member member) {
+        return generatePrompt(keyword, formality, audioTime, DEFAULT_MODEL, member);
     }
 
-    public ChatCompletionRequest generatePrompt(String keyword, Formality formality, int audioTime, String modelName) {
-        List<ChatMessage> promptMessage = createPromptMessage(keyword, formality, audioTime);
+    public ChatCompletionRequest generatePrompt(String keyword, Formality formality, int audioTime, String modelName, Member member) {
+        List<ChatMessage> promptMessage = createPromptMessage(keyword, formality, audioTime, member);
 
         ChatCompletionRequest prompt = ChatCompletionRequest.builder()
                 .model(modelName)
@@ -44,9 +45,9 @@ public class ChatGPTPromptGenerator {
         return prompt;
     }
 
-    public List<ChatMessage> createPromptMessage(String keyword, Formality formality, int audioTime) {
+    public List<ChatMessage> createPromptMessage(String keyword, Formality formality, int audioTime, Member member) {
         // 현재 사용자의 언어 설정에 맞춘다 TODO: 회원 기능으로 언어 설정 가져오기
-        String language = "English";
+        String language = member.getLanguage().getRealLanguage();
         return createPromptMessage(keyword, formality, audioTime, language);
     }
 
@@ -64,7 +65,7 @@ public class ChatGPTPromptGenerator {
                 new ChatMessage(system, "Answer should be " + audioTime / 60 + " minutes long."), // 분량 설정 3
                 new ChatMessage(system, "You should add " + SENTENCE_DELIMITER + " at each end of sentences."), // 문장 분리
                 new ChatMessage(system, "Answer in " + formality.name() + " manner."), // 격식 설정 (official, casual)
-                new ChatMessage(system, "The answer should be in " + language.toLowerCase()) // 언어 설정 (English, Spanish, Japanese, ...)
+                new ChatMessage(system, "The answer should be in " + language) // 언어 설정 (English, Spanish, Japanese, ...)
         );
 
         // 채팅 메시지

@@ -47,7 +47,7 @@ public class CastServiceImpl implements CastService {
 
     @Override
     public CastScriptDTO createCastByKeyword(KeywordCastCreationDTO castRequest, Member member) {
-        String script = scriptService.createScript(castRequest);
+        String script = scriptService.createScript(member, castRequest);
         return handleCastCreation(castRequest, script, member);
     }
 

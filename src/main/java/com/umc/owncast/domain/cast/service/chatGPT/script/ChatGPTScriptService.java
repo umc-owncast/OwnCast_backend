@@ -4,6 +4,7 @@ import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
 import com.umc.owncast.domain.cast.service.chatGPT.ChatGPTAnswerGenerator;
 import com.umc.owncast.domain.cast.service.chatGPT.ChatGPTPromptGenerator;
+import com.umc.owncast.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +15,13 @@ public class ChatGPTScriptService implements ScriptService {
     private final ChatGPTPromptGenerator promptGenerator;
     private final ChatGPTAnswerGenerator answerGenerator;
 
-    public String createScript(KeywordCastCreationDTO castRequest) {
+    public String createScript(Member member, KeywordCastCreationDTO castRequest) {
         String script = "";
         try {
             ChatCompletionRequest prompt = promptGenerator.generatePrompt(
                     castRequest.getKeyword(),
                     castRequest.getFormality(),
-                    castRequest.getAudioTime()
+                    castRequest.getAudioTime(), member
             );
             script = answerGenerator.generateAnswer(prompt);
         } catch (Exception e) {
