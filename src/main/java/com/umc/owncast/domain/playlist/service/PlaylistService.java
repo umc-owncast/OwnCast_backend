@@ -18,4 +18,8 @@ public interface PlaylistService {
     ModifyPlaylistDTO modifyPlaylist(Member member, Long playlistId, String playlistName);
 
     List<PlaylistResultDTO> getAllPlaylists(Member member);
+
+    GetPlaylistDTO getAllSavedPlaylists(Member member);
+
+    GetPlaylistDTO getAllMyPlaylists(Member member);
 }

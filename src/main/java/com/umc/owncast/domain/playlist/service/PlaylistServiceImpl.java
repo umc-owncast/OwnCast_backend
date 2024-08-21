@@ -176,6 +176,33 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
+    public GetPlaylistDTO getAllSavedPlaylists(Member member) {
+        List<CastPlaylist> savedCastList = castPlaylistRepository.findAllSavedCast(member.getId());
+
+        List<CastDTO> castDTOList = savedCastList.stream()
+                .map(this::convertToCastDTO)
+                .toList();
+
+        return GetPlaylistDTO.builder()
+                .castList(castDTOList)
+                .build();
+    }
+
+    @Override
+    public GetPlaylistDTO getAllMyPlaylists(Member member) {
+        List<CastPlaylist> savedCastList = castPlaylistRepository.findAllMyCast(member.getId());
+
+        List<CastDTO> castDTOList = savedCastList.stream()
+                .map(this::convertToCastDTO)
+                .toList();
+
+        return GetPlaylistDTO.builder()
+                .castList(castDTOList)
+                .build();
+    }
+
+
+    @Override
     @Transactional
     public ModifyPlaylistDTO modifyPlaylist(Member member, Long playlistId, String playlistName) {
 

@@ -37,7 +37,7 @@ public class PlaylistController {
     }
 
     @Operation(summary = "플레이리스트 수정")
-    @PatchMapping("/playlist/{playlistId}")
+    @PatchMapping("/playlist")
     public ApiResponse<ModifyPlaylistDTO> modifyPlaylist(@AuthUser Member member,
                                                          @RequestParam("playlistId") Long playlistId,
                                                          @RequestParam("playlistName") String playlistName) {
@@ -46,18 +46,32 @@ public class PlaylistController {
 
     @CrossOrigin
     @Operation(summary = "플레이리스트 삭제")
-    @DeleteMapping("/playlist/{playlistId}")
+    @DeleteMapping("/playlist")
     public ApiResponse<DeletePlaylistDTO> deletePlaylist(@AuthUser Member member, @RequestParam("playlistId") Long playlistId) {
         return ApiResponse.onSuccess(playlistService.deletePlaylist(member, playlistId));
     }
 
     @CrossOrigin
     @Operation(summary = "플레이리스트 조회")
-    @GetMapping("/playlist/{playlistId}")
+    @GetMapping("/playlist")
     public ApiResponse<GetPlaylistDTO> getPlaylist(@AuthUser Member member,
                                                     @RequestParam("playlistId") Long playlistId,
                                                     @RequestParam("page") Integer page,
                                                     @RequestParam("size") Integer size) {
         return ApiResponse.onSuccess(playlistService.getPlaylist(member, playlistId, page, size));
+    }
+
+    @CrossOrigin
+    @Operation(summary = "내가 담아온 플레이리스트 조회")
+    @GetMapping("/playlist/saved")
+    public ApiResponse<GetPlaylistDTO> getSavedPlaylist(@AuthUser Member member) {
+        return ApiResponse.onSuccess(playlistService.getAllSavedPlaylists(member)); // TODO PAGE로 크기 조절
+    }
+
+    @CrossOrigin
+    @Operation(summary = "저장한 플레이리스트 조회")
+    @GetMapping("/playlist/my")
+    public ApiResponse<GetPlaylistDTO> getAllMyPlaylist(@AuthUser Member member) {
+        return ApiResponse.onSuccess(playlistService.getAllMyPlaylists(member));
     }
 }
