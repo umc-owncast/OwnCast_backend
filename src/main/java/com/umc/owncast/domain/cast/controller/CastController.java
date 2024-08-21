@@ -33,7 +33,7 @@ public class CastController {
     /* Cast 생성 API (keyword) */
     @PostMapping("/keyword")
     @Operation(summary = "키워드로 캐스트를 생성하는 API")
-    public ApiResponse<Object> createCastByKeyword(@Valid @RequestBody KeywordCastCreationDTO castRequest,
+    public ApiResponse<CastScriptDTO> createCastByKeyword(@Valid @RequestBody KeywordCastCreationDTO castRequest,
                                                    @AuthUser Member member) {
         return ApiResponse.of(SuccessCode._OK, castService.createCastByKeyword(castRequest, member));
     }
@@ -41,7 +41,7 @@ public class CastController {
     /* Cast 생성 API (script) */
     @PostMapping("/script")
     @Operation(summary = "스크립트로 캐스트를 생성하는 API.")
-    public ApiResponse<Object> createCastByScript(@Valid @RequestBody ScriptCastCreationDTO castRequest,
+    public ApiResponse<CastScriptDTO> createCastByScript(@Valid @RequestBody ScriptCastCreationDTO castRequest,
                                                   @AuthUser Member member) {
         return ApiResponse.of(SuccessCode._OK, castService.createCastByScript(castRequest, member));
     }
@@ -49,7 +49,7 @@ public class CastController {
     /* Cast 저장 API */
     @PostMapping(value = "/{castId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "캐스트 저장 API (저장 화면에서 호출)")
-    public ApiResponse<Object> saveCast(@PathVariable("castId") Long castId,
+    public ApiResponse<SimpleCastDTO> saveCast(@PathVariable("castId") Long castId,
                                         @ModelAttribute CastUpdateRequestDTO saveRequest,
                                         @AuthUser Member member) {
         SimpleCastDTO castDTO = castService.saveCast(castId, saveRequest, member);
@@ -60,7 +60,7 @@ public class CastController {
     @CrossOrigin
     @GetMapping("/{castId}")
     @Operation(summary = "캐스트 재생 API")
-    public ApiResponse<Object> findCast(@PathVariable("castId") Long castId,
+    public ApiResponse<CastDTO> findCast(@PathVariable("castId") Long castId,
                                         @AuthUser Member member) {
         return ApiResponse.of(SuccessCode._OK, castService.findCast(castId, member));
     }
@@ -68,7 +68,7 @@ public class CastController {
     /* Cast 수정 API */
     @PatchMapping("/{castId}")
     @Operation(summary = "캐스트 수정 API")
-    public ApiResponse<Object> updateCast(@PathVariable("castId") Long castId,
+    public ApiResponse<SimpleCastDTO> updateCast(@PathVariable("castId") Long castId,
                                           @ModelAttribute CastUpdateRequestDTO updateRequest,
                                           @AuthUser Member member) {
         SimpleCastDTO castDTO = castService.updateCast(castId, updateRequest, member);
@@ -78,7 +78,7 @@ public class CastController {
     /* Cast 삭제 API */
     @DeleteMapping("/{castId}")
     @Operation(summary = "캐스트 삭제 API")
-    public ApiResponse<Object> deleteCast(@PathVariable("castId") Long castId,
+    public ApiResponse<SimpleCastDTO> deleteCast(@PathVariable("castId") Long castId,
                                           @AuthUser Member member) {
         return ApiResponse.of(SuccessCode._OK, castService.deleteCast(castId, member));
     }
