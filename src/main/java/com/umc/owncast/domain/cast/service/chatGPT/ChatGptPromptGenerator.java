@@ -157,7 +157,7 @@ public class ChatGptPromptGenerator {
         String assistant = ChatMessageRole.ASSISTANT.value();
 
         chatPrompts = List.of(
-                new ChatMessage(user, "Give me six keywords in array format about " + keyword1 + "and" + keyword2)
+                new ChatMessage(user, "Give me six keywords in one array format about " + keyword1 + "and" + keyword2)
         );
 
         // 반환
