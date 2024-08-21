@@ -74,7 +74,7 @@ public class CastServiceImpl implements CastService {
                 .filePath(ttsResult.getMp3Path())
                 .formality(castRequest.getFormality())
                 .member(member)
-                .language(null) // TODO 회원 기능 만들어지면 언어 설정 넣기
+                .language(member.getLanguage())
                 .isPublic(false)
                 .hits(0L)
                 .build();
