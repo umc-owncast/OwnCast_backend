@@ -27,6 +27,7 @@ public class BookmarkController {
     @Operation(summary = "북마크된 문장 불러오기")
     @GetMapping("/study/{playlistId}")
     public ApiResponse<List<BookmarkResultDTO>> getBookmarks(@AuthUser Member member, @PathVariable("playlistId") Long playlistId) {
+        System.out.println("GET /api/study/" + playlistId);
         return ApiResponse.onSuccess(bookmarkService.getBookmarks(member, playlistId));
     }
 
@@ -34,6 +35,7 @@ public class BookmarkController {
     @Operation(summary = "내가 저장한 캐스트의 북마크된 문장 불러오기")
     @GetMapping("/study/mycast")
     public ApiResponse<List<BookmarkResultDTO>> getMyCastBookmarks(@AuthUser Member member) {
+        System.out.println("GET /api/study/mycast");
         return ApiResponse.onSuccess(bookmarkService.getMyCastBookmarks(member));
     }
 
@@ -41,6 +43,7 @@ public class BookmarkController {
     @Operation(summary = "내가 저장한 남의 캐스트의 북마크된 문장 불러오기")
     @GetMapping("/study/savedcast")
     public ApiResponse<List<BookmarkResultDTO>> getSavedBookmarks(@AuthUser Member member) {
+        System.out.println("GET /api/study/savedcast");
         return ApiResponse.onSuccess(bookmarkService.getSavedBookmarks(member));
     }
 
@@ -48,6 +51,7 @@ public class BookmarkController {
     @Operation(summary = "문장 북마크 하기")
     @PostMapping("/bookmark")
     public ApiResponse<BookmarkSaveResultDTO> saveBookmark(@AuthUser Member member, @RequestParam("sentenceId") Long sentenceId) {
+        System.out.println("POST /api/study/bookmark");
         return ApiResponse.onSuccess(bookmarkService.saveBookmark(member, sentenceId));
     }
 
@@ -55,6 +59,7 @@ public class BookmarkController {
     @Operation(summary = "문장 북마크 취소하기")
     @DeleteMapping("/bookmark")
     public ApiResponse<BookmarkSaveResultDTO> deleteBookmark(@AuthUser Member member, @RequestParam("sentenceId") Long sentenceId) {
+        System.out.println("DELETE /api/study/bookmark");
         return ApiResponse.onSuccess(bookmarkService.deleteBookmark(member, sentenceId));
     }
 }
