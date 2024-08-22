@@ -20,4 +20,6 @@ public interface SentenceService {
     List<Sentence> findCastSentence(Long castId);
 
     Sentence findById(Long sentenceId);
+
+    void deleteAllByCast(Cast cast);
 }

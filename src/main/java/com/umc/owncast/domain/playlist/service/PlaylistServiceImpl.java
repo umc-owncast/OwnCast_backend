@@ -129,7 +129,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                 throw new UserHandler(ErrorCode.PLAYLIST_UNAUTHORIZED_ACCESS);
 
             Cast cast = castPlaylist.getCast();
-            castPlaylistRepository.deleteAllByCastId(cast.getId());
+            castPlaylistRepository.deleteAllByCast(cast);
             castRepository.delete(cast);
         }
 

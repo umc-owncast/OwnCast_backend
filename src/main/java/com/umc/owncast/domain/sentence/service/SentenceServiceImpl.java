@@ -53,4 +53,10 @@ public class SentenceServiceImpl implements SentenceService {
                 .orElseThrow(() -> new UserHandler(ErrorCode.SENTENCE_NOT_FOUND));
     }
 
+    @Override
+    public void deleteAllByCast(Cast cast) {
+        List<Sentence> sentenceList = sentenceRepository.findAllByCastId(cast.getId());
+        sentenceRepository.deleteAll(sentenceList);
+    }
+
 }

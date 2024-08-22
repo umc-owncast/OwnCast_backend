@@ -18,6 +18,7 @@ import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import com.umc.owncast.domain.sentence.service.SentenceService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
@@ -204,6 +205,7 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
+    @Transactional
     public SimpleCastDTO deleteCast(Long castId, Member member) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
         if(!Objects.equals(cast.getMember(), member)){
@@ -211,6 +213,10 @@ public class CastServiceImpl implements CastService {
         }
         fileService.deleteFile(cast.getImagePath());
         fileService.deleteFile(cast.getFilePath());
+
+        castPlaylistRepository.deleteAllByCast(cast);
+        sentenceService.deleteAllByCast(cast);
+
         castRepository.delete(cast);
         return new SimpleCastDTO(cast);
     }
