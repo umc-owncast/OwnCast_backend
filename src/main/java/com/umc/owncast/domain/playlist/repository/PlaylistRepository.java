@@ -10,10 +10,6 @@ import java.util.Optional;
 
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
-    @Query("SELECT cp.playlist.name FROM CastPlaylist cp " +
-            "WHERE cp.cast.id = :castId AND cp.cast.member.id = cp.playlist.member.id ")
-    String findUserCategoryName(@Param("castId") Long castId);
-
     List<Playlist> findAllByMemberIdOrderByCreatedAt(@Param("memberId") Long memberId);
 
     boolean existsByNameAndMemberId(String name, Long memberId);

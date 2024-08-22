@@ -149,7 +149,7 @@ public class CastServiceImpl implements CastService {
         // 이미지 설정
         CastUpdateDTO updateDTO = setCastImage(cast, updateRequest, image);
         // 플레이리스트 변경
-        changePlaylist(cast, updateRequest.getPlaylistId());
+        changePlaylist(member, cast, updateRequest.getPlaylistId());
         // cast 필드 수정
         cast.update(updateDTO);
         castRepository.save(cast);
@@ -164,9 +164,10 @@ public class CastServiceImpl implements CastService {
     }
 
     /** 캐스트가 속한 플레이리스트 변경 */
-    private void changePlaylist(Cast cast, Long playlistId){
+    private void changePlaylist(Member member, Cast cast, Long playlistId){
+        
         if(cast == null || playlistId == null) return;
-        Optional<CastPlaylist> optionalOldCp = castPlaylistRepository.findByPlaylistMemberIdAndCastId(1L, cast.getId()); // TODO 회원 기능 연동
+        Optional<CastPlaylist> optionalOldCp = castPlaylistRepository.findByPlaylistMemberIdAndCastId(member.getId(), cast.getId());
         if(optionalOldCp.isPresent()){
             CastPlaylist oldCp = optionalOldCp.get();
             if(Objects.equals(oldCp.getPlaylist().getId(), playlistId)) return; // 동일한 플레이리스트인 경우 스킵
@@ -174,6 +175,7 @@ public class CastServiceImpl implements CastService {
                 castPlaylistRepository.delete(oldCp); // 이전 castPlaylist 삭제
             }
         }
+
         Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
         castPlaylistRepository.save(CastPlaylist.builder() // 새 castPlaylist 추가
                 .cast(cast)
@@ -283,7 +285,9 @@ public class CastServiceImpl implements CastService {
 
         return castList.stream().map(cast -> {
 
-            String castPlaylistName = playlistRepository.findUserCategoryName(cast.getId());
+            System.out.println(cast.getId());
+
+            String castPlaylistName = castPlaylistRepository.findUserCategoryName(cast.getId());
 
             if (castPlaylistName == null) {
                 throw new UserHandler(ErrorCode.CAST_PLAYLIST_NOT_FOUND);

@@ -50,6 +50,10 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
 
     Optional<CastPlaylist> findFirstByPlaylist_IdOrderByCreatedAt(@Param("playlistId") long playlistId);
 
+    @Query("SELECT cp.playlist.name FROM CastPlaylist cp " +
+            "WHERE cp.cast.id = :castId AND cp.cast.member.id = cp.playlist.member.id ")
+    String findUserCategoryName(@Param("castId") Long castId);
+
 //    @Query("SELECT c FROM CastPlaylist c WHERE c.playlist.member.id = :memberId AND c.cast.id = :castId ")
     Optional<CastPlaylist> findByPlaylistMemberIdAndCastId(Long memberId, Long castId);
 }
