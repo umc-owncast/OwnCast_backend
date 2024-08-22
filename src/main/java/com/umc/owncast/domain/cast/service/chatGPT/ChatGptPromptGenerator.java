@@ -16,7 +16,7 @@ import java.util.List;
 public class ChatGptPromptGenerator {
 
     /* GPT 모델 : "gpt-4o" 혹은 "gpt-4o-mini" 중 선택 */
-    private final String DEFAULT_MODEL = "gpt-4o-mini";
+    private final String DEFAULT_MODEL = "gpt-4o";
 
     /* 문장을 뭘로 나눌지 */
     private final String SENTENCE_DELIMITER = "@";
@@ -67,7 +67,7 @@ public class ChatGptPromptGenerator {
         final String USER = ChatMessageRole.USER.value();
         final String ASSISTANT = ChatMessageRole.ASSISTANT.value();
         chatPrompts = List.of(
-                new ChatMessage(USER, "Make a " + audioTime + " minute podcast script about " + keyword + "; Use around " + ChatGptPromptGenerator.calculateWords(audioTime, member) + " words.")
+                new ChatMessage(USER, "Make a " + String.format("%.1f", audioTime/60f) + " minute podcast script about " + keyword + "; Use around " + ChatGptPromptGenerator.calculateWords(audioTime, member) + " words.")
         );
 
         // 반환
