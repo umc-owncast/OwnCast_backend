@@ -61,13 +61,13 @@ public class BookMarkServiceImpl implements BookmarkService {
 
                 sentences.forEach(sentence -> {
 
-                    Sentence nextSentence = sentenceRepository.findById(sentence.getId() + 1)
+                    Sentence prevSentence = sentenceRepository.findById(sentence.getId() - 1)
                             .orElseGet(() -> Sentence.builder()
                                     .timePoint(null)
                                     .build());
 
-                    if(!Objects.equals(nextSentence.getCast().getId(), sentence.getCast().getId())){
-                        nextSentence = Sentence.builder()
+                    if(!Objects.equals(prevSentence.getCast().getId(), sentence.getCast().getId())){
+                        prevSentence = Sentence.builder()
                                 .timePoint(null)
                                 .build();
                     }
@@ -78,8 +78,8 @@ public class BookMarkServiceImpl implements BookmarkService {
                         .sentenceId(sentence.getId())
                         .originalSentence(sentence.getOriginalSentence())
                         .translatedSentence(sentence.getTranslatedSentence())
-                        .start(sentence.getTimePoint())
-                        .end(nextSentence.getTimePoint())
+                        .start(prevSentence.getTimePoint())
+                        .end(sentence.getTimePoint())
                         .build());
                     }
                 );
@@ -96,13 +96,13 @@ public class BookMarkServiceImpl implements BookmarkService {
 
         return sentenceList.stream().map(sentence -> {
 
-            Sentence nextSentence = sentenceRepository.findById(sentence.getId() + 1)
+            Sentence prevSentence = sentenceRepository.findById(sentence.getId() - 1)
                     .orElseGet(() -> Sentence.builder()
                             .timePoint(null)
                             .build());
 
-            if(!Objects.equals(nextSentence.getCast().getId(), sentence.getCast().getId())){
-                nextSentence = Sentence.builder()
+            if(!Objects.equals(prevSentence.getCast().getId(), sentence.getCast().getId())){
+                prevSentence = Sentence.builder()
                         .timePoint(null)
                         .build();
             }
@@ -113,8 +113,8 @@ public class BookMarkServiceImpl implements BookmarkService {
                     .sentenceId(sentence.getId())
                     .originalSentence(sentence.getOriginalSentence())
                     .translatedSentence(sentence.getTranslatedSentence())
-                    .start(sentence.getTimePoint())
-                    .end(nextSentence.getTimePoint())
+                    .start(prevSentence.getTimePoint())
+                    .end(sentence.getTimePoint())
                     .build();
         }).toList();
     }
