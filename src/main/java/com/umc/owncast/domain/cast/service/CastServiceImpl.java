@@ -26,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -96,7 +97,7 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public SimpleCastDTO saveCast(Long castId, CastUpdateRequestDTO saveRequest, Member member) {
+    public SimpleCastDTO saveCast(Long castId, CastUpdateRequestDTO saveRequest, Member member, MultipartFile image) {
         /*
         // 제목, 커버이미지, 공개여부 등 저장
         Cast cast = updateCast(castId,
@@ -123,13 +124,12 @@ public class CastServiceImpl implements CastService {
 
         castPlaylistRepository.save(castPlaylist);
         return cast;*/
-        return updateCast(castId, saveRequest, member);
+        return updateCast(castId, saveRequest, member, image);
     }
     
     /** Cast 커버 이미지 교체 */
-    private CastUpdateDTO setCastImage(Cast cast, CastUpdateRequestDTO updateRequest) {
-        if (updateRequest.getImage() == null) return null;
-        String imagePath = fileService.uploadFile(updateRequest.getImage());
+    private CastUpdateDTO setCastImage(Cast cast, CastUpdateRequestDTO updateRequest, MultipartFile image) {
+        String imagePath = fileService.uploadFile(image);
         fileService.deleteFile(cast.getImagePath());
         return CastUpdateDTO.builder()
                 .title(updateRequest.getTitle())
@@ -140,13 +140,13 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public SimpleCastDTO updateCast(Long castId, CastUpdateRequestDTO updateRequest, Member member) {
+    public SimpleCastDTO updateCast(Long castId, CastUpdateRequestDTO updateRequest, Member member, MultipartFile image) {
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new NoSuchElementException("캐스트가 존재하지 않습니다"));
         if(!Objects.equals(cast.getMember().getId(), member.getId())){
             throw new UserHandler(ErrorCode.NO_AUTHORITY);
         }
         // 이미지 설정
-        CastUpdateDTO updateDTO = setCastImage(cast, updateRequest);
+        CastUpdateDTO updateDTO = setCastImage(cast, updateRequest, image);
         // 플레이리스트 변경
         changePlaylist(cast, updateRequest.getPlaylistId());
         // cast 필드 수정

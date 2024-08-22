@@ -50,10 +50,11 @@ public class CastController {
     @PostMapping(value = "/{castId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "캐스트 저장 API (저장 화면에서 호출)")
     public ApiResponse<SimpleCastDTO> saveCast(@PathVariable("castId") Long castId,
-                                        @ModelAttribute CastUpdateRequestDTO saveRequest,
-                                        @AuthUser Member member) {
-        SimpleCastDTO castDTO = castService.saveCast(castId, saveRequest, member);
-        return ApiResponse.of(SuccessCode._CAST_SAVED, castDTO);
+                                        @AuthUser Member member,
+                                        @Valid @RequestPart(value = "saveInfo") CastUpdateRequestDTO updateRequest,
+                                        @RequestPart(value = "image", required = false) MultipartFile image) {
+        SimpleCastDTO simpleCastDTO = castService.saveCast(castId, updateRequest, member, image);
+        return ApiResponse.of(SuccessCode._OK, simpleCastDTO);
     }
 
     /* Cast 재생 API */
@@ -69,9 +70,10 @@ public class CastController {
     @PatchMapping("/{castId}")
     @Operation(summary = "캐스트 수정 API")
     public ApiResponse<SimpleCastDTO> updateCast(@PathVariable("castId") Long castId,
-                                          @ModelAttribute CastUpdateRequestDTO updateRequest,
-                                          @AuthUser Member member) {
-        SimpleCastDTO castDTO = castService.updateCast(castId, updateRequest, member);
+                                          @AuthUser Member member,
+                                          @Valid @RequestPart(value = "updateInfo") CastUpdateRequestDTO updateRequest,
+                                          @RequestPart(value = "image", required = false) MultipartFile image) {
+        SimpleCastDTO castDTO = castService.updateCast(castId, updateRequest, member, image);
         return ApiResponse.of(SuccessCode._CAST_UPDATED, castDTO);
     }
 
