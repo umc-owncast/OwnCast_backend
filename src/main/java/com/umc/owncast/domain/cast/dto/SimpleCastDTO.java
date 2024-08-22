@@ -18,7 +18,7 @@ public class SimpleCastDTO {
 
     public SimpleCastDTO(Cast cast){
         id = cast.getId();
-        title = cast.getTitle();;
+        title = cast.getTitle();
         imagePath = cast.getImagePath();
         audioLength = cast.getAudioLength();
         isPublic = cast.getIsPublic();
