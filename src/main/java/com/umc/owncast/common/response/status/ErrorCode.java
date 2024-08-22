@@ -55,6 +55,7 @@ public enum ErrorCode implements BaseErrorCode {
     //Playlist 관련 에러
     PLAYLIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "PLAYLIST4001", "해당 플레이리스트가 없습니다."),
     PLAYLIST_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "PLAYLIST4002", "이미 존재하는 플레이리스트입니다."),
+    PLAYLIST_UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "PLAYLIST4003", "플레이리스트에 대한 접근 권한이 없습니다."),
 
     //Sentence 관련 에러
     SENTENCE_NOT_FOUND(HttpStatus.BAD_REQUEST, "SENTENCE4001", "해당 문장이 없습니다."),

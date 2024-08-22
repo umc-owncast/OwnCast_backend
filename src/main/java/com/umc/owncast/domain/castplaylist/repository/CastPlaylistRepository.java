@@ -36,6 +36,12 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
     @Query("SELECT cp.cast FROM CastPlaylist cp WHERE cp.playlist.member.id = :memberId AND cp.cast.member.id != :memberId")
     List<Cast> findSavedCast(@Param("memberId") long memberId);
 
+    @Query("SELECT cp FROM CastPlaylist cp WHERE cp.playlist.member.id = :memberId AND cp.cast.member.id != :memberId")
+    List<CastPlaylist> findAllSavedCast(@Param("memberId") long memberId);
+
+    @Query("SELECT cp FROM CastPlaylist cp WHERE cp.playlist.member.id = :memberId AND cp.cast.member.id = :memberId")
+    List<CastPlaylist> findAllMyCast(@Param("memberId") long memberId);
+
     Optional<CastPlaylist> findByCastIdAndPlaylistId(Long castId, Long id);
 
     Page<CastPlaylist> findByPlaylistId(Long playlistId, Pageable pageable);
