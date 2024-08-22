@@ -129,7 +129,7 @@ public class ChatGptPromptGenerator {
     static int calculateWords(int audioTime, Member member) {
         // WPM: Word Per Minute
         int WPM = switch (member.getLanguage()) {
-            case US -> 130;
+            case US -> 140;
             case UK -> 190;
             case AUS -> 190;
             case IND -> 170;
