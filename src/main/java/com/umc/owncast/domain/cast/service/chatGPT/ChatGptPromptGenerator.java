@@ -154,8 +154,6 @@ public class ChatGptPromptGenerator {
                 .temperature(DEFAULT_TEMPERATURE)
                 .build();
 
-        System.out.println("ChatGptPromptGenerator - generated prompt:");
-        System.out.println(prompt);
         return prompt;
     }
 

@@ -35,6 +35,7 @@ public class CastController {
     @Operation(summary = "키워드로 캐스트를 생성하는 API")
     public ApiResponse<CastScriptDTO> createCastByKeyword(@Valid @RequestBody KeywordCastCreationDTO castRequest,
                                                    @AuthUser Member member) {
+        System.out.println("GET api/cast/keyword");
         return ApiResponse.of(SuccessCode._OK, castService.createCastByKeyword(castRequest, member));
     }
 
@@ -43,6 +44,7 @@ public class CastController {
     @Operation(summary = "스크립트로 캐스트를 생성하는 API.")
     public ApiResponse<CastScriptDTO> createCastByScript(@Valid @RequestBody ScriptCastCreationDTO castRequest,
                                                   @AuthUser Member member) {
+        System.out.println("GET api/cast/script");
         return ApiResponse.of(SuccessCode._OK, castService.createCastByScript(castRequest, member));
     }
 
@@ -52,6 +54,7 @@ public class CastController {
     public ApiResponse<SimpleCastDTO> saveCast(@PathVariable("castId") Long castId,
                                         @ModelAttribute CastUpdateRequestDTO saveRequest,
                                         @AuthUser Member member) {
+        System.out.println("POST api/cast/" + castId);
         SimpleCastDTO castDTO = castService.saveCast(castId, saveRequest, member);
         return ApiResponse.of(SuccessCode._CAST_SAVED, castDTO);
     }
@@ -62,6 +65,7 @@ public class CastController {
     @Operation(summary = "캐스트 재생 API")
     public ApiResponse<CastDTO> findCast(@PathVariable("castId") Long castId,
                                         @AuthUser Member member) {
+        System.out.println("GET api/cast/" + castId);
         return ApiResponse.of(SuccessCode._OK, castService.findCast(castId, member));
     }
 
@@ -71,6 +75,7 @@ public class CastController {
     public ApiResponse<SimpleCastDTO> updateCast(@PathVariable("castId") Long castId,
                                           @ModelAttribute CastUpdateRequestDTO updateRequest,
                                           @AuthUser Member member) {
+        System.out.println("PATCH api/cast/" + castId);
         SimpleCastDTO castDTO = castService.updateCast(castId, updateRequest, member);
         return ApiResponse.of(SuccessCode._CAST_UPDATED, castDTO);
     }
@@ -80,12 +85,14 @@ public class CastController {
     @Operation(summary = "캐스트 삭제 API")
     public ApiResponse<SimpleCastDTO> deleteCast(@PathVariable("castId") Long castId,
                                           @AuthUser Member member) {
+        System.out.println("DELETE api/cast/" + castId);
         return ApiResponse.of(SuccessCode._OK, castService.deleteCast(castId, member));
     }
 
     @GetMapping("/home")
     @Operation(summary = "홈 화면 키워드 6개 받아오기")
     public ApiResponse<List<String>> getHomeKeyword(@AuthUser Member member) {
+        System.out.println("GET api/cast/home");
         return ApiResponse.onSuccess(keywordService.createKeyword(member));
     }
 
@@ -93,6 +100,7 @@ public class CastController {
     @Operation(summary = "검색 홈 API")
     @GetMapping("/search/home")
     public ApiResponse<List<CastHomeDTO>> searchHome(@AuthUser Member member) {
+        System.out.println("GET api/cast/search/home");
         return ApiResponse.onSuccess(castService.getHomeCast(member));
     }
 
@@ -100,6 +108,7 @@ public class CastController {
     @Operation(summary = "다른 사람의 플레이리스트 가져오기")
     @PostMapping("/other")
     public ApiResponse<OtherCastResponseDTO> getOtherCast(@AuthUser Member member, @RequestBody OtherCastRequestDTO castDTO) {
+        System.out.println("POST api/cast/search/other");
         return ApiResponse.onSuccess(castService.getOtherCast(member, castDTO));
     }
 
@@ -107,6 +116,7 @@ public class CastController {
     @Operation(summary = "검색 API")
     @PostMapping("/search")
     public ApiResponse<List<CastHomeDTO>> saveCast(@AuthUser Member member, @RequestParam("keyword") String keyword) {
+        System.out.println("POST api/cast/search");
         return ApiResponse.onSuccess(castService.getCast(member, keyword));
     }
 }
