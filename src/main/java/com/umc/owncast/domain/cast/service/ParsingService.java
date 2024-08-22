@@ -30,8 +30,8 @@ public class ParsingService {
     }
 
     public String addMarks(String[] sentences) {
-        int i = 0;
-        StringBuilder processedScript = new StringBuilder("<speak>");
+        int i = 1;
+        StringBuilder processedScript = new StringBuilder("<speak><mark name=\"0\"/>");
 
         for (String sentence : sentences) {
             if(sentence.length() > MAX_LENGTH) {

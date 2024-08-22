@@ -16,7 +16,7 @@ import java.util.List;
 public class ChatGptPromptGenerator {
 
     /* GPT 모델 : "gpt-4o" 혹은 "gpt-4o-mini" 중 선택 */
-    private final String DEFAULT_MODEL = "gpt-4o-mini";
+    private final String DEFAULT_MODEL = "gpt-4o";
 
     /* 문장을 뭘로 나눌지 */
     private final String SENTENCE_DELIMITER = "@";
@@ -55,29 +55,19 @@ public class ChatGptPromptGenerator {
         // 시스템 프롬프트
         final String SYSTEM = ChatMessageRole.SYSTEM.value();
         systemPrompts = List.of(
-                /*
-                new ChatMessage(system, "You are the host of the podcast."), // 역할 부여
-                new ChatMessage(system, "Answer should only contain what you have to say (no markdowns or background musics)"), // 형식 지정
-                //new ChatMessage(system, "Answer should be less than " + tokens + " tokens"), // 분량 설정
-                //new ChatMessage(system, "Use around " + words + "words"), // 분량 설정 2   -->  (calculateWords() 개발 후 해보기)
-                new ChatMessage(system, "Answer should be " + audioTime / 60 + " minutes long."), // 분량 설정 3
-                new ChatMessage(system, "You should add " + SENTENCE_DELIMITER + " at each end of sentences."), // 문장 분리
-                new ChatMessage(system, "Answer in " + formality.name() + " manner."), // 격식 설정 (official, casual)
-                new ChatMessage(system, "The answer should be in " + language) // 언어 설정 (English, Spanish, Japanese, ...)
-                */
                 new ChatMessage(SYSTEM, "You are the host of the podcast."),
                 new ChatMessage(SYSTEM, "Your job is to make a podcast script about what happened recently. It is best if you say things based on real news"),
                 new ChatMessage(SYSTEM, "script should only contain what you have to say (no markdowns or background musics)"),
                 new ChatMessage(SYSTEM, "Don't write .! except at the end of a sentence (not Dr. or Mr. or Miss,, use Doctor, Mister, and Miss)"),
-                new ChatMessage(SYSTEM, "Answer in " + formality.name().toLowerCase() + " manner.")
+                new ChatMessage(SYSTEM, "Answer in " + formality.name().toLowerCase() + " manner."),
+                new ChatMessage(SYSTEM, "Answer in " + member.getLanguage().getRealLanguage() + ".")
         );
 
         // 채팅 메시지
         final String USER = ChatMessageRole.USER.value();
         final String ASSISTANT = ChatMessageRole.ASSISTANT.value();
         chatPrompts = List.of(
-//                new ChatMessage(USER, "Make a podcast script about " + keyword)
-                new ChatMessage(USER, "Make a " + audioTime + "minute podcast script about " + keyword + " in " + language + "; Use around " + ChatGptPromptGenerator.calculateWords(audioTime, member) + " words.")
+                new ChatMessage(USER, "Make a " + String.format("%.1f", audioTime/60f) + " minute podcast script about " + keyword + "; Use around " + ChatGptPromptGenerator.calculateWords(audioTime, member) + " words.")
         );
 
         // 반환
@@ -85,43 +75,7 @@ public class ChatGptPromptGenerator {
         result.addAll(systemPrompts);
         result.addAll(chatPrompts);
         return result;
-
-
-
-//        return createPromptMessage(keyword, formality, audioTime, language);
     }
-
-    /*public List<ChatMessage> createPromptMessage(String keyword, Formality formality, int audioTime, String language) {
-        List<ChatMessage> systemPrompts;
-        List<ChatMessage> chatPrompts;
-
-        // 시스템 프롬프트
-        final String SYSTEM = ChatMessageRole.SYSTEM.value();
-        systemPrompts = List.of(
-
-                new ChatMessage(SYSTEM, "You are the host of the podcast."), // 역할 부여
-                new ChatMessage(SYSTEM, "Answer should only contain what you have to say (no markdowns or background musics)"), // 형식 지정
-                //new ChatMessage(SYSTEM, "Answer should be less than " + tokens + " tokens"), // 분량 설정
-                //new ChatMessage(SYSTEM, "Use around " + words + "words"), // 분량 설정 2   -->  (calculateWords() 개발 후 해보기)
-                new ChatMessage(SYSTEM, "Answer should be " + audioTime / 60 + " minutes long."), // 분량 설정 3
-                new ChatMessage(SYSTEM, "You should add " + SENTENCE_DELIMITER + " at each end of sentences."), // 문장 분리
-                new ChatMessage(SYSTEM, "Answer in " + formality.name() + " manner."), // 격식 설정 (official, casual)
-                new ChatMessage(SYSTEM, "The answer should be in " + language) // 언어 설정 (English, Spanish, Japanese, ...)
-        );
-
-        // 채팅 메시지
-        final String USER = ChatMessageRole.USER.value();
-        final String ASSISTANT = ChatMessageRole.ASSISTANT.value();
-        chatPrompts = List.of(
-                new ChatMessage(USER, "Make a podcast script about " + keyword)
-        );
-
-        // 반환
-        List<ChatMessage> result = new ArrayList<>();
-        result.addAll(systemPrompts);
-        result.addAll(chatPrompts);
-        return result;
-    }*/
 
     /**
      * 분당 단어 수 기반으로 오디오 분량에 맞는 단어 수 어림계산 (아직 개발 X)
