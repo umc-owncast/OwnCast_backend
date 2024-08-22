@@ -12,6 +12,7 @@ import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.sentence.entity.Sentence;
+import com.umc.owncast.domain.sentence.repository.SentenceRepository;
 import com.umc.owncast.domain.sentence.service.SentenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,6 +30,7 @@ import java.util.List;
 public class BookMarkServiceImpl implements BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final CastPlaylistRepository castPlaylistRepository;
+    private final SentenceRepository sentenceRepository;
     private final SentenceService sentenceService;
     private final CastRepository castRepository;
 
@@ -55,12 +59,30 @@ public class BookMarkServiceImpl implements BookmarkService {
 
                 List<Sentence> sentences = bookmarkRepository.findSentencesByBookmarkId(bookmark.getId());
 
-                sentences.forEach(sentence -> sentenceList.add(BookmarkResultDTO.builder()
+                sentences.forEach(sentence -> {
+
+                    Sentence nextSentence = sentenceRepository.findById(sentence.getId() + 1)
+                            .orElseGet(() -> Sentence.builder()
+                                    .timePoint(null)
+                                    .build());
+
+                    if(!Objects.equals(nextSentence.getCast().getId(), sentence.getCast().getId())){
+                        nextSentence = Sentence.builder()
+                                .timePoint(null)
+                                .build();
+                    }
+
+                    sentenceList.add(BookmarkResultDTO.builder()
                         .castId(sentence.getCast().getId())
+                        .castURL(sentence.getCast().getFilePath())
                         .sentenceId(sentence.getId())
                         .originalSentence(sentence.getOriginalSentence())
                         .translatedSentence(sentence.getTranslatedSentence())
-                        .build()));
+                        .start(sentence.getTimePoint())
+                        .end(nextSentence.getTimePoint())
+                        .build());
+                    }
+                );
             });
         });
 
@@ -72,14 +94,29 @@ public class BookMarkServiceImpl implements BookmarkService {
 
         List<Sentence> sentenceList = bookmarkRepository.findSentencesByPlaylistId(playlistId);
 
-        return sentenceList.stream().map(sentence ->
-                BookmarkResultDTO.builder()
-                        .castId(sentence.getCast().getId())
-                        .sentenceId(sentence.getId())
-                        .originalSentence(sentence.getOriginalSentence())
-                        .translatedSentence(sentence.getTranslatedSentence())
-                        .build()
-        ).toList();
+        return sentenceList.stream().map(sentence -> {
+
+            Sentence nextSentence = sentenceRepository.findById(sentence.getId() + 1)
+                    .orElseGet(() -> Sentence.builder()
+                            .timePoint(null)
+                            .build());
+
+            if(!Objects.equals(nextSentence.getCast().getId(), sentence.getCast().getId())){
+                nextSentence = Sentence.builder()
+                        .timePoint(null)
+                        .build();
+            }
+
+            return BookmarkResultDTO.builder()
+                    .castId(sentence.getCast().getId())
+                    .castURL(sentence.getCast().getFilePath())
+                    .sentenceId(sentence.getId())
+                    .originalSentence(sentence.getOriginalSentence())
+                    .translatedSentence(sentence.getTranslatedSentence())
+                    .start(sentence.getTimePoint())
+                    .end(nextSentence.getTimePoint())
+                    .build();
+        }).toList();
     }
 
     @Override
