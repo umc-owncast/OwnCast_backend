@@ -1,7 +1,6 @@
 package com.umc.owncast.domain.cast.dto;
 
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder

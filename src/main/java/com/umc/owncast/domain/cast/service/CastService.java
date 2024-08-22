@@ -1,7 +1,6 @@
 package com.umc.owncast.domain.cast.service;
 
 import com.umc.owncast.domain.cast.dto.*;
-import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.member.entity.Member;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;

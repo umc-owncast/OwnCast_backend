@@ -129,7 +129,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                 throw new UserHandler(ErrorCode.PLAYLIST_UNAUTHORIZED_ACCESS);
 
             Cast cast = castPlaylist.getCast();
-            castPlaylistRepository.deleteAllByCastId(cast.getId());
+            castPlaylistRepository.deleteAllByCast(cast);
             castRepository.delete(cast);
         }
 
@@ -192,6 +192,16 @@ public class PlaylistServiceImpl implements PlaylistService {
         return GetPlaylistDTO.builder()
                 .castList(castDTOList)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public DeleteCastFromPlaylistDTO deleteCast(DeleteCastFromPlaylistDTO dto, Long playlistId) {
+        Cast cast = castRepository.findById(dto.getCastId()).orElseThrow(() -> new UserHandler(ErrorCode.CAST_NOT_FOUND));
+        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
+        castPlaylistRepository.deleteByCastAndPlaylist(cast, playlist);
+
+        return dto;
     }
 
     @Override
