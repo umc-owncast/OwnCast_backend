@@ -81,4 +81,12 @@ public class PlaylistController {
         System.out.println("POST /api/playlist/my");
         return ApiResponse.onSuccess(playlistService.getAllMyPlaylists(member));
     }
+
+    @CrossOrigin
+    @DeleteMapping("/playlist/{playlistId}")
+    @Operation(summary = "플레이리스트에 남의 캐스트 삭제")
+    public ApiResponse<DeleteCastFromPlaylistDTO> deleteCastFromPlaylist(@PathVariable("playlistId") Long playlistId,
+                                                      @RequestBody DeleteCastFromPlaylistDTO deleteCastFromPlaylistDTO) {
+        return ApiResponse.onSuccess(playlistService.deleteCast(deleteCastFromPlaylistDTO, playlistId));
+    }
 }

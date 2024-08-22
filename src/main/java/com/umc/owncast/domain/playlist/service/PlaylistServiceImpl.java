@@ -196,6 +196,16 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     @Transactional
+    public DeleteCastFromPlaylistDTO deleteCast(DeleteCastFromPlaylistDTO dto, Long playlistId) {
+        Cast cast = castRepository.findById(dto.getCastId()).orElseThrow(() -> new UserHandler(ErrorCode.CAST_NOT_FOUND));
+        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
+        castPlaylistRepository.deleteByCastAndPlaylist(cast, playlist);
+
+        return dto;
+    }
+
+    @Override
+    @Transactional
     public ModifyPlaylistDTO modifyPlaylist(Member member, Long playlistId, String playlistName) {
 
         Playlist playlist = playlistRepository.findByIdAndMemberId(playlistId, member.getId()).orElseThrow(() ->

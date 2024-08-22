@@ -17,8 +17,6 @@ public interface SentenceService {
      * 매개변수를 묶어 List<Sentence>로 반환
      */
 
-    List<Sentence> findCastSentence(Long castId);
-
     Sentence findById(Long sentenceId);
 
     void deleteAllByCast(Cast cast);

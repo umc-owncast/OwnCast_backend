@@ -43,11 +43,6 @@ public class SentenceServiceImpl implements SentenceService {
     }
 
     @Override
-    public List<Sentence> findCastSentence(Long castId) {
-        return sentenceRepository.findAllByCastIdOrderByTimePointAsc(castId);
-    }
-
-    @Override
     public Sentence findById(Long sentenceId) {
         return sentenceRepository.findById(sentenceId)
                 .orElseThrow(() -> new UserHandler(ErrorCode.SENTENCE_NOT_FOUND));
