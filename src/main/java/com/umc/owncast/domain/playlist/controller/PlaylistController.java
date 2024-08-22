@@ -24,8 +24,8 @@ public class PlaylistController {
 
     @CrossOrigin
     @Operation(summary = "플레이리스트 추가")
-    @PostMapping("/playlist")
-    public ApiResponse<AddPlaylistDTO> addPlaylist(@AuthUser Member member, @RequestParam("playlistName") String playlistName) {
+    @PostMapping("/playlist/{playlistName}")
+    public ApiResponse<AddPlaylistDTO> addPlaylist(@AuthUser Member member, @PathVariable("playlistName") String playlistName) {
         return ApiResponse.onSuccess(playlistService.addPlaylist(member, playlistName));
     }
 
@@ -37,9 +37,9 @@ public class PlaylistController {
     }
 
     @Operation(summary = "플레이리스트 수정")
-    @PatchMapping("/playlist")
+    @PatchMapping("/playlist/{playlistId}")
     public ApiResponse<ModifyPlaylistDTO> modifyPlaylist(@AuthUser Member member,
-                                                         @RequestParam("playlistId") Long playlistId,
+                                                         @PathVariable("playlistId") Long playlistId,
                                                          @RequestParam("playlistName") String playlistName) {
         return ApiResponse.onSuccess(playlistService.modifyPlaylist(member, playlistId, playlistName));
     }
@@ -53,9 +53,9 @@ public class PlaylistController {
 
     @CrossOrigin
     @Operation(summary = "플레이리스트 조회")
-    @GetMapping("/playlist")
+    @GetMapping("/playlist/{playlistId}")
     public ApiResponse<GetPlaylistDTO> getPlaylist(@AuthUser Member member,
-                                                    @RequestParam("playlistId") Long playlistId,
+                                                    @PathVariable("playlistId") Long playlistId,
                                                     @RequestParam("page") Integer page,
                                                     @RequestParam("size") Integer size) {
         return ApiResponse.onSuccess(playlistService.getPlaylist(member, playlistId, page, size));
