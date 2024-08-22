@@ -11,8 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class CastUpdateRequestDTO {
     private String title;
 
-    private MultipartFile image;
-
     private Boolean isPublic;
 
     private Long playlistId;
