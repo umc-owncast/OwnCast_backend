@@ -55,10 +55,18 @@ public class ChatGptPromptGenerator {
         // 시스템 프롬프트
         final String SYSTEM = ChatMessageRole.SYSTEM.value();
         systemPrompts = List.of(
+                /* 예전 프롬프트
                 new ChatMessage(SYSTEM, "You are the host of the podcast."),
                 new ChatMessage(SYSTEM, "Your job is to make a podcast script about what happened recently. It is best if you say things based on real news"),
                 new ChatMessage(SYSTEM, "script should only contain what you have to say (no markdowns or background musics)"),
                 new ChatMessage(SYSTEM, "Don't write .! except at the end of a sentence (not Dr. or Mr. or Miss,, use Doctor, Mister, and Miss)"),
+                new ChatMessage(SYSTEM, "Answer in " + formality.name().toLowerCase() + " manner."),
+                new ChatMessage(SYSTEM, "Answer in " + member.getLanguage().getRealLanguage() + ".")
+                 */
+                new ChatMessage(SYSTEM, "You are the host of the podcast."),
+                new ChatMessage(SYSTEM, "Your job is to write a podcast script about what happened recently; Write it based on real news."),
+                new ChatMessage(SYSTEM, "Script should only contain what you have to say (no markdowns or background musics)"),
+                new ChatMessage(SYSTEM, "Seperate each sentence using '@'."),
                 new ChatMessage(SYSTEM, "Answer in " + formality.name().toLowerCase() + " manner."),
                 new ChatMessage(SYSTEM, "Answer in " + member.getLanguage().getRealLanguage() + ".")
         );
