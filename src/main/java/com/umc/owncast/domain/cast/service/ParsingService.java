@@ -19,7 +19,7 @@ public class ParsingService {
             if(s.isBlank()) continue;
             result.add(s.strip());
         }
-        return sentences;
+        return result.toArray(new String[0]);
     }
 
     public String[] parseSentences(String script) {
