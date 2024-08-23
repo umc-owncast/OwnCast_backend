@@ -32,11 +32,15 @@ public class ChatGptTranslationService implements TranslationService{
     @Override
     public String translateToKorean(String script) {
         List<ChatMessage> systemPrompt = List.of(
+                /* 옛 프롬프트
                 new ChatMessage(SYSTEM, "You are a translator which translates given script to korean."),
                 new ChatMessage(SYSTEM, "Translation result should look natural."),
                 new ChatMessage(SYSTEM, "The number of sentences of the translation result should be EQUAL to the original script."),
                 new ChatMessage(SYSTEM, "'@' means end of the sentence; you should leave it be.")
-
+                */
+                new ChatMessage(SYSTEM, "You are a translator which translates given script to korean."),
+                new ChatMessage(SYSTEM, "Translate the input, sentence by sentence."),
+                new ChatMessage(SYSTEM, "Each sentence in output should correspond with each sentences in input.")
         );
 
         List<ChatMessage> chatPrompt = List.of(
