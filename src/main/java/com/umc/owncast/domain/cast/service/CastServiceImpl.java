@@ -64,7 +64,7 @@ public class CastServiceImpl implements CastService {
                 .voice(castRequest.getVoice())
                 .formality(castRequest.getFormality())
                 .build();
-        return handleCastCreation(request, script, member);
+        return handleCastCreation_scriptInput(request, script, member);
     }
 
     /** Cast와 Sentence 저장 후 CastScriptDTO로 묶어 반환 */

@@ -13,9 +13,12 @@ public class ParsingService {
     private static final int MAX_LENGTH = 220;
 
     public String[] parseSentencesByDelimiter(String script){
-        String[] sentences = Arrays.stream(script.split("@"))
-                .filter(String::isBlank)
-                .toArray(String[]::new);
+        String[] sentences = script.split("@");
+        List<String> result = new ArrayList<>();
+        for(String s : sentences){
+            if(s.isBlank()) continue;
+            result.add(s.strip());
+        }
         return sentences;
     }
 
@@ -26,7 +29,7 @@ public class ParsingService {
 
         while (matcher.find()) {
             String sentence = matcher.group();
-            sentence = sentence.replace("@", "").trim();
+            sentence = sentence.replace("@", "").strip();
 
             if (!sentence.isEmpty()) {
                 sentences.add(sentence);
