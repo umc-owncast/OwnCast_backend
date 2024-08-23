@@ -3,6 +3,7 @@ package com.umc.owncast.domain.cast.service;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,9 +12,15 @@ import java.util.regex.Pattern;
 public class ParsingService {
     private static final int MAX_LENGTH = 220;
 
+    public String[] parseSentencesByDelimiter(String script){
+        String[] sentences = Arrays.stream(script.split("@"))
+                .filter(String::isBlank)
+                .toArray(String[]::new);
+        return sentences;
+    }
+
     public String[] parseSentences(String script) {
         Pattern pattern = Pattern.compile("[^.!?@]+[.!?@]?");
-
         List<String> sentences = new ArrayList<>();
         Matcher matcher = pattern.matcher(script);
 
@@ -27,6 +34,7 @@ public class ParsingService {
         }
 
         return sentences.toArray(new String[0]);
+
     }
 
     public String addMarks(String[] sentences) {
