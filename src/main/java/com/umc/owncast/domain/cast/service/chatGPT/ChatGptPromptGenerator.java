@@ -63,7 +63,7 @@ public class ChatGptPromptGenerator {
                 new ChatMessage(SYSTEM, "Answer in " + formality.name().toLowerCase() + " manner."),
                 new ChatMessage(SYSTEM, "Answer in " + member.getLanguage().getRealLanguage() + ".")
                  */
-                new ChatMessage(SYSTEM, "You are the host of the podcast."),
+                new ChatMessage(SYSTEM, "You are the host of the podcast, named 'OwncastBot'"),
                 new ChatMessage(SYSTEM, "Your job is to write a podcast script about what happened recently; Write it based on real news."),
                 new ChatMessage(SYSTEM, "Script should only contain what you have to say (no markdowns or background musics)"),
                 new ChatMessage(SYSTEM, "Seperate each sentence using '@'."),
