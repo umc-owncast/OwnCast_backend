@@ -5,6 +5,7 @@ import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.cast.dto.*;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
+import com.umc.owncast.domain.cast.service.chatGPT.ChatGptScriptDivider;
 import com.umc.owncast.domain.cast.service.chatGPT.script.ScriptService;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
@@ -42,6 +43,7 @@ public class CastServiceImpl implements CastService {
     private final TTSService ttsService;
     private final FileService fileService;
     private final SentenceService sentenceService;
+    private final ChatGptScriptDivider scriptDivider;
 
     private final CastRepository castRepository;
     private final PlaylistRepository playlistRepository;
@@ -59,7 +61,7 @@ public class CastServiceImpl implements CastService {
 
     @Override
     public CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest, Member member) {
-        String script = castRequest.getScript().strip();
+        String script = scriptDivider.placeDelimiter(castRequest.getScript(), "@").strip();
         KeywordCastCreationDTO request = KeywordCastCreationDTO.builder()
                 .voice(castRequest.getVoice())
                 .formality(castRequest.getFormality())
