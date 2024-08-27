@@ -3,7 +3,6 @@ package com.umc.owncast.domain.cast.service;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +21,11 @@ public class ParsingService {
         return result.toArray(new String[0]);
     }
 
-    public String[] parseSentences(String script) {
+    /** 구두점 (.!?)으로 문장 파싱 <br>
+     * => 예외상황 발생하므로 사용 X <br>
+     * (구두점 기준 파싱 필요해지면 Apache OpenNLP 등 라이브러리 사용하도록 변경) */
+    @Deprecated
+    public String[] parseSentencesByPunctuation(String script) {
         Pattern pattern = Pattern.compile("[^.!?@]+[.!?@]?");
         List<String> sentences = new ArrayList<>();
         Matcher matcher = pattern.matcher(script);

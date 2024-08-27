@@ -61,48 +61,19 @@ public class CastServiceImpl implements CastService {
 
     @Override
     public CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest, Member member) {
-        String script = scriptDivider.placeDelimiter(castRequest.getScript(), "@").strip();
+        // @로 문장 구분하여 전달
+        String script = scriptDivider.placeDelimiter(castRequest.getScript(), "@");
         KeywordCastCreationDTO request = KeywordCastCreationDTO.builder()
                 .voice(castRequest.getVoice())
                 .formality(castRequest.getFormality())
                 .build();
-        return handleCastCreation_scriptInput(request, script, member);
+        return handleCastCreation(request, script, member);
     }
 
     /** Cast와 Sentence 저장 후 CastScriptDTO로 묶어 반환 */
     private CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script, Member member) {
         // 키워드 입력 (@ 기준 파싱)
         TTSResultDTO ttsResult = ttsService.createSpeech(script, castRequest);
-        Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
-        int minutes = (int) (audioLength / 60);
-        int seconds = (int) Math.round(audioLength % 60);
-
-        Cast cast = Cast.builder()
-                .voice(castRequest.getVoice())
-                .audioLength(String.format("%02d:%02d", minutes, seconds))
-                .filePath(ttsResult.getMp3Path())
-                .formality(castRequest.getFormality())
-                .imagePath(CAST_DEFAULT_IMAGE_PATH)
-                .member(member)
-                .language(member.getLanguage())
-                .isPublic(false)
-                .hits(0L)
-                .build();
-        cast = castRepository.save(cast);
-        List<Sentence> sentences = sentenceService.save(script, ttsResult, cast);
-
-        return CastScriptDTO.builder()
-                .id(cast.getId())
-                .fileUrl(cast.getFilePath())
-                .sentences(sentences.stream()
-                        .map(SentenceResponseDTO::new)
-                        .toList())
-                .build();
-    }
-
-    private CastScriptDTO handleCastCreation_scriptInput(KeywordCastCreationDTO castRequest, String script, Member member) {
-        // 스크립트 입력 (유저가 직접 입력) -> 구두점 기준 파싱
-        TTSResultDTO ttsResult = ttsService.createSpeech_scriptInput(script, castRequest);
         Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
         int minutes = (int) (audioLength / 60);
         int seconds = (int) Math.round(audioLength % 60);

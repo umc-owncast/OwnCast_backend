@@ -28,25 +28,8 @@ public class TTSService {
         return requestSpeech(setSpeech(script, keywordCastCreationDTO));
     }
 
-    public TTSResultDTO createSpeech_scriptInput(String script, KeywordCastCreationDTO keywordCastCreationDTO) {
-        return requestSpeech(setSpeech_scriptInput(script, keywordCastCreationDTO));
-    }
-
     private TTSDTO setSpeech(String script, KeywordCastCreationDTO keywordCastCreationDTO) {
-//        String[] seperatedSentences = parsingService.parseSentences(script);
-        String[] seperatedSentences = parsingService.parseSentencesByDelimiter(script); // @로 파싱하도록
-        String processedScript = parsingService.addMarks(seperatedSentences);
-        String voice = VoiceCode.fromValue(keywordCastCreationDTO.getVoice()).getValue();
-        return TTSDTO.builder()
-                .voice(voice)   //ex: "en-US-Standard-A"
-                .language(voice.substring(0, 5))
-                .script(processedScript)
-                .build();
-    }
-
-    private TTSDTO setSpeech_scriptInput(String script, KeywordCastCreationDTO keywordCastCreationDTO) {
-        // 원래 setSpeech 함수
-        String[] seperatedSentences = parsingService.parseSentences(script);
+        String[] seperatedSentences = parsingService.parseSentencesByDelimiter(script); // @로 파싱
         String processedScript = parsingService.addMarks(seperatedSentences);
         String voice = VoiceCode.fromValue(keywordCastCreationDTO.getVoice()).getValue();
         return TTSDTO.builder()
