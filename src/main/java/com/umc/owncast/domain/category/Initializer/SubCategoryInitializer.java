@@ -28,7 +28,6 @@ public class SubCategoryInitializer implements CommandLineRunner {
             MainCategory movie = mainCategoryRepository.findById(5L).orElse(new MainCategory(5L, "드라마/영화"));
             MainCategory foods = mainCategoryRepository.findById(6L).orElse(new MainCategory(6L, "음식"));
             MainCategory news = mainCategoryRepository.findById(7L).orElse(new MainCategory(7L, "시사/뉴스"));
-            MainCategory etc = mainCategoryRepository.findById(8L).orElse(new MainCategory(8L, "직접 입력"));
 
             // 스포츠
             subCategoryRepository.save(new SubCategory(1L, "축구", sports, false));
@@ -85,14 +84,6 @@ public class SubCategoryInitializer implements CommandLineRunner {
             subCategoryRepository.save(new SubCategory(40L, "사회", news, false));
             subCategoryRepository.save(new SubCategory(41L, "기술", news, false));
             subCategoryRepository.save(new SubCategory(42L, "환경", news, false));
-
-            // 직접 입력
-            subCategoryRepository.save(new SubCategory(43L, "정치", etc, false));
-            subCategoryRepository.save(new SubCategory(44L, "경제", etc, false));
-            subCategoryRepository.save(new SubCategory(45L, "국제", etc, false));
-            subCategoryRepository.save(new SubCategory(46L, "사회", etc, false));
-            subCategoryRepository.save(new SubCategory(47L, "기술", etc, false));
-            subCategoryRepository.save(new SubCategory(48L, "환경", etc, false));
         }
     }
 }
