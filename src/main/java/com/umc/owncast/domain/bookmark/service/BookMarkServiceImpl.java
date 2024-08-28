@@ -2,7 +2,7 @@ package com.umc.owncast.domain.bookmark.service;
 
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
-import com.umc.owncast.domain.bookmark.Repository.BookmarkRepository;
+import com.umc.owncast.domain.bookmark.repository.BookmarkRepository;
 import com.umc.owncast.domain.bookmark.dto.BookmarkResultDTO;
 import com.umc.owncast.domain.bookmark.dto.BookmarkSaveResultDTO;
 import com.umc.owncast.domain.bookmark.entity.Bookmark;
@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -124,7 +123,7 @@ public class BookMarkServiceImpl implements BookmarkService {
 
         CastPlaylist castPlaylist = castPlaylistRepository.findBySentenceId(sentenceId, member.getId()).orElseThrow(() -> new UserHandler(ErrorCode.CAST_PLAYLIST_NOT_FOUND));
 
-        if (bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, member.getId()).isPresent()) {
+        if (bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_idOrderByCreatedAt(sentenceId, member.getId()).isPresent()) {
             throw new UserHandler(ErrorCode.BOOKMARK_ALREADY_EXIST);
         }
 
@@ -143,7 +142,7 @@ public class BookMarkServiceImpl implements BookmarkService {
     @Override
     public BookmarkSaveResultDTO deleteBookmark(Member member, Long sentenceId) {
 
-        Bookmark bookmark = bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, member.getId()).orElseThrow(() -> new UserHandler(ErrorCode.BOOKMARK_NOT_EXIST));
+        Bookmark bookmark = bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_idOrderByCreatedAt(sentenceId, member.getId()).orElseThrow(() -> new UserHandler(ErrorCode.BOOKMARK_NOT_EXIST));
 
         bookmarkRepository.delete(bookmark);
 
