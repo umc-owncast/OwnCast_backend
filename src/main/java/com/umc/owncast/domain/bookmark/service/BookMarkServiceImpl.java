@@ -2,7 +2,7 @@ package com.umc.owncast.domain.bookmark.service;
 
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
-import com.umc.owncast.domain.bookmark.repository.BookmarkRepository;
+import com.umc.owncast.domain.bookmark.Repository.BookmarkRepository;
 import com.umc.owncast.domain.bookmark.dto.BookmarkResultDTO;
 import com.umc.owncast.domain.bookmark.dto.BookmarkSaveResultDTO;
 import com.umc.owncast.domain.bookmark.entity.Bookmark;

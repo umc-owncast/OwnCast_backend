@@ -1,4 +1,4 @@
-package com.umc.owncast.domain.bookmark.repository;
+package com.umc.owncast.domain.bookmark.Repository;
 
 import com.umc.owncast.domain.bookmark.entity.Bookmark;
 import com.umc.owncast.domain.member.entity.Member;
