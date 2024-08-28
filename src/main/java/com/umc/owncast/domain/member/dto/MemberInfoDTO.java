@@ -15,5 +15,7 @@ public class MemberInfoDTO {
     String loginId;
     String username;
     String nickname;
+    String mainCategory;
+    String subCategory;
     Language language;
 }

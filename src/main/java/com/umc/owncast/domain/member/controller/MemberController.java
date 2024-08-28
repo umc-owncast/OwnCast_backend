@@ -74,6 +74,13 @@ public class MemberController {
     }
 
     @CrossOrigin
+    @Operation(summary = "현재 로그인한 유저의 언어 정보 가져오기")
+    @GetMapping("/language")
+    public ApiResponse<LanguageResponseDTO> getLanguage(@AuthUser Member member) {
+        return ApiResponse.onSuccess(memberService.getLanguage(member));
+    }
+
+    @CrossOrigin
     @Operation(summary = "언어 설정 바꾸기")
     @PostMapping("/setting/language")
     public ApiResponse<MemberSettingResponseDTO> language(@AuthUser Member member, @RequestBody LanguageDTO languageDTO) {

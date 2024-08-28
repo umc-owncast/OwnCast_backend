@@ -75,11 +75,25 @@ public class MemberService {
     }
 
     public MemberInfoDTO getMemberInfo(Member member){
+
+        MainCategory mainCategory = mainPreferRepository.findByMember(member).orElseThrow(() -> new UserHandler(ErrorCode.CATEGORY_NOT_EXIST)).getMainCategory();
+        SubCategory subCategory = subPreferRepository.findByMember(member).orElseThrow(() -> new UserHandler(ErrorCode.CATEGORY_NOT_EXIST)).getSubCategory();
+
         return MemberInfoDTO.builder()
                 .loginId(member.getLoginId())
                 .language(member.getLanguage())
                 .nickname(member.getNickname())
+                .mainCategory(mainCategory.getName())
+                .subCategory(subCategory.getName())
                 .username(member.getUsername())
+                .build();
+    }
+
+    public LanguageResponseDTO getLanguage(Member member) {
+
+        return LanguageResponseDTO.builder()
+                .language(member.getLanguage().getLanguage())
+                .accent(member.getLanguage())
                 .build();
     }
 
