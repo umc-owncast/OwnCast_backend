@@ -91,7 +91,7 @@ public class CastController {
 
     @GetMapping("/home")
     @Operation(summary = "홈 화면 키워드 6개 받아오기")
-    public ApiResponse<List<String>> getHomeKeyword(@AuthUser Member member) {
+    public ApiResponse<HomeDTO> getHomeKeyword(@AuthUser Member member) {
         System.out.println("GET api/cast/home");
         return ApiResponse.onSuccess(keywordService.createKeyword(member));
     }
