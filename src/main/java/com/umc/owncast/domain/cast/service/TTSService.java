@@ -29,7 +29,7 @@ public class TTSService {
     }
 
     private TTSDTO setSpeech(String script, KeywordCastCreationDTO keywordCastCreationDTO) {
-        String[] seperatedSentences = parsingService.parseSentences(script);
+        String[] seperatedSentences = parsingService.parseSentencesByDelimiter(script); // @로 파싱
         String processedScript = parsingService.addMarks(seperatedSentences);
         String voice = VoiceCode.fromValue(keywordCastCreationDTO.getVoice()).getValue();
         return TTSDTO.builder()

@@ -74,6 +74,15 @@ public class MemberService {
         return memberRepository.existsByLoginId(loginId);
     }
 
+    public MemberInfoDTO getMemberInfo(Member member){
+        return MemberInfoDTO.builder()
+                .loginId(member.getLoginId())
+                .language(member.getLanguage())
+                .nickname(member.getNickname())
+                .username(member.getUsername())
+                .build();
+    }
+
     @Transactional
     public String reissueToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = loginService.validateRefreshToken(request.getCookies());

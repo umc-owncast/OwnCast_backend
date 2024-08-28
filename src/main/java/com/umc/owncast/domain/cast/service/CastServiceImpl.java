@@ -5,6 +5,7 @@ import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.cast.dto.*;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
+import com.umc.owncast.domain.cast.service.chatGPT.ChatGptScriptDivider;
 import com.umc.owncast.domain.cast.service.chatGPT.script.ScriptService;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
@@ -42,6 +43,7 @@ public class CastServiceImpl implements CastService {
     private final TTSService ttsService;
     private final FileService fileService;
     private final SentenceService sentenceService;
+    private final ChatGptScriptDivider scriptDivider;
 
     private final CastRepository castRepository;
     private final PlaylistRepository playlistRepository;
@@ -59,7 +61,8 @@ public class CastServiceImpl implements CastService {
 
     @Override
     public CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest, Member member) {
-        String script = castRequest.getScript().strip();
+        // @로 문장 구분하여 전달
+        String script = scriptDivider.placeDelimiter(castRequest.getScript(), "@");
         KeywordCastCreationDTO request = KeywordCastCreationDTO.builder()
                 .voice(castRequest.getVoice())
                 .formality(castRequest.getFormality())
@@ -69,6 +72,7 @@ public class CastServiceImpl implements CastService {
 
     /** Cast와 Sentence 저장 후 CastScriptDTO로 묶어 반환 */
     private CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script, Member member) {
+        // 키워드 입력 (@ 기준 파싱)
         TTSResultDTO ttsResult = ttsService.createSpeech(script, castRequest);
         Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
         int minutes = (int) (audioLength / 60);
