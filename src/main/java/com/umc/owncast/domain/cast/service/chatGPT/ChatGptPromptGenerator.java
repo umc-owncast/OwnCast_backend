@@ -142,6 +142,7 @@ public class ChatGptPromptGenerator {
                 new ChatMessage(system, "For Art: Include recent art trends or notable figures like 'Beeple,' 'NFT art,' 'Yayoi Kusama,' 'Banksy's new works,' 'Virtual reality art,' 'Documenta 15.'"),
                 new ChatMessage(system, "For Sports: Use current trends or figures such as 'Live betting,' 'Esports tournaments,' 'Neymar Jr.,' 'Formula 1 regulations,' '2024 Olympics,' 'Team USA basketball.'"),
                 new ChatMessage(system, "For Music: Include popular or emerging artists and trends like 'Bad Bunny,' 'Lo-fi beats,' 'Music NFTs,' 'Adele's latest album,' 'Travis Scott collaborations,' 'Billboard Hot 100 hits.'"),
+                new ChatMessage(system, "Make sure that 6 words should be related to first and second keyword"),
                 new ChatMessage(system, "The answer should be in " + language.toLowerCase()) // 언어 설정 (English, Spanish, Japanese, ...)
         );
 

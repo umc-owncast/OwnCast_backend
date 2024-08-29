@@ -35,10 +35,10 @@ public class KeywordServiceImpl implements KeywordService {
         String mainCategoryName = mainCategoryRepository.getMainCategoryNameByMember(member).orElseThrow(()->new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
         String subCategoryName = subCategoryRepository.getSubCategoryNameByMember(member).orElseThrow(()->new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
 
+        if(mainCategoryName.equals("직접 입력")) mainCategoryName = subCategoryName;
+
         System.out.println("입력 받은 키워드 1: " + mainCategoryName);
         System.out.println("입력 받은 키워드 2: " + subCategoryName);
-
-        if(mainCategoryName.equals("직접 입력")) mainCategoryName = subCategoryName;
 
         try {
             ChatCompletionRequest prompt = chatGPTPromptGenerator.generateKeywordPrompt(mainCategoryName, subCategoryName);
