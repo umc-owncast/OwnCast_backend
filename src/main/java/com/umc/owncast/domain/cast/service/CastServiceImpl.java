@@ -9,6 +9,7 @@ import com.umc.owncast.domain.cast.service.chatGPT.ChatGptScriptDivider;
 import com.umc.owncast.domain.cast.service.chatGPT.script.ScriptService;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
+import com.umc.owncast.domain.category.entity.SubCategory;
 import com.umc.owncast.domain.enums.Language;
 import com.umc.owncast.domain.enums.MainCategory;
 import com.umc.owncast.domain.member.entity.Member;
