@@ -9,11 +9,12 @@ import com.umc.owncast.domain.cast.service.chatGPT.ChatGptScriptDivider;
 import com.umc.owncast.domain.cast.service.chatGPT.script.ScriptService;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
-import com.umc.owncast.domain.category.entity.MainCategory;
+import com.umc.owncast.domain.category.entity.SubCategory;
 import com.umc.owncast.domain.enums.Language;
+import com.umc.owncast.domain.enums.MainCategory;
 import com.umc.owncast.domain.member.entity.Member;
-import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
-import com.umc.owncast.domain.memberprefer.repository.MemberPreferRepository;
+import com.umc.owncast.domain.memberprefer.entity.SubPrefer;
+import com.umc.owncast.domain.memberprefer.repository.SubPreferRepository;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
@@ -44,11 +45,10 @@ public class CastServiceImpl implements CastService {
     private final FileService fileService;
     private final SentenceService sentenceService;
     private final ChatGptScriptDivider scriptDivider;
-
     private final CastRepository castRepository;
     private final PlaylistRepository playlistRepository;
     private final CastPlaylistRepository castPlaylistRepository;
-    private final MemberPreferRepository memberPreferRepository;
+    private final SubPreferRepository subPreferRepository;
 
     @Value("${app.image.default-path}")
     private String CAST_DEFAULT_IMAGE_PATH;
@@ -227,10 +227,9 @@ public class CastServiceImpl implements CastService {
         return new SimpleCastDTO(cast);
     }
 
-    private MainPrefer getMemberPrefer(Member member) {
-        return memberPreferRepository.findByMember(member)
-                .orElseThrow(() -> new UserHandler(ErrorCode.CAST_NOT_FOUND));
-
+    private MainCategory getMemberPrefer(Member member) {
+        SubPrefer subPrefer = subPreferRepository.findByMember(member).orElseThrow(() -> new UserHandler(ErrorCode.CAST_NOT_FOUND));
+        return subPrefer.getSubCategory().getMainCategory();
     }
 
     @Override
@@ -239,10 +238,10 @@ public class CastServiceImpl implements CastService {
         final int TOP_CASTS_LIMIT = 5;
         Pageable pageable = PageRequest.of(0, TOP_CASTS_LIMIT);
 
-        MainCategory userCategory = getMemberPrefer(member).getMainCategory();
+        MainCategory userCategory = getMemberPrefer(member);
         Language userLanguage = member.getLanguage();
 
-        List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryIdOrderByHitsDesc(userCategory, member, userLanguage, pageable).getContent();
+        List<Cast> castMainCategories = castRepository.findTop5ByMainCategoryOrderByHitsDesc(userCategory, member, userLanguage, pageable).getContent();
 
         return convertToCastHomeDTO(castMainCategories);
     }

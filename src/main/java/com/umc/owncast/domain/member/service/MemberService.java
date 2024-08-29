@@ -4,18 +4,15 @@ import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.jwt.JwtUtil;
 import com.umc.owncast.common.jwt.LoginService;
 import com.umc.owncast.common.response.status.ErrorCode;
-import com.umc.owncast.domain.category.entity.MainCategory;
 import com.umc.owncast.domain.category.entity.SubCategory;
-import com.umc.owncast.domain.category.repository.MainCategoryRepository;
 import com.umc.owncast.domain.category.repository.SubCategoryRepository;
 import com.umc.owncast.domain.enums.Language;
+import com.umc.owncast.domain.enums.MainCategory;
 import com.umc.owncast.domain.member.dto.*;
-import com.umc.owncast.domain.member.dto.MemberRequest.joinLoginIdDto;
+import com.umc.owncast.domain.member.dto.MemberRequest.JoinLoginIdDto;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.member.repository.MemberRepository;
-import com.umc.owncast.domain.memberprefer.entity.MainPrefer;
 import com.umc.owncast.domain.memberprefer.entity.SubPrefer;
-import com.umc.owncast.domain.memberprefer.repository.MainPreferRepository;
 import com.umc.owncast.domain.memberprefer.repository.SubPreferRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,14 +32,12 @@ public class MemberService {
     private final LoginService loginService;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-    private final MainPreferRepository mainPreferRepository;
     private final SubPreferRepository subPreferRepository;
-    private final MainCategoryRepository mainCategoryRepository;
     private final SubCategoryRepository subCategoryRepository;
 
 
     @Transactional
-    public RefreshTokenDto insertMember(HttpServletResponse response, joinLoginIdDto requestDto) {
+    public RefreshTokenDto insertMember(HttpServletResponse response, JoinLoginIdDto requestDto) {
 
         if (memberRepository.existsByNickname(requestDto.getNickname())) {
             throw new UserHandler(ErrorCode.NICKNAME_ALREADY_EXIST);
@@ -113,9 +108,7 @@ public class MemberService {
     }
 
     public MemberSettingResponseDTO preferSetting(Member member, MemberPreferRequestDTO memberPreferRequestDTO) {
-        MainCategory mainCategory = mainCategoryRepository.findByName(memberPreferRequestDTO.getMainCategory())
-                .orElseThrow(() -> new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
-
+        MainCategory mainCategory = MainCategory.valueOf(memberPreferRequestDTO.getMainCategory().toUpperCase(Locale.ROOT));
         SubCategory subCategory = subCategoryRepository.findByName(memberPreferRequestDTO.getSubCategory())
                 .orElseGet(() -> {
                     if (memberPreferRequestDTO.getSubCategory() == null) {
@@ -129,19 +122,6 @@ public class MemberService {
                     subCategoryRepository.save(newSubCategory);
                     return newSubCategory;
                 });
-
-        Optional<MainPrefer> mainPrefer = mainPreferRepository.findByMember(member);
-
-        if(mainPrefer.isPresent()) {
-            mainPrefer.get().setMainCategory(mainCategory);
-            mainPreferRepository.save(mainPrefer.get());
-        } else {
-            MainPrefer newMainPrefer = MainPrefer.builder()
-                    .member(member)
-                    .mainCategory(mainCategory)
-                    .build();
-            mainPreferRepository.save(newMainPrefer);
-        }
 
         Optional<SubPrefer> subPrefer = subPreferRepository.findByMember(member);
         if(subPrefer.isPresent()) {

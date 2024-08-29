@@ -10,11 +10,11 @@ import java.util.Optional;
 
 public interface SubCategoryRepository extends JpaRepository<SubCategory, Long> {
 
-    @Query(" SELECT s.name " +
+    @Query(" SELECT s " +
             " FROM SubCategory s " +
             " JOIN SubPrefer sp ON s.id =sp.subCategory.id " +
             " WHERE sp.member = :member ")
-    Optional<String> getSubCategoryNameByMember(@Param("member") Member member);
+    Optional<SubCategory> getSubCategoryNameByMember(@Param("member") Member member);
 
     Optional<SubCategory> findByName(String name);
 }
