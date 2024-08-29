@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.category.entity;
 
+import com.umc.owncast.domain.enums.MainCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,8 +21,7 @@ public class SubCategory {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @Enumerated(EnumType.STRING)
     private MainCategory mainCategory;
 
     @Column(nullable = false)
