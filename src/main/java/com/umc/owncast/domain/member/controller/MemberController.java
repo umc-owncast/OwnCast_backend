@@ -5,6 +5,8 @@ import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.member.annotation.AuthUser;
 import com.umc.owncast.domain.member.dto.*;
+import com.umc.owncast.domain.member.dto.MemberRequest.JoinLoginIdDto;
+import com.umc.owncast.domain.member.dto.MemberRequest.LoginDto;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.member.service.MemberMapper;
 import com.umc.owncast.domain.member.service.MemberService;
@@ -18,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.umc.owncast.common.response.status.SuccessCode._SIGNUP_SUCCESS;
 
-
 @Tag(name = "유저 관련 API", description = "유저 관련 API입니다")
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -30,13 +31,13 @@ public class MemberController {
     @Operation(summary = "회원가입 API")
     @PostMapping("/signup")
     public ApiResponse<RefreshTokenDto> joinByLoginId(HttpServletResponse response,
-                                                      @Valid @RequestBody MemberRequest.joinLoginIdDto requestDto) {
+                                                      @Valid @RequestBody JoinLoginIdDto requestDto) {
         return ApiResponse.of(_SIGNUP_SUCCESS, memberService.insertMember(response, requestDto));
     }
 
     @Operation(summary = "로그인 API")
     @PostMapping("/login")
-    public ApiResponse<LoginResponseDTO> login(@Valid @RequestBody MemberRequest.loginDto request) {
+    public ApiResponse<LoginResponseDTO> login(@Valid @RequestBody LoginDto request) {
         //Filter에서 작동, swagger 틀만 작성
         return ApiResponse.onSuccess(new LoginResponseDTO("mockup", "for swagger"));
     }

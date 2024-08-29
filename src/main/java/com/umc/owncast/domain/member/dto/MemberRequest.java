@@ -8,7 +8,7 @@ import lombok.Getter;
 public class MemberRequest {
 
     @Getter
-    public static class joinLoginIdDto {
+    public static class JoinLoginIdDto {
 
         @NotBlank
         @Size(max = 10, message = "닉네임은 10자 이내여야 합니다.")
@@ -41,18 +41,8 @@ public class MemberRequest {
     }
 
     @Getter
-    public static class loginDto {
+    public static class LoginDto {
         String loginId;
         String password;
-    }
-
-    @Getter
-    public static class memberPreferDto {
-        @NotBlank
-        String language;
-        @NotBlank
-        Long mainCategoryId;
-        Long subCategoryId;
-        String etc;
     }
 }

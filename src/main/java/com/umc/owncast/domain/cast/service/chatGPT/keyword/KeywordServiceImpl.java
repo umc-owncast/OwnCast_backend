@@ -8,7 +8,7 @@ import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.cast.dto.HomeDTO;
 import com.umc.owncast.domain.cast.service.chatGPT.ChatGptAnswerGenerator;
 import com.umc.owncast.domain.cast.service.chatGPT.ChatGptPromptGenerator;
-import com.umc.owncast.domain.category.repository.MainCategoryRepository;
+import com.umc.owncast.domain.category.entity.SubCategory;
 import com.umc.owncast.domain.category.repository.SubCategoryRepository;
 import com.umc.owncast.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +23,6 @@ public class KeywordServiceImpl implements KeywordService {
 
     private final ChatGptPromptGenerator chatGPTPromptGenerator;
     private final ChatGptAnswerGenerator answerGenerator;
-    private final MainCategoryRepository mainCategoryRepository;
     private final SubCategoryRepository subCategoryRepository;
 
     @Override
@@ -33,8 +31,9 @@ public class KeywordServiceImpl implements KeywordService {
         String script = "";
         List<String> keywords = null;
 
-        String mainCategoryName = mainCategoryRepository.getMainCategoryNameByMember(member).orElseThrow(()->new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
-        String subCategoryName = subCategoryRepository.getSubCategoryNameByMember(member).orElseThrow(()->new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
+        SubCategory subCategory = subCategoryRepository.getSubCategoryNameByMember(member).orElseThrow(()->new UserHandler(ErrorCode.CATEGORY_NOT_EXIST));
+        String subCategoryName = subCategory.getName();
+        String mainCategoryName = subCategory.getMainCategory().getKrSubCategory();
 
         System.out.println("입력 받은 키워드 1: " + mainCategoryName);
         System.out.println("입력 받은 키워드 2: " + subCategoryName);
