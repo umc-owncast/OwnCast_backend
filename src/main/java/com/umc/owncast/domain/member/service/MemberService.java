@@ -108,7 +108,8 @@ public class MemberService {
     }
 
     public MemberSettingResponseDTO preferSetting(Member member, MemberPreferRequestDTO memberPreferRequestDTO) {
-        MainCategory mainCategory = MainCategory.valueOf(memberPreferRequestDTO.getMainCategory().toUpperCase(Locale.ROOT));
+//        MainCategory mainCategory = MainCategory.valueOf(memberPreferRequestDTO.getMainCategory().toUpperCase(Locale.ROOT));
+        MainCategory mainCategory = MainCategory.fromValue(memberPreferRequestDTO.getMainCategory());
         SubCategory subCategory = subCategoryRepository.findByName(memberPreferRequestDTO.getSubCategory())
                 .orElseGet(() -> {
                     if (memberPreferRequestDTO.getSubCategory() == null) {
