@@ -12,7 +12,7 @@ public class ParsingService {
     private static final int MAX_LENGTH = 220;
 
     public String[] parseSentencesByDelimiter(String script){
-        String[] sentences = script.split("@");
+        String[] sentences = script.split("@|\\n\\n");
         List<String> result = new ArrayList<>();
         for(String s : sentences){
             if(s.isBlank()) continue;
@@ -43,9 +43,9 @@ public class ParsingService {
 
     }
 
-    public String addMarks(String[] sentences) {
-        int i = 1;
-        StringBuilder processedScript = new StringBuilder("<speak><mark name=\"0\"/>");
+    public String addMarks(List<String> sentences) {
+        int i = 0;
+        StringBuilder processedScript = new StringBuilder("<speak>");
 
         for (String sentence : sentences) {
             if(sentence.length() > MAX_LENGTH) {

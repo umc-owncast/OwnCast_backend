@@ -9,7 +9,6 @@ import com.umc.owncast.domain.cast.service.chatGPT.ChatGptScriptDivider;
 import com.umc.owncast.domain.cast.service.chatGPT.script.ScriptService;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
-import com.umc.owncast.domain.category.entity.SubCategory;
 import com.umc.owncast.domain.enums.Language;
 import com.umc.owncast.domain.enums.MainCategory;
 import com.umc.owncast.domain.member.entity.Member;
@@ -73,7 +72,6 @@ public class CastServiceImpl implements CastService {
 
     /** Cast와 Sentence 저장 후 CastScriptDTO로 묶어 반환 */
     private CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script, Member member) {
-        // 키워드 입력 (@ 기준 파싱)
         String[] seperatedSentences = parsingService.parseSentencesByDelimiter(script); // @로 파싱
         TTSResultDTO ttsResult = ttsService.createSpeech(seperatedSentences, castRequest);
         Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
