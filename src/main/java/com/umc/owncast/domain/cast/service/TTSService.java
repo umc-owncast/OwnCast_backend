@@ -3,6 +3,7 @@ package com.umc.owncast.domain.cast.service;
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
 import com.umc.owncast.domain.cast.dto.TTSDTO;
 import com.umc.owncast.domain.cast.dto.TTSResultDTO;
+import com.umc.owncast.domain.cast.dto.TTSTempDTO;
 import com.umc.owncast.domain.enums.VoiceCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,11 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class TTSService {
+    private static final Integer MaxByteLength = 4000;
     private final RestTemplate restTemplate;
     private final ParsingService parsingService;
     private final FileService fileService;
@@ -24,13 +27,38 @@ public class TTSService {
     @Value("${google.api.key}")
     private String apiKey;
 
-    public TTSResultDTO createSpeech(String script, KeywordCastCreationDTO keywordCastCreationDTO) {
-        return requestSpeech(setSpeech(script, keywordCastCreationDTO));
+    public TTSResultDTO createSpeech(String[] script, KeywordCastCreationDTO keywordCastCreationDTO) {
+        List<Double> timePoints = new ArrayList<>();
+        timePoints.add(0.0);
+        byte[] audio = new byte[0];
+        List<List<String>> splitScript = splitSentencesByByte(script);
+        for (List<String> row : splitScript) {
+            TTSTempDTO ttsTempDTO= requestSpeech(setSpeech(row, keywordCastCreationDTO));
+
+            byte[] result = new byte[audio.length + ttsTempDTO.getAudioBytes().length];
+            System.arraycopy(audio, 0, result, 0, audio.length);
+            System.arraycopy(ttsTempDTO.getAudioBytes(), 0, result, audio.length, ttsTempDTO.getAudioBytes().length);
+            audio = result;
+
+            if(timePoints.isEmpty()) {
+                timePoints = ttsTempDTO.getTimePointList();
+            } else {
+                Double lastValue = timePoints.get(timePoints.size() - 1);
+                for(Double value : ttsTempDTO.getTimePointList()) {
+                    timePoints.add(lastValue + value);
+                }
+                Collections.sort(timePoints);
+            }
+        }
+        String path = makeAudioFile(audio);
+        return TTSResultDTO.builder()
+                .mp3Path(path)
+                .timePointList(timePoints)
+                .build();
     }
 
-    private TTSDTO setSpeech(String script, KeywordCastCreationDTO keywordCastCreationDTO) {
-        String[] seperatedSentences = parsingService.parseSentencesByDelimiter(script); // @로 파싱
-        String processedScript = parsingService.addMarks(seperatedSentences);
+    private TTSDTO setSpeech(List<String> script, KeywordCastCreationDTO keywordCastCreationDTO) {
+        String processedScript = parsingService.addMarks(script);
         String voice = VoiceCode.fromValue(keywordCastCreationDTO.getVoice()).getValue();
         return TTSDTO.builder()
                 .voice(voice)   //ex: "en-US-Standard-A"
@@ -39,7 +67,7 @@ public class TTSService {
                 .build();
     }
 
-    private TTSResultDTO requestSpeech(TTSDTO ttsdto) {
+    private TTSTempDTO requestSpeech(TTSDTO ttsdto) {
         String url = "https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=" + apiKey;
 
         Map<String, Object> requestBody = new HashMap<>();
@@ -79,16 +107,37 @@ public class TTSService {
 
         byte[] audioBytes = Base64.getDecoder().decode(audioContent);
 
+        return TTSTempDTO.builder()
+                .audioBytes(audioBytes)
+                .timePointList(timepointList)
+                .build();
+    }
+
+    private String makeAudioFile (byte[] audioBytes) {
         MultipartFile multipartFile = new MockMultipartFile(
                 UUID.randomUUID() + ".mp3",
                 UUID.randomUUID() + ".mp3",
                 "audio/mpeg",
                 audioBytes);
-        String path = fileService.uploadFile(multipartFile);
+        return fileService.uploadFile(multipartFile);
+    }
 
-        return TTSResultDTO.builder()
-                .mp3Path(path)
-                .timePointList(timepointList)
-                .build();
+    private List<List<String>> splitSentencesByByte(String[] sentences) {
+        List<List<String>> result = new ArrayList<>();
+        int i = 0;
+
+        while(i < sentences.length)
+        {
+            List<String> row = new ArrayList<>();
+            int len = 0;
+            do {
+                row.add(sentences[i]);
+                len += sentences[i].getBytes(StandardCharsets.UTF_8).length;
+                i++;
+            } while (len < MaxByteLength && i < sentences.length);
+            result.add(row);
+        }
+
+        return result;
     }
 }

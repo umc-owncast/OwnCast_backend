@@ -49,6 +49,7 @@ public class CastServiceImpl implements CastService {
     private final PlaylistRepository playlistRepository;
     private final CastPlaylistRepository castPlaylistRepository;
     private final SubPreferRepository subPreferRepository;
+    private final ParsingService parsingService;
 
     @Value("${app.image.default-path}")
     private String CAST_DEFAULT_IMAGE_PATH;
@@ -72,8 +73,8 @@ public class CastServiceImpl implements CastService {
 
     /** Cast와 Sentence 저장 후 CastScriptDTO로 묶어 반환 */
     private CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script, Member member) {
-        // 키워드 입력 (@ 기준 파싱)
-        TTSResultDTO ttsResult = ttsService.createSpeech(script, castRequest);
+        String[] seperatedSentences = parsingService.parseSentencesByDelimiter(script); // @로 파싱
+        TTSResultDTO ttsResult = ttsService.createSpeech(seperatedSentences, castRequest);
         Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
         int minutes = (int) (audioLength / 60);
         int seconds = (int) Math.round(audioLength % 60);
@@ -90,7 +91,7 @@ public class CastServiceImpl implements CastService {
                 .hits(0L)
                 .build();
         cast = castRepository.save(cast);
-        List<Sentence> sentences = sentenceService.save(script, ttsResult, cast);
+        List<Sentence> sentences = sentenceService.save(script, seperatedSentences, ttsResult, cast);
 
         return CastScriptDTO.builder()
                 .id(cast.getId())
