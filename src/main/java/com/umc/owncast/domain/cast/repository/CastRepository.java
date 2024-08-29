@@ -1,9 +1,8 @@
 package com.umc.owncast.domain.cast.repository;
 
-
 import com.umc.owncast.domain.cast.entity.Cast;
-import com.umc.owncast.domain.category.entity.MainCategory;
 import com.umc.owncast.domain.enums.Language;
+import com.umc.owncast.domain.enums.MainCategory;
 import com.umc.owncast.domain.member.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CastRepository extends JpaRepository<Cast, Long> {
 
@@ -29,11 +27,15 @@ public interface CastRepository extends JpaRepository<Cast, Long> {
                           @Param("language") String language);
 
     @Query("SELECT c FROM Cast c " +
-            "JOIN MainPrefer m ON m.member = c.member " +
-            "WHERE m.mainCategory = :mainCategory " +
+            "JOIN SubPrefer s ON s.member = c.member " +
+            "JOIN SubCategory sub ON sub = s.subCategory " +
+            "WHERE sub.mainCategory = :mainCategory " +
             "AND c.isPublic = true " +
             "AND c.member != :member " +
             "AND c.language = :language " +
-            "ORDER BY c.hits DESC ")
-    Page<Cast> findTop5ByMainCategoryIdOrderByHitsDesc(@Param("mainCategory") MainCategory mainCategory, @Param("member") Member member, @Param("language") Language language, Pageable pageable);
+            "ORDER BY c.hits DESC")
+    Page<Cast> findTop5ByMainCategoryOrderByHitsDesc(@Param("mainCategory") MainCategory mainCategory,
+                                                      @Param("member") Member member,
+                                                      @Param("language") Language language,
+                                                      Pageable pageable);
 }
