@@ -24,13 +24,12 @@ public class TTSService {
     @Value("${google.api.key}")
     private String apiKey;
 
-    public TTSResultDTO createSpeech(String script, KeywordCastCreationDTO keywordCastCreationDTO) {
+    public TTSResultDTO createSpeech(String[] script, KeywordCastCreationDTO keywordCastCreationDTO) {
         return requestSpeech(setSpeech(script, keywordCastCreationDTO));
     }
 
-    private TTSDTO setSpeech(String script, KeywordCastCreationDTO keywordCastCreationDTO) {
-        String[] seperatedSentences = parsingService.parseSentencesByDelimiter(script); // @로 파싱
-        String processedScript = parsingService.addMarks(seperatedSentences);
+    private TTSDTO setSpeech(String[] script, KeywordCastCreationDTO keywordCastCreationDTO) {
+        String processedScript = parsingService.addMarks(script);
         String voice = VoiceCode.fromValue(keywordCastCreationDTO.getVoice()).getValue();
         return TTSDTO.builder()
                 .voice(voice)   //ex: "en-US-Standard-A"
