@@ -70,11 +70,17 @@ public class MemberService {
     }
 
     public MemberInfoDTO getMemberInfo(Member member){
+        Optional<SubPrefer> subPrefer = subPreferRepository.findByMember(member);
+        if(subPrefer.isEmpty()){
+            throw new UserHandler(ErrorCode.SUBCATEGORY_NOT_EXIST);
+        }
         return MemberInfoDTO.builder()
                 .loginId(member.getLoginId())
                 .language(member.getLanguage())
                 .nickname(member.getNickname())
                 .username(member.getUsername())
+                .mainCategory(subPrefer.get().getSubCategory().getMainCategory().getKrSubCategory())
+                .subCategory(subPrefer.get().getSubCategory().getName())
                 .build();
     }
 
