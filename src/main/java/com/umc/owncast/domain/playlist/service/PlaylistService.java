@@ -21,5 +21,5 @@ public interface PlaylistService {
 
     GetPlaylistDTO getAllMyPlaylists(Member member);
 
-    DeleteCastFromPlaylistDTO deleteCast(DeleteCastFromPlaylistDTO dto, Long playlistId);
+    DeleteCastFromPlaylistDTO deleteCast(Long playlistId, Long castId, Member member);
 }

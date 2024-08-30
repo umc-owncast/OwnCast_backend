@@ -83,10 +83,12 @@ public class PlaylistController {
     }
 
     @CrossOrigin
-    @DeleteMapping("/playlist/{playlistId}")
+    @DeleteMapping("/playlist/{playlistId}/cast/{castId}")
     @Operation(summary = "플레이리스트에 남의 캐스트 삭제")
-    public ApiResponse<DeleteCastFromPlaylistDTO> deleteCastFromPlaylist(@PathVariable("playlistId") Long playlistId,
-                                                      @RequestBody DeleteCastFromPlaylistDTO deleteCastFromPlaylistDTO) {
-        return ApiResponse.onSuccess(playlistService.deleteCast(deleteCastFromPlaylistDTO, playlistId));
+    public ApiResponse<DeleteCastFromPlaylistDTO> deleteCastFromPlaylist
+            (@PathVariable("playlistId") Long playlistId,
+             @PathVariable("castId") Long castId,
+             @AuthUser Member member) {
+        return ApiResponse.onSuccess(playlistService.deleteCast(playlistId, castId, member));
     }
 }
