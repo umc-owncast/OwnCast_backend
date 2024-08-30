@@ -3,6 +3,7 @@ package com.umc.owncast.domain.voiceexample.service;
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.enums.Language;
+import com.umc.owncast.domain.enums.VoiceCode;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.voiceexample.dto.VoiceExampleDTO;
 import com.umc.owncast.domain.voiceexample.entity.VoiceExample;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Service
@@ -34,5 +36,12 @@ public class VoiceExampleService {
         return voices.stream()
                 .map(VoiceExampleDTO::new)
                 .toList();
+    }
+
+    public VoiceExampleDTO fetchVoiceExample(String voiceCode, Member member) {
+        VoiceCode voice = VoiceCode.fromValue(voiceCode);
+        VoiceExample voiceExample = voiceExampleRepository.findByVoiceCode(voice)
+                .orElseThrow(()->new NoSuchElementException(voiceCode + "의 VoiceExample이 존재하지 않습니다."));
+        return new VoiceExampleDTO(voiceExample);
     }
 }
