@@ -5,6 +5,8 @@ import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
+import com.umc.owncast.domain.enums.Language;
+import com.umc.owncast.domain.member.entity.Member;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,12 +34,6 @@ public class ChatGptTranslationService implements TranslationService{
     @Override
     public String translateToKorean(String script) {
         List<ChatMessage> systemPrompt = List.of(
-                /* 옛 프롬프트
-                new ChatMessage(SYSTEM, "You are a translator which translates given script to korean."),
-                new ChatMessage(SYSTEM, "Translation result should look natural."),
-                new ChatMessage(SYSTEM, "The number of sentences of the translation result should be EQUAL to the original script."),
-                new ChatMessage(SYSTEM, "'@' means end of the sentence; you should leave it be.")
-                */
                 new ChatMessage(SYSTEM, "You are a translator which translates given script to korean."),
                 new ChatMessage(SYSTEM, "Translate the input, sentence by sentence."),
                 new ChatMessage(SYSTEM, "Each sentence in output should correspond with each sentences in input.")
@@ -59,8 +55,8 @@ public class ChatGptTranslationService implements TranslationService{
     }
 
     @Override
-    public String translateToMemberLanguage(String script) {
-        String memberLanguage = "english";
+    public String translateToMemberLanguage(String script, Language language) {
+        String memberLanguage = language.getRealLanguage();
 
         List<ChatMessage> systemPrompt = List.of(
                 new ChatMessage(SYSTEM, "You are a translator which translates given script to " + memberLanguage), // TODO 회원 기능 연동

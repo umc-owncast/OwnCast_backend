@@ -20,7 +20,7 @@ public class ChatGptScriptService implements ScriptService {
     public String createScript(Member member, KeywordCastCreationDTO castRequest) {
         String script = "";
         try {
-            String translatedKeyword = translationService.translateToMemberLanguage(castRequest.getKeyword());
+            String translatedKeyword = translationService.translateToMemberLanguage(castRequest.getKeyword(), member.getLanguage());
             castRequest.setKeyword(translatedKeyword);
             ChatCompletionRequest prompt = promptGenerator.generatePrompt(
                     castRequest.getKeyword(),
