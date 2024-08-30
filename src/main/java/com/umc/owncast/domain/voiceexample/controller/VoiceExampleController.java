@@ -12,11 +12,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @Tag(name = "보이스 API", description = "보이스 관련 API입니다")
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class VoiceExampleController {
     private final VoiceExampleService voiceExampleService;
