@@ -218,7 +218,9 @@ public class CastServiceImpl implements CastService {
         if(!Objects.equals(cast.getMember(), member)){
             throw new UserHandler(ErrorCode.NO_AUTHORITY);
         }
-        fileService.deleteFile(cast.getImagePath());
+        if(!cast.getImagePath().equals(CAST_DEFAULT_IMAGE_PATH)) {
+            fileService.deleteFile(cast.getImagePath());
+        }
         fileService.deleteFile(cast.getFilePath());
 
         castPlaylistRepository.deleteAllByCast(cast);
