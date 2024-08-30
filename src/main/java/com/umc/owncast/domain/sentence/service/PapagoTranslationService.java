@@ -1,8 +1,8 @@
 package com.umc.owncast.domain.sentence.service;
 
+import com.umc.owncast.domain.enums.Language;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -46,7 +46,7 @@ public class PapagoTranslationService implements TranslationService{
     }
 
     @Override
-    public String translateToMemberLanguage(String script) {
+    public String translateToMemberLanguage(String script, Language language) {
         return null;
     }
 
