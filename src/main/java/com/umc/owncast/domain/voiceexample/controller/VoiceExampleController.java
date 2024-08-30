@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -24,5 +25,12 @@ public class VoiceExampleController {
     @Operation(summary = "회원에 알맞는 목소리 오디오 경로 반환하는 API")
     public ApiResponse<List<VoiceExampleDTO>> fetchVoiceExamples(@AuthUser Member member){
         return ApiResponse.of(SuccessCode._OK, voiceExampleService.fetchVoiceExamplesForMember(member));
+    }
+
+    @GetMapping("/api/voice/{voiceCode}/example")
+    @Operation(summary = "특정 목소리 오디오 경로 반환하는 API")
+    public ApiResponse<VoiceExampleDTO> fetchVoiceExample(@PathVariable("voiceCode") String voiceCode,
+                                                          @AuthUser Member member){
+        return ApiResponse.of(SuccessCode._OK, voiceExampleService.fetchVoiceExample(voiceCode, member));
     }
 }
