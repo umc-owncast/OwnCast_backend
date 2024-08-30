@@ -124,7 +124,7 @@ public class BookMarkServiceImpl implements BookmarkService {
 
         CastPlaylist castPlaylist = castPlaylistRepository.findBySentenceId(sentenceId, member.getId()).orElseThrow(() -> new UserHandler(ErrorCode.CAST_PLAYLIST_NOT_FOUND));
 
-        if (bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, member.getId()).isPresent()) {
+        if (bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_idOrderByCreatedAtDesc(sentenceId, member.getId()).isPresent()) {
             throw new UserHandler(ErrorCode.BOOKMARK_ALREADY_EXIST);
         }
 
@@ -143,7 +143,7 @@ public class BookMarkServiceImpl implements BookmarkService {
     @Override
     public BookmarkSaveResultDTO deleteBookmark(Member member, Long sentenceId) {
 
-        Bookmark bookmark = bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_id(sentenceId, member.getId()).orElseThrow(() -> new UserHandler(ErrorCode.BOOKMARK_NOT_EXIST));
+        Bookmark bookmark = bookmarkRepository.findBookmarkBySentenceIdAndCastPlaylist_Playlist_Member_idOrderByCreatedAtDesc(sentenceId, member.getId()).orElseThrow(() -> new UserHandler(ErrorCode.BOOKMARK_NOT_EXIST));
 
         bookmarkRepository.delete(bookmark);
 
