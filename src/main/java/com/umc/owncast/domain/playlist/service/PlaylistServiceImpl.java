@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -196,12 +197,23 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     @Transactional
-    public DeleteCastFromPlaylistDTO deleteCast(DeleteCastFromPlaylistDTO dto, Long playlistId) {
-        Cast cast = castRepository.findById(dto.getCastId()).orElseThrow(() -> new UserHandler(ErrorCode.CAST_NOT_FOUND));
+    public DeleteCastFromPlaylistDTO deleteCast(Long playlistId, Long castId, Member member) {
+        Cast cast = castRepository.findById(castId).orElseThrow(() -> new UserHandler(ErrorCode.CAST_NOT_FOUND));
         Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
+
+        if(!Objects.equals(playlist.getMember().getId(), member.getId())){ // 본인의 플레이리스트가 아닌 경우
+            throw new UserHandler(ErrorCode.PLAYLIST_UNAUTHORIZED_ACCESS);
+        }
+
+        if(Objects.equals(cast.getMember().getId(), playlist.getMember().getId())) { // 본인이 만든 캐스트인 경우
+            throw new UserHandler(ErrorCode._BAD_REQUEST);
+        }
+
         castPlaylistRepository.deleteByCastAndPlaylist(cast, playlist);
 
-        return dto;
+        return DeleteCastFromPlaylistDTO.builder()
+                .castId(castId)
+                .build();
     }
 
     @Override
