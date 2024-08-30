@@ -1,4 +1,4 @@
-package com.umc.owncast.domain.category.Initializer;
+package com.umc.owncast.common.initializer;
 
 import com.umc.owncast.domain.category.entity.SubCategory;
 import com.umc.owncast.domain.category.repository.SubCategoryRepository;
