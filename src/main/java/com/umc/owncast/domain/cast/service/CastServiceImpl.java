@@ -57,7 +57,9 @@ public class CastServiceImpl implements CastService {
     @Override
     public CastScriptDTO createCastByKeyword(KeywordCastCreationDTO castRequest, Member member) {
         String script = scriptService.createScript(member, castRequest);
-        return handleCastCreation(castRequest, script, member);
+        String dividedScript = scriptDivider.placeDelimiter(script, "@");
+//        return handleCastCreation(castRequest, script, member);
+        return handleCastCreation(castRequest, dividedScript, member);
     }
 
     @Override
