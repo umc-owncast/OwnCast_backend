@@ -36,7 +36,8 @@ public class ChatGptTranslationService implements TranslationService{
         List<ChatMessage> systemPrompt = List.of(
                 new ChatMessage(SYSTEM, "You are a translator which translates given script to korean."),
                 new ChatMessage(SYSTEM, "Translate the input, sentence by sentence."),
-                new ChatMessage(SYSTEM, "Each sentence in output should correspond with each sentences in input.")
+//                new ChatMessage(SYSTEM, "Each sentence in output should correspond with each sentences in input.")
+                new ChatMessage(SYSTEM, "'@' is a sentence seperator, so leave it be; never touch it.")
         );
 
         List<ChatMessage> chatPrompt = List.of(
