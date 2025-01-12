@@ -1,64 +1,88 @@
-name: OwnCast Dev CI/CD
+name: Java CI with Gradle
 
+# 동작 조건 설정: master 브랜치에 push 또는 pull request가 발생할 경우 실행
 on:
   push:
-    branches:
-      - develop
-  workflow_dispatch: # (2).수동 실행도 가능하도록
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+# GitHub Actions가 접근 가능한 권한 설정
+permissions:
+  contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest # (3).OS환경
-    environment: develop
-    
+  # 1. Docker 이미지를 빌드하고 Docker Hub에 푸시하는 작업
+  build-docker-image:
+    runs-on: ubuntu-latest # 최신 우분투 환경에서 실행
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2 # (4).코드 check out
-        with:
-          ref: develop
+      # 1.1 코드 체크아웃
+      - uses: actions/checkout@v3
 
+      # 1.2 Java 17 설정
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: 17 # (5).자바 설치
-          distribution: 'adopt'
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Grant execute permission for gradlew
+      # 1.3 Gradle 실행 파일 권한 추가
+      - name: Run chmod to make gradlew executable
         run: chmod +x ./gradlew
-        shell: bash # (6).권한 부여
 
+      # 1.4 Spring Boot 애플리케이션 빌드
       - name: Build with Gradle
-        run: ./gradlew clean build -x test
-        shell: bash # (7).build시작
+        run: ./gradlew bootJar --parallel --no-daemon
 
-      - name: Get current time
-        uses: 1466587594/get-current-time@v2
-        id: current-time
+      # 1.5 Docker 이미지 빌드
+      - name: Build Docker Image
+        run: docker build -t '${{ secrets.DOCKER_USERNAME }}/github-actions-demo' .
+
+      # 1.6 Docker Hub 로그인
+      - name: Docker Hub Login
+        uses: docker/login-action@v2
         with:
-          format: YYYY-MM-DDTHH-mm-ss
-          utcOffset: "+09:00"# (8).build시점의 시간확보
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Show Current Time
-        run: echo "CurrentTime=$"
-        shell: bash # (9).확보한 시간 보여주기
+      # 1.7 Docker Hub에 이미지 푸시
+      - name: Push Docker Image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
 
-      - name: Generate deployment package
-        run: |
-          mkdir -p deploy
-          cp build/libs/*.jar deploy/application.jar
-          cp Procfile deploy/Procfile
-          cp -r .ebextensions deploy/.ebextensions
-          cp -r .platform deploy/.platform
-          cd deploy && zip -r deploy.zip .
+      # 환경 변수 설정
+      - name: Set up Environment
+        run: echo "${{ secrets.ENV_PROPERTIES }}" > ./.env # GitHub SecretKey 에서 설정한 내용으로 .env 파일 생성
 
-      - name: Beanstalk Deploy
-        uses: einaregilsson/beanstalk-deploy@v20
+      # 환경 변수 파일 서버로 전달하기(복사 후 붙여넣기)
+      - name: Send env file
+        uses: appleboy/scp-action@master
         with:
-          aws_access_key: ${{ secrets.AWS_ACTION_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_ACTION_SECRET_ACCESS_KEY }}
-          application_name: OwnCast-dev
-          environment_name: OwnCast-dev-env
-          version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
-          region: ap-northeast-2
-          deployment_package: deploy/deploy.zip
-          wait_for_deployment: false
+          username: ubuntu
+          host: ${{ secrets.EC2_HOST }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "./.env"
+          target: "/home/ubuntu"
+
+  # 2. AWS EC2 서버에 Docker 이미지를 배포하는 작업
+  deploy:
+    runs-on: ubuntu-latest # 최신 우분투 환경에서 실행
+    needs: build-docker-image # 이 작업은 Docker 이미지를 빌드한 후에 실행
+    steps:
+      # 2.1 EC2 서버로 SSH 연결 및 배포
+      - name: SSH to EC2 and Deploy
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{ secrets.EC2_HOST }} # EC2 인스턴스의 IP 주소 또는 호스트명
+          username: ${{ secrets.EC2_USER }} # EC2 SSH 사용자 이름
+          key: ${{ secrets.SSH_KEY }} # GitHub Secrets에 저장된 SSH 개인 키
+          port: 22
+          script: |
+            # 1. 기존 Docker 컨테이너 중지 및 삭제
+            sudo docker stop my-container || true
+            sudo docker rm my-container || true
+            
+            # 2. Docker Hub에서 최신 이미지 pull
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
+            
+            # 3. 새로운 컨테이너 실행 (환경 변수 전달)
+            sudo docker run -d --name my-container -p 8080:8080 --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
