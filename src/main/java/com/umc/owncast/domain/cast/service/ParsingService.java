@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.cast.service;
 
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.regex.Pattern;
 public class ParsingService {
     private static final int MAX_LENGTH = 220;
 
+    @TrackExecutionTime
     public String[] parseSentencesByDelimiter(String script){
         String[] sentences = script.split("@|\\n\\n");
         List<String> result = new ArrayList<>();
