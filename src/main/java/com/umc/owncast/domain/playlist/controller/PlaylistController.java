@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.playlist.controller;
 
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.domain.member.annotation.AuthUser;
 import com.umc.owncast.domain.member.entity.Member;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @RestController
+@TrackExecutionTime
 public class PlaylistController {
 
     private final PlaylistService playlistService;
