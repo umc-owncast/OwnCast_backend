@@ -3,7 +3,7 @@ package com.umc.owncast.common.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.owncast.common.exception.GeneralException;
 import com.umc.owncast.common.jwt.dto.LoginDTO;
-import com.umc.owncast.common.jwt.dto.LoginResponseDTO;
+import com.umc.owncast.common.jwt.dto.TokenDTO;
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.common.response.status.SuccessCode;
@@ -67,15 +67,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             return;
         }
 
-        Long userId = customUserDetails.getUserId();
+        String username = customUserDetails.getUsername();
 
-        String accessToken = loginService.issueAccessToken(userId);
+        String accessToken = loginService.issueAccessToken(username);
         //Cookie refreshTokenCookie = loginService.issueRefreshToken(userId);
-        String refreshToken = loginService.issueRefreshToken(userId);
+        String refreshToken = loginService.issueRefreshToken(username);
 
         response.addHeader("Authorization", accessToken);
         //response.addCookie(refreshTokenCookie);
-        writeOutput(request, response, HttpServletResponse.SC_OK, ApiResponse.of(SuccessCode._OK, new LoginResponseDTO(accessToken, refreshToken)));
+        writeOutput(request, response, HttpServletResponse.SC_OK, ApiResponse.of(SuccessCode._OK, new TokenDTO("Bearer", accessToken, refreshToken)));
     }
 
     @Override

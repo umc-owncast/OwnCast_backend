@@ -1,6 +1,8 @@
 package com.umc.owncast.domain.member.controller;
 
-import com.umc.owncast.common.jwt.dto.LoginResponseDTO;
+import com.umc.owncast.common.jwt.LoginService;
+import com.umc.owncast.common.jwt.dto.LoginDTO;
+import com.umc.owncast.common.jwt.dto.TokenDTO;
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.member.annotation.AuthUser;
@@ -27,6 +29,7 @@ import static com.umc.owncast.common.response.status.SuccessCode._SIGNUP_SUCCESS
 public class MemberController {
 
     private final MemberService memberService;
+    private final LoginService loginService;
 
     @Operation(summary = "회원가입 API")
     @PostMapping("/signup")
@@ -37,9 +40,10 @@ public class MemberController {
 
     @Operation(summary = "로그인 API")
     @PostMapping("/login")
-    public ApiResponse<LoginResponseDTO> login(@Valid @RequestBody LoginDto request) {
+    public ApiResponse<TokenDTO> login(@Valid @RequestBody LoginDto request) {
         //Filter에서 작동, swagger 틀만 작성
-        return ApiResponse.onSuccess(new LoginResponseDTO("mockup", "for swagger"));
+        LoginDTO loginDTO = new LoginDTO(request.getLoginId(), request.getPassword());
+        return ApiResponse.onSuccess(loginService.login(loginDTO));
     }
 
     @Operation(summary = "닉네임 중복 체크 API")
