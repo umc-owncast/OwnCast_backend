@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExecutionTimeAspect {
 
-    @Around("@annotation(com.umc.owncast.common.annotation.TrackExecutionTime)")
+    @Around("@annotation(com.umc.owncast.common.annotation.TrackExecutionTime)" +
+            "|| @within(com.umc.owncast.common.annotation.TrackExecutionTime)")
     public Object trackExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         // 메서드 실행 전후로 실행시간 측정
         long start = System.currentTimeMillis();
