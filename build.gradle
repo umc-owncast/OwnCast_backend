@@ -57,6 +57,9 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+    //NLP
+    implementation 'org.apache.opennlp:opennlp-tools:1.9.4'
 }
 
 tasks.named('test') {
