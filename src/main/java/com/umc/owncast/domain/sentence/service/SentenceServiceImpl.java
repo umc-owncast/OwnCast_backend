@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.sentence.service;
 
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.cast.dto.TTSResultDTO;
@@ -22,6 +23,7 @@ public class SentenceServiceImpl implements SentenceService {
     private final ParsingService parsingService;
 
     @Override
+    @TrackExecutionTime
     public List<Sentence> save(String original, String[] originalList, TTSResultDTO ttsResultDTO, Cast cast) {
         String koreanScript = translationService.translateToKorean(original);
         String[] koreanList = parsingService.parseSentencesByDelimiter(koreanScript);

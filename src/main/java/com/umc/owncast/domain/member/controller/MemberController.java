@@ -26,6 +26,7 @@ import static com.umc.owncast.common.response.status.SuccessCode._SIGNUP_SUCCESS
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 @RestController
+@TrackExecutionTime
 public class MemberController {
 
     private final MemberService memberService;
@@ -74,6 +75,7 @@ public class MemberController {
     @CrossOrigin
     @Operation(summary = "현재 로그인한 유저 정보 가져오기")
     @GetMapping("/info")
+    @TrackExecutionTime
     public ApiResponse<MemberInfoDTO> getInfo(@AuthUser Member member) {
         return ApiResponse.onSuccess(memberService.getMemberInfo(member));
     }

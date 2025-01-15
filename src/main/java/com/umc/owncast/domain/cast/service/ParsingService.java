@@ -1,7 +1,12 @@
 package com.umc.owncast.domain.cast.service;
 
+import com.umc.owncast.common.annotation.TrackExecutionTime;
+import opennlp.tools.sentdetect.SentenceDetectorME;
+import opennlp.tools.sentdetect.SentenceModel;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -10,7 +15,32 @@ import java.util.regex.Pattern;
 @Service
 public class ParsingService {
     private static final int MAX_LENGTH = 220;
+    private final SentenceDetectorME sentenceDetector;
 
+    public ParsingService() throws IOException {
+        // 문장 감지 모델 로드
+        InputStream modelIn = getClass().getResourceAsStream("/models/en-sent.bin");
+        SentenceModel model = new SentenceModel(modelIn);
+        this.sentenceDetector = new SentenceDetectorME(model);
+    }
+
+    @TrackExecutionTime
+    public String placeDelimiter(String script) {
+        String[] sentences = sentenceDetector.sentDetect(script);
+
+        // 결과 문자열 생성
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < sentences.length; i++) {
+            result.append(sentences[i].trim());
+            if (i < sentences.length - 1) {
+                result.append("@");
+            }
+        }
+
+        return result.toString();
+    }
+
+    @TrackExecutionTime
     public String[] parseSentencesByDelimiter(String script){
         String[] sentences = script.split("@|\\n\\n");
         List<String> result = new ArrayList<>();

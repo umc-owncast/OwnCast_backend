@@ -29,6 +29,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.json:json:20240303'
     implementation 'org.springframework:spring-test:6.1.10'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -57,6 +58,10 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    //NLP
+    implementation 'org.apache.opennlp:opennlp-tools:1.9.4'
+
 }
 
 tasks.named('test') {
