@@ -41,6 +41,12 @@ public enum ErrorCode implements BaseErrorCode {
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_4012", "토큰이 만료되었습니다"),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_4013", "토큰이 올바르지 않습니다"),
     OUTPUT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_5000", "서버 출력에 오류가 있습니다. 관리자에게 문의하세요"),
+    MISSING_AUTHOR_TOKEN(HttpStatus.UNAUTHORIZED, "4014", "권한 정보가 없는 토큰입니다"),
+    TOKEN_CREATION_FAILED(HttpStatus.UNAUTHORIZED, "4015", "토큰 생성에 실패했습니다."),
+    TOKEN_SAVE_FAILED(HttpStatus.UNAUTHORIZED, "4016", "토큰 저장에 실패했습니다."),
+
+
+
 
     //Cast 관련 에러
     CAST_NOT_FOUND(HttpStatus.BAD_REQUEST, "CAST4001", "해당 캐스트가 없습니다"),

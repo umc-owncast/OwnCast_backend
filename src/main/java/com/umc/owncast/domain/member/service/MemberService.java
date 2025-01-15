@@ -1,8 +1,9 @@
 package com.umc.owncast.domain.member.service;
 
 import com.umc.owncast.common.exception.handler.UserHandler;
-import com.umc.owncast.common.jwt.JwtUtil;
+import com.umc.owncast.common.jwt.JwtAuthenticationFilter;
 import com.umc.owncast.common.jwt.LoginService;
+import com.umc.owncast.common.jwt.TokenProvider;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.category.entity.SubCategory;
 import com.umc.owncast.domain.category.repository.SubCategoryRepository;
@@ -30,10 +31,11 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final LoginService loginService;
-    private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final SubPreferRepository subPreferRepository;
     private final SubCategoryRepository subCategoryRepository;
+    private final TokenProvider tokenProvider;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
 
     @Transactional
@@ -57,7 +59,7 @@ public class MemberService {
 
         return RefreshTokenDto.builder()
                 .memberId(savedMember.getId())
-                .refreshToken(issueToken(savedMember.getId(), response))
+                .refreshToken(issueToken(savedMember.getUsername(), response))
                 .build();
     }
 
@@ -86,19 +88,19 @@ public class MemberService {
 
     @Transactional
     public String reissueToken(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = loginService.validateRefreshToken(request.getCookies());
+        String refreshToken = jwtAuthenticationFilter.resolveToken(request);
 
-        Long userId = jwtUtil.getUserId(refreshToken);
-        String newAccessToken = loginService.issueAccessToken(userId);
-        String newRefreshToken = loginService.reissueRefreshToken(userId, refreshToken);
+        String username  = tokenProvider.getUsername(refreshToken);
+        String newAccessToken = loginService.issueAccessToken(username);
+        String newRefreshToken = loginService.reissueRefreshToken(username, refreshToken);
 
         response.addHeader("Authorization", newAccessToken);
         return newRefreshToken;
     }
 
-    private String issueToken(Long memberId, HttpServletResponse response) {
-        String newAccessToken = loginService.issueAccessToken(memberId);
-        String newRefreshToken = loginService.issueRefreshToken(memberId);
+    private String issueToken(String username, HttpServletResponse response) {
+        String newAccessToken = loginService.issueAccessToken(username);
+        String newRefreshToken = loginService.issueRefreshToken(username);
         response.addHeader("Authorization", newAccessToken);
         return newRefreshToken;
     }
