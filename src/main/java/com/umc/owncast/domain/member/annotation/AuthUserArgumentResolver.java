@@ -1,7 +1,7 @@
 package com.umc.owncast.domain.member.annotation;
 
 import com.umc.owncast.common.exception.handler.UserHandler;
-import com.umc.owncast.common.jwt.TokenProvider;
+import com.umc.owncast.common.jwt.JwtUtil;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.member.repository.MemberRepository;
@@ -18,7 +18,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
-    private final TokenProvider tokenProvider;
+    private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
 
     @Override
@@ -35,8 +35,8 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
         String bearer = webRequest.getHeader("Authorization");
         assert bearer != null;
         String token = bearer.substring(7);
-        String username = tokenProvider.getUsername(token);
+        Long memberId = jwtUtil.getUserId(token);
 
-        return memberRepository.findByUsername(username).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
+        return memberRepository.findById(memberId).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
     }
 }

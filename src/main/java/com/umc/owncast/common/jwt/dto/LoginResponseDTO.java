@@ -1,15 +1,11 @@
 package com.umc.owncast.common.jwt.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 
-@Builder
-@Data
+@Getter
 @AllArgsConstructor
-public class TokenDTO {
+public class LoginResponseDTO {
     private String accessToken;
     private String refreshToken;
-    private String grantType;
 }
