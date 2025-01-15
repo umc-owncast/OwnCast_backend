@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.cast.service;
 
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
 import com.umc.owncast.domain.cast.dto.TTSDTO;
 import com.umc.owncast.domain.cast.dto.TTSResultDTO;
@@ -27,6 +28,7 @@ public class TTSService {
     @Value("${google.api.key}")
     private String apiKey;
 
+    @TrackExecutionTime
     public TTSResultDTO createSpeech(String[] script, KeywordCastCreationDTO keywordCastCreationDTO) {
         List<Double> timePoints = new ArrayList<>();
         timePoints.add(0.0);

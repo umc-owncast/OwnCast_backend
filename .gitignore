@@ -38,3 +38,5 @@ out/
 
 ### 추가로 무시할 파일 ###
 *.mp3
+application*.yml
+application*.yaml

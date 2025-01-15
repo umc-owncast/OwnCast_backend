@@ -29,7 +29,7 @@ public class LogoutFilter extends OncePerRequestFilter {
         }
 
         try {
-            String refreshToken = loginService.validateRefreshToken(request.getCookies());
+            String refreshToken = loginService.validateRefreshToken(request);
             loginService.revokeRefreshToken(refreshToken);
 
             writeOutput(request, response, HttpServletResponse.SC_OK, ApiResponse.onSuccess(SuccessCode._OK));

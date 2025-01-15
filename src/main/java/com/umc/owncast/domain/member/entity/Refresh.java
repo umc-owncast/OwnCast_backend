@@ -19,7 +19,7 @@ public class Refresh extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-    private Long userId;
+    private String username;
     private String refreshToken;
     private LocalDateTime expiredAt;
 }

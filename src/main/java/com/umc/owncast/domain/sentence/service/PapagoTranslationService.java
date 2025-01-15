@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.sentence.service;
 
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import com.umc.owncast.domain.enums.Language;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ public class PapagoTranslationService implements TranslationService{
     String secret;
 
     @Override
+    @TrackExecutionTime
     public String translateToKorean(String script) {
         String clientId = id;
         String clientSecret = secret;
@@ -46,6 +48,7 @@ public class PapagoTranslationService implements TranslationService{
     }
 
     @Override
+    @TrackExecutionTime
     public String translateToMemberLanguage(String script, Language language) {
         return null;
     }

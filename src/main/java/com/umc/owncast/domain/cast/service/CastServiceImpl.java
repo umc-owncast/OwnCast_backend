@@ -5,11 +5,9 @@ import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.cast.dto.*;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
-import com.umc.owncast.domain.cast.service.chatGPT.ChatGptScriptDivider;
 import com.umc.owncast.domain.cast.service.chatGPT.script.ScriptService;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
-import com.umc.owncast.domain.category.entity.SubCategory;
 import com.umc.owncast.domain.enums.Language;
 import com.umc.owncast.domain.enums.MainCategory;
 import com.umc.owncast.domain.member.entity.Member;
@@ -44,7 +42,7 @@ public class CastServiceImpl implements CastService {
     private final TTSService ttsService;
     private final FileService fileService;
     private final SentenceService sentenceService;
-    private final ChatGptScriptDivider scriptDivider;
+    //private final ChatGptScriptDivider scriptDivider;
     private final CastRepository castRepository;
     private final PlaylistRepository playlistRepository;
     private final CastPlaylistRepository castPlaylistRepository;
@@ -57,15 +55,16 @@ public class CastServiceImpl implements CastService {
     @Override
     public CastScriptDTO createCastByKeyword(KeywordCastCreationDTO castRequest, Member member) {
         String script = scriptService.createScript(member, castRequest);
-        String dividedScript = scriptDivider.placeDelimiter(script, "@");
+        //String dividedScript = scriptDivider.placeDelimiter(script, "@");
+        String dividedScript = parsingService.placeDelimiter(script);
 //        return handleCastCreation(castRequest, script, member);
         return handleCastCreation(castRequest, dividedScript, member);
     }
 
     @Override
     public CastScriptDTO createCastByScript(ScriptCastCreationDTO castRequest, Member member) {
-        // @로 문장 구분하여 전달
-        String script = scriptDivider.placeDelimiter(castRequest.getScript(), "@");
+        //String script = scriptDivider.placeDelimiter(castRequest.getScript(), "@");
+        String script = parsingService.placeDelimiter(castRequest.getScript());
         KeywordCastCreationDTO request = KeywordCastCreationDTO.builder()
                 .voice(castRequest.getVoice())
                 .formality(castRequest.getFormality())

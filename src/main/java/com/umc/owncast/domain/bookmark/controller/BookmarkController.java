@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.bookmark.controller;
 
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.domain.bookmark.dto.BookmarkResultDTO;
 import com.umc.owncast.domain.bookmark.dto.BookmarkSaveResultDTO;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @RestController
+@TrackExecutionTime
 public class BookmarkController {
 
     private final BookmarkService bookmarkService;
