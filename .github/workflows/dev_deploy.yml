@@ -77,12 +77,19 @@ jobs:
           key: ${{ secrets.SSH_KEY }} # GitHub Secrets에 저장된 SSH 개인 키
           port: 22
           script: |
-            # 1. 기존 Docker 컨테이너 중지 및 삭제
+          # 1. 기존 Docker 컨테이너 중지 및 삭제
             sudo docker stop my-container || true
             sudo docker rm my-container || true
             
-            # 2. Docker Hub에서 최신 이미지 pull
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
+          # 2. Docker 네트워크 생성
+            sudo docker network create my-network || true  
             
-            # 3. 새로운 컨테이너 실행 (환경 변수 전달)
-            sudo docker run -d --name my-container -p 8080:8080 --env ACTIVE_PROFILE=dev --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
+          # 3. Docker Hub에서 최신 이미지 pull
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
+
+          # 4. Spring Boot 애플리케이션 컨테이너 실행 (네트워크 연결)
+            sudo docker run -d --name my-container -p 8080:8080 \
+            --env ACTIVE_PROFILE=dev \
+            --env-file /home/ubuntu/.env \
+            --network my-network \
+            ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
