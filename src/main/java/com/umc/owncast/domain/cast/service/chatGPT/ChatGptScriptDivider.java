@@ -5,6 +5,7 @@ import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class ChatGptScriptDivider {
 
 
     /** 문장 사이에 @를 삽입하도록 지시  */
+    @TrackExecutionTime
     public String placeDelimiter(String script, String delimiter) {
         List<ChatMessage> systemPrompt = List.of(
                 new ChatMessage(SYSTEM, "You are a sentence parser."),

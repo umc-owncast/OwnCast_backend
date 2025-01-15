@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.cast.service;
 
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class ParsingService {
         this.sentenceDetector = new SentenceDetectorME(model);
     }
 
+    @TrackExecutionTime
     public String placeDelimiter(String script) {
         String[] sentences = sentenceDetector.sentDetect(script);
 
@@ -38,6 +40,7 @@ public class ParsingService {
         return result.toString();
     }
 
+    @TrackExecutionTime
     public String[] parseSentencesByDelimiter(String script){
         String[] sentences = script.split("@|\\n\\n");
         List<String> result = new ArrayList<>();

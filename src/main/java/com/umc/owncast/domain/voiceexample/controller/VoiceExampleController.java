@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.voiceexample.controller;
 
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.member.annotation.AuthUser;
@@ -19,6 +20,7 @@ import java.util.List;
 @Tag(name = "보이스 API", description = "보이스 관련 API입니다")
 @RestController
 @RequiredArgsConstructor
+@TrackExecutionTime
 public class VoiceExampleController {
     private final VoiceExampleService voiceExampleService;
 

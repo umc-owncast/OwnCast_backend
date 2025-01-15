@@ -1,6 +1,7 @@
 package com.umc.owncast.domain.cast.service.chatGPT.script;
 
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import com.umc.owncast.domain.cast.dto.KeywordCastCreationDTO;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.cast.service.chatGPT.ChatGptAnswerGenerator;
@@ -17,6 +18,7 @@ public class ChatGptScriptService implements ScriptService {
     private final ChatGptAnswerGenerator answerGenerator;
     private final TranslationService translationService;
 
+    @TrackExecutionTime
     public String createScript(Member member, KeywordCastCreationDTO castRequest) {
         String script = "";
         try {

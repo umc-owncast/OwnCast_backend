@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.cast.controller;
 
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import com.umc.owncast.common.response.ApiResponse;
 import com.umc.owncast.common.response.status.SuccessCode;
 import com.umc.owncast.domain.cast.dto.*;
@@ -21,6 +22,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/cast")
+@TrackExecutionTime
 public class CastController {
     private final KeywordService keywordService;
     private final CastService castService;
@@ -41,6 +43,7 @@ public class CastController {
     /* Cast 생성 API (script) */
     @PostMapping("/script")
     @Operation(summary = "스크립트로 캐스트를 생성하는 API.")
+    @TrackExecutionTime
     public ApiResponse<CastScriptDTO> createCastByScript(@Valid @RequestBody ScriptCastCreationDTO castRequest,
                                                   @AuthUser Member member) {
         System.out.println("GET api/cast/script");

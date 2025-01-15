@@ -5,8 +5,8 @@ import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import com.umc.owncast.domain.enums.Language;
-import com.umc.owncast.domain.member.entity.Member;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,6 +32,7 @@ public class ChatGptTranslationService implements TranslationService{
     }
 
     @Override
+    @TrackExecutionTime
     public String translateToKorean(String script) {
         List<ChatMessage> systemPrompt = List.of(
                 new ChatMessage(SYSTEM, "You are a translator which translates given script to korean."),
@@ -56,6 +57,7 @@ public class ChatGptTranslationService implements TranslationService{
     }
 
     @Override
+    @TrackExecutionTime
     public String translateToMemberLanguage(String script, Language language) {
         String memberLanguage = language.getRealLanguage();
 
