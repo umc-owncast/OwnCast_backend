@@ -92,4 +92,6 @@ jobs:
             --env ACTIVE_PROFILE=dev \
             --env-file /home/ubuntu/.env \
             --network my-network \
+            --memory="512m" \
+            --memory-swap="1024m" \
             ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
