@@ -15,9 +15,10 @@ ENV AWS_ACCESS_KEY=${AWS_ACCESS_KEY} \
     RDS_URL=${RDS_URL} \
     RDS_USERNAME=${RDS_USERNAME} \
     DEFAULT_IMAGE_PATH=${DEFAULT_IMAGE_PATH}
+    S3_BUCKET=${S3_BUCKET}
 
 # jar 파일 복사
 COPY ${JAR_FILE} app.jar
 
 # 애플리케이션 실행 명령어
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=${ACTIVE_PROFILE}", "-jar", "/app.jar"]
