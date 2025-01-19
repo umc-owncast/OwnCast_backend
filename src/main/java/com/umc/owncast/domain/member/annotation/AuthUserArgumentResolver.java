@@ -35,8 +35,8 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
         String bearer = webRequest.getHeader("Authorization");
         assert bearer != null;
         String token = bearer.substring(7);
-        String username = tokenProvider.getUsername(token);
+        String username = tokenProvider.getAuthentication(token).getName();
 
-        return memberRepository.findByUsername(username).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
+        return memberRepository.findByLoginId(username).orElseThrow(() -> new UserHandler(ErrorCode.MEMBER_NOT_FOUND));
     }
 }

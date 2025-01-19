@@ -90,7 +90,7 @@ public class MemberService {
     public String reissueToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = jwtAuthenticationFilter.resolveToken(request);
 
-        String username  = tokenProvider.getUsername(refreshToken);
+        String username  = tokenProvider.getAuthentication(refreshToken).getName();
         String newAccessToken = loginService.issueAccessToken(username);
         String newRefreshToken = loginService.reissueRefreshToken(username, refreshToken);
 

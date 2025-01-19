@@ -101,11 +101,6 @@ public class TokenProvider {
         return false;
     }
 
-    public String getUsername(String refreshToken) {
-        Claims claims = parseClaims(refreshToken);
-        return claims.getSubject();
-    }
-
     private Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
