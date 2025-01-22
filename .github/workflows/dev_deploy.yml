@@ -4,8 +4,6 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ "develop" ]
-  pull_request:
-    branches: [ "develop" ]
 
 # GitHub Actions가 접근 가능한 권한 설정
 permissions:
