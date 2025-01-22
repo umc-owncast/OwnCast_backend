@@ -34,7 +34,7 @@ jobs:
 
       # 1.5 Docker 이미지 빌드
       - name: Build Docker Image
-        run: docker build -t '${{ secrets.DOCKER_USERNAME }}/github-actions-demo' -f .docker/Dockerfile .
+        run: docker build --no-cache -t '${{ secrets.DOCKER_USERNAME }}/github-actions-demo' -f .docker/Dockerfile .
 
       # 1.6 Docker Hub 로그인
       - name: Docker Hub Login
