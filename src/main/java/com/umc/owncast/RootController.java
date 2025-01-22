@@ -8,6 +8,6 @@ public class RootController {
 
         @GetMapping("/health")
     public String healthCheck() {
-        return "OwnCast health check!";
+        return "OwnCast health check!!!";
     }
 }
