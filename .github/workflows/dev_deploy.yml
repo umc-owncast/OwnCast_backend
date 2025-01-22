@@ -79,13 +79,16 @@ jobs:
             sudo docker stop my-container || true
             sudo docker rm my-container || true
             
-            # 2. Docker 네트워크 생성
+            # 2. 기존 Docker 이미지 삭제
+            sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/github-actions-demo || true
+            
+            # 3. Docker 네트워크 생성
             sudo docker network create my-network || true  
             
-            # 3. Docker Hub에서 최신 이미지 pull
+            # 4. Docker Hub에서 최신 이미지 pull
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
 
-            # 4. Spring Boot 애플리케이션 컨테이너 실행 (네트워크 연결)
+            # 5. Spring Boot 애플리케이션 컨테이너 실행 (네트워크 연결)
             sudo docker run -d --name my-container -p 8080:8080 \
             --env ACTIVE_PROFILE=dev \
             --env-file /home/ubuntu/.env \
