@@ -21,7 +21,7 @@ public class ExecutionTimeAspect {
 
         String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
-        log.info(className + ": " + methodName + "() executed in " + (end - start) + "ms");
+        log.info("{}: {}() executed in {}ms", className, methodName, end - start);
         return proceed;
     }
 }

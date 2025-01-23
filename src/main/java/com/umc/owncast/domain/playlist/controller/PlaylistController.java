@@ -28,7 +28,9 @@ public class PlaylistController {
     @Operation(summary = "플레이리스트 추가")
     @PostMapping("/playlist/{playlistName}")
     public ApiResponse<AddPlaylistDTO> addPlaylist(@AuthUser Member member, @PathVariable("playlistName") String playlistName) {
-        System.out.println("POST /api/playlist/" + playlistName);
+
+        log.info("플레이리스트 추가 : POST /api/playlist/{}", playlistName);
+
         return ApiResponse.onSuccess(playlistService.addPlaylist(member, playlistName));
     }
 

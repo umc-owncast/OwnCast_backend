@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.playlist.service;
 
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.cast.entity.Cast;
@@ -104,6 +105,8 @@ public class PlaylistServiceImpl implements PlaylistService {
                 .name(playlistName)
                 .member(member)
                 .build();
+
+        log.info("새 플레이리스트 생성 {}", newPlaylist.getName());
 
         playlistRepository.save(newPlaylist);
 
