@@ -11,7 +11,7 @@ public interface SentenceService {
     /**
      * 1차적으로 Cast 생성 된 후 cast를 추가하려 sentence 객체 생성하도록 수정
      */
-    List<Sentence> save(String original, String[] originalList, TTSResultDTO ttsResultDTO, Cast cast);
+    List<Sentence> saveSentences(String original, String[] originalList, TTSResultDTO ttsResultDTO, Cast cast);
 
     /**
      * 매개변수를 묶어 List<Sentence>로 반환

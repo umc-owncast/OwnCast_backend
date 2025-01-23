@@ -24,7 +24,7 @@ public class SentenceServiceImpl implements SentenceService {
 
     @Override
     @TrackExecutionTime
-    public List<Sentence> save(String original, String[] originalList, TTSResultDTO ttsResultDTO, Cast cast) {
+    public List<Sentence> saveSentences(String original, String[] originalList, TTSResultDTO ttsResultDTO, Cast cast) {
         String koreanScript = translationService.translateToKorean(original);
         String[] koreanList = parsingService.parseSentencesByDelimiter(koreanScript);
         List<Sentence> sentences = new ArrayList<>();

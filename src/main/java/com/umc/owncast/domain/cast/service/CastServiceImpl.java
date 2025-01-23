@@ -92,7 +92,7 @@ public class CastServiceImpl implements CastService {
                 .hits(0L)
                 .build();
         cast = castRepository.save(cast);
-        List<Sentence> sentences = sentenceService.save(script, seperatedSentences, ttsResult, cast);
+        List<Sentence> sentences = sentenceService.saveSentences(script, seperatedSentences, ttsResult, cast);
 
         return CastScriptDTO.builder()
                 .id(cast.getId())
