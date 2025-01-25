@@ -21,7 +21,9 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @Entity
-@Table(name = "cast")
+@Table(
+        name = "cast"
+)
 @AllArgsConstructor
 public class Cast extends BaseTimeEntity {
 

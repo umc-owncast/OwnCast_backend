@@ -17,7 +17,12 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @Entity
-@Table(name = "cast_playlist")
+@Table(
+        name = "cast_playlist",
+        indexes = {
+                @Index(name = "idx_cast_playlist_created_at", columnList = "playlist_id, created_at")
+        }
+)
 @AllArgsConstructor
 public class CastPlaylist extends BaseTimeEntity {
 

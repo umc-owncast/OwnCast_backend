@@ -29,7 +29,7 @@ public class PlaylistController {
     @PostMapping("/playlist/{playlistName}")
     public ApiResponse<AddPlaylistDTO> addPlaylist(@AuthUser Member member, @PathVariable("playlistName") String playlistName) {
 
-        log.info("플레이리스트 추가 : POST /api/playlist/{}", playlistName);
+        log.info("POST /api/playlist/{}");
 
         return ApiResponse.onSuccess(playlistService.addPlaylist(member, playlistName));
     }
@@ -38,7 +38,9 @@ public class PlaylistController {
     @Operation(summary = "사용자의 플레이리스트 불러오기")
     @GetMapping("/playlist/view")
     public ApiResponse<List<PlaylistResultDTO>> getPlaylists(@AuthUser Member member) {
-        System.out.println("GET /api/playlist/view");
+
+        log.info("GET /api/playlist/view");
+
         return ApiResponse.onSuccess(playlistService.getAllPlaylists(member));
     }
 

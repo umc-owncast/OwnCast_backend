@@ -2,6 +2,7 @@ package com.umc.owncast.domain.castplaylist.repository;
 
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
+import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,4 +57,6 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
 
 //    @Query("SELECT c FROM CastPlaylist c WHERE c.playlist.member.id = :memberId AND c.cast.id = :castId ")
     Optional<CastPlaylist> findByPlaylistMemberIdAndCastId(Long memberId, Long castId);
+
+    List<CastPlaylist> findAllByPlaylistMember(@Param("member") Member member);
 }

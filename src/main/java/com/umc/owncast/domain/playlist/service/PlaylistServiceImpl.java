@@ -11,6 +11,7 @@ import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.playlist.dto.*;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,62 +41,6 @@ public class PlaylistServiceImpl implements PlaylistService {
     private String DEFAULT_IMAGE_PATH;
 
     @Override
-    public List<PlaylistResultDTO> getAllPlaylists(Member member) {
-
-        List<Playlist> playlistList = playlistRepository.findAllByMemberIdOrderByCreatedAt(member.getId());
-        List<PlaylistResultDTO> playlistDTOList = new ArrayList<>();
-        Pageable pageable = PageRequest.of(0, 1);
-
-        Cast myCastImagePath = castPlaylistRepository.findFirstSavedCast(member.getId(), pageable)
-                .getContent()
-                .stream()
-                .findFirst()
-                .orElse(Cast.builder().imagePath(DEFAULT_IMAGE_PATH).build());
-
-        Cast mySavedCastImagePath = castPlaylistRepository.findFirstOtherCast(member.getId(), pageable)
-                .getContent()
-                .stream()
-                .findFirst()
-                .orElse(Cast.builder().imagePath(DEFAULT_IMAGE_PATH).build());
-
-        /* CAST 이미지 경로 값 자체가 null인 경우를 해결해야 함 */
-
-        playlistDTOList.add(convertToPlaylistResultDTO("내가 만든 캐스트", myCastImagePath.getImagePath(), null, null));
-
-        playlistDTOList.add(convertToPlaylistResultDTO("담아온 캐스트", mySavedCastImagePath.getImagePath(), null, null));
-
-        playlistList.forEach(playlist -> {
-            String playlistName = playlist.getName();
-            String playlistImagePath = getOldestCastFromPlaylist(playlist.getId())
-                    .map(Cast::getImagePath)
-                    .orElse(DEFAULT_IMAGE_PATH);
-            Long playlistId = playlist.getId();
-            Long totalCast = castPlaylistRepository.countAllByPlaylist(playlist);
-
-            playlistDTOList.add(convertToPlaylistResultDTO(playlistName, playlistImagePath, playlistId, totalCast));
-
-        });
-
-        return playlistDTOList;
-    }
-
-    private PlaylistResultDTO convertToPlaylistResultDTO(String name, String imagePath, Long playlistId, Long totalCast) {
-        return PlaylistResultDTO.builder()
-                .name(name)
-                .imagePath(imagePath)
-                .playlistId(playlistId)
-                .totalCast(totalCast)
-                .build();
-    }
-
-    private Optional<Cast> getOldestCastFromPlaylist(Long playlistId) {
-        Optional<CastPlaylist> optionalCast = castPlaylistRepository.findFirstByPlaylist_IdOrderByCreatedAt(playlistId);
-
-        return optionalCast.map(CastPlaylist::getCast);
-    }
-
-
-    @Override
     @Transactional
     public AddPlaylistDTO addPlaylist(Member member, String playlistName) {
 
@@ -114,6 +60,54 @@ public class PlaylistServiceImpl implements PlaylistService {
                 .playlistId(newPlaylist.getId())
                 .build();
 
+    }
+
+    @Override
+    @TrackExecutionTime
+    public List<PlaylistResultDTO> getAllPlaylists(Member member) {
+        // playlistDTOList 초기화
+        List<PlaylistResultDTO> playlistDTOList = new ArrayList<>();
+
+        // 기본 캐스트 리스트 추가
+        addDefaultPlaylists(playlistDTOList);
+
+        // 플레이리스트 목록 가져오기
+        List<Playlist> playlistList = playlistRepository.findAllByMember(member);
+
+        log.info("playlistList: {}", playlistList.size());
+
+        playlistList.forEach(playlist -> {
+
+            String playlistName = playlist.getName();
+            String playlistImagePath = Optional.ofNullable(playlist.getImagePath()).orElse(DEFAULT_IMAGE_PATH);
+            Long playlistId = playlist.getId();
+            Long totalCast = playlist.getCastSize();
+
+            playlistDTOList.add(convertToPlaylistResultDTO(playlistName, playlistImagePath, playlistId, totalCast));
+        });
+
+        return playlistDTOList;
+    }
+
+    // 기본 캐스트 리스트를 추가하는 메서드
+    private void addDefaultPlaylists(List<PlaylistResultDTO> playlistDTOList) {
+        playlistDTOList.add(convertToPlaylistResultDTO("내가 만든 캐스트", DEFAULT_IMAGE_PATH, null, null)); // TODO 이것도 개선 해야 됨.
+        playlistDTOList.add(convertToPlaylistResultDTO("담아온 캐스트", DEFAULT_IMAGE_PATH, null, null));
+    }
+
+    private PlaylistResultDTO convertToPlaylistResultDTO(String name, String imagePath, Long playlistId, Long totalCast) {
+        return PlaylistResultDTO.builder()
+                .name(name)
+                .imagePath(imagePath)
+                .playlistId(playlistId)
+                .totalCast(totalCast)
+                .build();
+    }
+
+    private Optional<Cast> getOldestCastFromPlaylist(Long playlistId) {
+        Optional<CastPlaylist> optionalCast = castPlaylistRepository.findFirstByPlaylist_IdOrderByCreatedAt(playlistId);
+
+        return optionalCast.map(CastPlaylist::getCast);
     }
 
     @Override
@@ -239,6 +233,33 @@ public class PlaylistServiceImpl implements PlaylistService {
                 .playlistId(playlist.getId())
                 .playlistName(playlist.getName())
                 .build();
+    }
+
+    @Override
+    @Scheduled(fixedRate = 3600000)
+    @TrackExecutionTime
+    public void updateImage(){
+
+        log.info("플레이리스트에 이미지를 넣는 중");
+
+        List<Playlist> playlists = playlistRepository.findAllByImagePathIsNull();
+
+        log.info("이미지를 넣어야 할 플레이리스트의 수 : {}", playlists.size());
+
+        // image_path가 null인 플레이리스트만 가져오기
+        playlists.forEach(playlist -> {
+                    // 가장 오래된 CastPlay를 조회하여 imagePath를 설정
+                    String imagePath = castPlaylistRepository.findFirstByPlaylist_IdOrderByCreatedAt(playlist.getId())
+                            .map(castPlay -> castPlay.getCast().getImagePath())
+                            .orElse(null);
+
+                    log.info("이미지를 찾았습니다 : {}", imagePath);
+
+                    playlist.setImagePath(imagePath);
+
+                    // 업데이트된 playlist 저장
+                    playlistRepository.save(playlist);
+                });
     }
 
     private CastDTO convertToCastDTO(CastPlaylist castPlaylist) {

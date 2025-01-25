@@ -22,4 +22,6 @@ public interface PlaylistService {
     GetPlaylistDTO getAllMyPlaylists(Member member);
 
     DeleteCastFromPlaylistDTO deleteCast(Long playlistId, Long castId, Member member);
+
+    void updateImage();
 }
