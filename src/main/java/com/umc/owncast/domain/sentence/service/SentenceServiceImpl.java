@@ -43,6 +43,12 @@ public class SentenceServiceImpl implements SentenceService {
     }
 
     @Override
+    public List<Sentence> saveSentences(String[] parsedOriginalScript, String[] parsedKoreanScript, TTSResultDTO ttsResultDTO, Cast cast) {
+        // todo
+        return null;
+    }
+
+    @Override
     public Sentence findById(Long sentenceId) {
         return sentenceRepository.findById(sentenceId)
                 .orElseThrow(() -> new UserHandler(ErrorCode.SENTENCE_NOT_FOUND));
