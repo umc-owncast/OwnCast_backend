@@ -18,6 +18,7 @@ import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import com.umc.owncast.domain.sentence.dto.SentenceResponseDTO;
 import com.umc.owncast.domain.sentence.entity.Sentence;
 import com.umc.owncast.domain.sentence.service.SentenceService;
+import com.umc.owncast.domain.sentence.service.TranslationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 @Service
 @RequiredArgsConstructor
@@ -43,11 +47,15 @@ public class CastServiceImpl implements CastService {
     private final FileService fileService;
     private final SentenceService sentenceService;
     //private final ChatGptScriptDivider scriptDivider;
+    private final ParsingService parsingService;
+    private final TranslationService translationService;
+
     private final CastRepository castRepository;
     private final PlaylistRepository playlistRepository;
     private final CastPlaylistRepository castPlaylistRepository;
     private final SubPreferRepository subPreferRepository;
-    private final ParsingService parsingService;
+
+
 
     @Value("${app.image.default-path}")
     private String CAST_DEFAULT_IMAGE_PATH;
@@ -74,33 +82,59 @@ public class CastServiceImpl implements CastService {
 
     /** Cast와 Sentence 저장 후 CastScriptDTO로 묶어 반환 */
     private CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script, Member member) {
-        String[] seperatedSentences = parsingService.parseSentencesByDelimiter(script); // @로 파싱
-        TTSResultDTO ttsResult = ttsService.createSpeech(seperatedSentences, castRequest);
-        Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
-        int minutes = (int) (audioLength / 60);
-        int seconds = (int) Math.round(audioLength % 60);
+        // 작업 중 . . .
+        // todo executor 주입받아야함
+        AtomicReference<String[]> seperatedScriptReference = new AtomicReference<>();
+        AtomicReference<TTSResultDTO> ttsResultReference = new AtomicReference<>(); // todo 이게 맞나..
+        AtomicReference<Cast> castReference = new AtomicReference<>();
 
-        Cast cast = Cast.builder()
-                .voice(castRequest.getVoice())
-                .audioLength(String.format("%02d:%02d", minutes, seconds))
-                .filePath(ttsResult.getMp3Path())
-                .formality(castRequest.getFormality())
-                .imagePath(CAST_DEFAULT_IMAGE_PATH)
-                .member(member)
-                .language(member.getLanguage())
-                .isPublic(false)
-                .hits(0L)
-                .build();
-        cast = castRepository.save(cast);
-        List<Sentence> sentences = sentenceService.saveSentences(script, seperatedSentences, ttsResult, cast);
+        CompletableFuture<Cast> castFuture = CompletableFuture.supplyAsync(
+                () -> parsingService.parseSentencesByDelimiter(script)
+        ).thenCompose((String[] seperated) -> {
+             seperatedScriptReference.set(seperated);
+             return CompletableFuture.supplyAsync(() -> ttsService.createSpeech(seperated, castRequest));
+            }
+        ).thenCompose((TTSResultDTO ttsResult) -> {
+             ttsResultReference.set(ttsResult);
+             Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
+             int minutes = (int) (audioLength / 60);
+             int seconds = (int) Math.round(audioLength % 60);
+             Cast cast = Cast.builder()
+                    .voice(castRequest.getVoice())
+                    .audioLength(String.format("%02d:%02d", minutes, seconds))
+                    .filePath(ttsResult.getMp3Path())
+                    .formality(castRequest.getFormality())
+                    .imagePath(CAST_DEFAULT_IMAGE_PATH)
+                    .member(member)
+                    .language(member.getLanguage())
+                    .isPublic(false)
+                    .hits(0L)
+                    .build();
+             return CompletableFuture.supplyAsync(() -> castRepository.save(cast));
+            }
+        );
 
+        CompletableFuture<String[]> translationFuture = CompletableFuture.supplyAsync(
+                () -> translationService.translateToKorean(script)
+        ).thenCompose((String translatedScript) ->
+                CompletableFuture.supplyAsync(() -> parsingService.parseSentencesByDelimiter(translatedScript))
+        );
+
+        List<Sentence> savedSentences = castFuture.thenCombine(translationFuture, (Cast cast, String[] parsedKoreanScript) -> {
+             castReference.set(cast);
+             return sentenceService.saveSentences(seperatedScriptReference.get(), parsedKoreanScript, ttsResultReference.get(), cast);
+            }
+        ).join();
+
+        Cast cast = castReference.get();
         return CastScriptDTO.builder()
                 .id(cast.getId())
                 .fileUrl(cast.getFilePath())
-                .sentences(sentences.stream()
+                .sentences(savedSentences.stream()
                         .map(SentenceResponseDTO::new)
                         .toList())
                 .build();
+
     }
 
     @Override
