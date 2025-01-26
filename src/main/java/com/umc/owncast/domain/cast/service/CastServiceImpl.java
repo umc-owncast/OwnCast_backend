@@ -21,12 +21,14 @@ import com.umc.owncast.domain.sentence.service.SentenceService;
 import com.umc.owncast.domain.sentence.service.TranslationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,7 +39,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +55,8 @@ public class CastServiceImpl implements CastService {
     private final PlaylistRepository playlistRepository;
     private final CastPlaylistRepository castPlaylistRepository;
     private final SubPreferRepository subPreferRepository;
+
+    private final ThreadPoolTaskExecutor executor;
 
 
 
@@ -89,10 +92,11 @@ public class CastServiceImpl implements CastService {
         AtomicReference<Cast> castReference = new AtomicReference<>();
 
         CompletableFuture<Cast> castFuture = CompletableFuture.supplyAsync(
-                () -> parsingService.parseSentencesByDelimiter(script)
+                () -> parsingService.parseSentencesByDelimiter(script),
+                executor
         ).thenCompose((String[] seperated) -> {
              seperatedScriptReference.set(seperated);
-             return CompletableFuture.supplyAsync(() -> ttsService.createSpeech(seperated, castRequest));
+             return CompletableFuture.supplyAsync(() -> ttsService.createSpeech(seperated, castRequest), executor);
             }
         ).thenCompose((TTSResultDTO ttsResult) -> {
              ttsResultReference.set(ttsResult);
@@ -110,14 +114,15 @@ public class CastServiceImpl implements CastService {
                     .isPublic(false)
                     .hits(0L)
                     .build();
-             return CompletableFuture.supplyAsync(() -> castRepository.save(cast));
+             return CompletableFuture.supplyAsync(() -> castRepository.save(cast), executor);
             }
         );
 
         CompletableFuture<String[]> translationFuture = CompletableFuture.supplyAsync(
-                () -> translationService.translateToKorean(script)
+                () -> translationService.translateToKorean(script),
+                executor
         ).thenCompose((String translatedScript) ->
-                CompletableFuture.supplyAsync(() -> parsingService.parseSentencesByDelimiter(translatedScript))
+                CompletableFuture.supplyAsync(() -> parsingService.parseSentencesByDelimiter(translatedScript), executor)
         );
 
         List<Sentence> savedSentences = castFuture.thenCombine(translationFuture, (Cast cast, String[] parsedKoreanScript) -> {
