@@ -56,6 +56,7 @@ public class CastServiceImpl implements CastService {
     private final CastPlaylistRepository castPlaylistRepository;
     private final SubPreferRepository subPreferRepository;
 
+    @Qualifier("DefaultExecutor")
     private final ThreadPoolTaskExecutor executor;
 
 
@@ -85,8 +86,6 @@ public class CastServiceImpl implements CastService {
 
     /** Cast와 Sentence 저장 후 CastScriptDTO로 묶어 반환 */
     private CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script, Member member) {
-        // 작업 중 . . .
-        // todo executor 주입받아야함
         AtomicReference<String[]> seperatedScriptReference = new AtomicReference<>();
         AtomicReference<TTSResultDTO> ttsResultReference = new AtomicReference<>(); // todo 이게 맞나..
         AtomicReference<Cast> castReference = new AtomicReference<>();
