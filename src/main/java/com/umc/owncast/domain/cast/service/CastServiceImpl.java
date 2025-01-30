@@ -95,25 +95,25 @@ public class CastServiceImpl implements CastService {
             () -> parsingService.parseSentencesByDelimiter(script),
             executor
         ).thenCompose((String[] seperated) -> {
-             seperatedScriptReference.set(seperated);
-             return CompletableFuture.supplyAsync(() -> ttsService.createSpeech(seperated, castRequest), executor);
+            seperatedScriptReference.set(seperated);
+            return CompletableFuture.supplyAsync(() -> ttsService.createSpeech(seperated, castRequest), executor);
         }).thenCompose((TTSResultDTO ttsResult) -> {
-             ttsResultReference.set(ttsResult);
-             Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
-             int minutes = (int) (audioLength / 60);
-             int seconds = (int) Math.round(audioLength % 60);
-             Cast cast = Cast.builder()
-                    .voice(castRequest.getVoice())
-                    .audioLength(String.format("%02d:%02d", minutes, seconds))
-                    .filePath(ttsResult.getMp3Path())
-                    .formality(castRequest.getFormality())
-                    .imagePath(CAST_DEFAULT_IMAGE_PATH)
-                    .member(member)
-                    .language(member.getLanguage())
-                    .isPublic(false)
-                    .hits(0L)
-                    .build();
-             return CompletableFuture.supplyAsync(() -> castRepository.save(cast), executor);
+            ttsResultReference.set(ttsResult);
+            Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
+            int minutes = (int) (audioLength / 60);
+            int seconds = (int) Math.round(audioLength % 60);
+            Cast cast = Cast.builder()
+                   .voice(castRequest.getVoice())
+                   .audioLength(String.format("%02d:%02d", minutes, seconds))
+                   .filePath(ttsResult.getMp3Path())
+                   .formality(castRequest.getFormality())
+                   .imagePath(CAST_DEFAULT_IMAGE_PATH)
+                   .member(member)
+                   .language(member.getLanguage())
+                   .isPublic(false)
+                   .hits(0L)
+                   .build();
+            return CompletableFuture.supplyAsync(() -> castRepository.save(cast), executor);
         });
 
         // 영문 스크립트 번역 & 문장 별 분리
@@ -126,8 +126,8 @@ public class CastServiceImpl implements CastService {
 
         // 생성된 Sentence 저장
         List<Sentence> savedSentences = castFuture.thenCombine(translationFuture, (Cast cast, String[] parsedKoreanScript) -> {
-         castReference.set(cast);
-         return sentenceService.saveSentences(seperatedScriptReference.get(), parsedKoreanScript, ttsResultReference.get(), cast);
+            castReference.set(cast);
+            return sentenceService.saveSentences(seperatedScriptReference.get(), parsedKoreanScript, ttsResultReference.get(), cast);
         }).join();
 
         Cast cast = castReference.get();
