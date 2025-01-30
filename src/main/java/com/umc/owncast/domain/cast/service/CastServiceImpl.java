@@ -87,17 +87,17 @@ public class CastServiceImpl implements CastService {
     /** Cast와 Sentence 저장 후 CastScriptDTO로 묶어 반환 */
     private CastScriptDTO handleCastCreation(KeywordCastCreationDTO castRequest, String script, Member member) {
         AtomicReference<String[]> seperatedScriptReference = new AtomicReference<>();
-        AtomicReference<TTSResultDTO> ttsResultReference = new AtomicReference<>(); // todo 이게 맞나..
+        AtomicReference<TTSResultDTO> ttsResultReference = new AtomicReference<>();
         AtomicReference<Cast> castReference = new AtomicReference<>();
 
+        // 영문 스크립트 분리 / TTS 요청 / Cast 저장
         CompletableFuture<Cast> castFuture = CompletableFuture.supplyAsync(
-                () -> parsingService.parseSentencesByDelimiter(script),
-                executor
+            () -> parsingService.parseSentencesByDelimiter(script),
+            executor
         ).thenCompose((String[] seperated) -> {
              seperatedScriptReference.set(seperated);
              return CompletableFuture.supplyAsync(() -> ttsService.createSpeech(seperated, castRequest), executor);
-            }
-        ).thenCompose((TTSResultDTO ttsResult) -> {
+        }).thenCompose((TTSResultDTO ttsResult) -> {
              ttsResultReference.set(ttsResult);
              Double audioLength = ttsResult.getTimePointList().get(ttsResult.getTimePointList().size() - 1);
              int minutes = (int) (audioLength / 60);
@@ -114,21 +114,21 @@ public class CastServiceImpl implements CastService {
                     .hits(0L)
                     .build();
              return CompletableFuture.supplyAsync(() -> castRepository.save(cast), executor);
-            }
-        );
+        });
 
+        // 영문 스크립트 번역 & 문장 별 분리
         CompletableFuture<String[]> translationFuture = CompletableFuture.supplyAsync(
-                () -> translationService.translateToKorean(script),
-                executor
+            () -> translationService.translateToKorean(script),
+            executor
         ).thenCompose((String translatedScript) ->
-                CompletableFuture.supplyAsync(() -> parsingService.parseSentencesByDelimiter(translatedScript), executor)
+            CompletableFuture.supplyAsync(() -> parsingService.parseSentencesByDelimiter(translatedScript), executor)
         );
 
+        // 생성된 Sentence 저장
         List<Sentence> savedSentences = castFuture.thenCombine(translationFuture, (Cast cast, String[] parsedKoreanScript) -> {
-             castReference.set(cast);
-             return sentenceService.saveSentences(seperatedScriptReference.get(), parsedKoreanScript, ttsResultReference.get(), cast);
-            }
-        ).join();
+         castReference.set(cast);
+         return sentenceService.saveSentences(seperatedScriptReference.get(), parsedKoreanScript, ttsResultReference.get(), cast);
+        }).join();
 
         Cast cast = castReference.get();
         return CastScriptDTO.builder()
