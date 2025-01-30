@@ -42,6 +42,7 @@ public class SentenceServiceImpl implements SentenceService {
     }
 
     @Override
+    @TrackExecutionTime
     public List<Sentence> saveSentences(String[] parsedOriginalScript, String[] parsedKoreanScript, TTSResultDTO ttsResultDTO, Cast cast) {
         // todo ttsResult.timePointList / originalScript / koreanScript 인덱스 다를 때 처리 (warning 띄우던가.. 셋 중에 최소인 인덱스로 몰아준다던가..)
         List<Sentence> sentences = new ArrayList<>(Math.min(parsedKoreanScript.length, parsedOriginalScript.length));
