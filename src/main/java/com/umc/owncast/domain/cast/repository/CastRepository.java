@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.cast.repository;
 
+import com.umc.owncast.common.annotation.TrackExecutionTime;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.enums.Language;
 import com.umc.owncast.domain.enums.MainCategory;
@@ -12,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+@TrackExecutionTime
 public interface CastRepository extends JpaRepository<Cast, Long> {
 
     List<Cast> findCastsByMember_Id(@Param("memberId") Long memberId);
