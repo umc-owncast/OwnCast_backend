@@ -82,14 +82,19 @@ public class PlaylistServiceTest {
             }
         });
 
-        playlistService.updateImage();
+        /*playlistService.updateImage();*/
     }
 
-    @Test
+    /*@Test
     void addPlaylistTest() {
        playlistService.getAllPlaylists(member).forEach(playlistResultDTO -> {
             System.out.println(playlistResultDTO.getPlaylistId());
         });
+    }*/
+
+    @Test
+    void search() {
+        System.out.println(playlistService.getAllMyPlaylists(member, 0));
     }
 }
 

@@ -22,8 +22,12 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "cast"
+        name = "cast",
+        indexes = {
+                @Index(name = "idx_member_id_created_at", columnList = "member_id, created_at")
+        }
 )
+
 @AllArgsConstructor
 public class Cast extends BaseTimeEntity {
 

@@ -16,6 +16,8 @@ public interface CastRepository extends JpaRepository<Cast, Long> {
 
     List<Cast> findCastsByMember_Id(@Param("memberId") Long memberId);
 
+    Cast findFirstByMemberIdOrderByCreatedAt (@Param("memberId") Long memberId);
+
     @Query(value = "SELECT * FROM `cast` " +
             "WHERE MATCH(title) AGAINST(:text IN BOOLEAN MODE) " +
             "AND `is_public` = true " +

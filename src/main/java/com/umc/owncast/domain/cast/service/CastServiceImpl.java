@@ -196,6 +196,7 @@ public class CastServiceImpl implements CastService {
         if(!cast.getImagePath().equals(CAST_DEFAULT_IMAGE_PATH)) {
             fileService.deleteFile(cast.getImagePath());
         }
+
         fileService.deleteFile(cast.getFilePath());
 
         castPlaylistRepository.deleteAllByCast(cast);
