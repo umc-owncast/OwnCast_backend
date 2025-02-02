@@ -1,9 +1,9 @@
 package com.umc.owncast.domain.playlist.factory;
 
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
-import com.umc.owncast.domain.playlist.dto.CastDTO;
-import com.umc.owncast.domain.playlist.dto.PlaylistResultDTO;
+import com.umc.owncast.domain.playlist.dto.*;
 import com.umc.owncast.domain.playlist.entity.Playlist;
+import com.umc.owncast.domain.playlist.template.crud.UpdatePlaylist;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
@@ -41,6 +41,25 @@ public class PlaylistDTOFactory {
         return castPlaylist.stream()
                 .map(PlaylistDTOFactory::convertToCastDTO) // 변환 메서드 호출
                 .collect(Collectors.toList());
+    }
+
+    public static CreatePlaylistDTO createCreatePlaylistDTO(Long playlistId){
+        return CreatePlaylistDTO.builder()
+                .playlistId(playlistId)
+                .build();
+    }
+
+    public static DeletePlaylistDTO createDeletePlaylistDTO(Long playlistId){
+        return DeletePlaylistDTO.builder()
+                .playlistId(playlistId)
+                .build();
+    }
+
+    public static UpdatePlaylistDTO createUpdatePlaylistDTO(Playlist playlist){
+        return UpdatePlaylistDTO.builder()
+                .playlistId(playlist.getId())
+                .playlistName(playlist.getName())
+                .build();
     }
 
 

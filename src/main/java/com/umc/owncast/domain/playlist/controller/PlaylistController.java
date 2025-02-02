@@ -27,7 +27,7 @@ public class PlaylistController {
     @CrossOrigin
     @Operation(summary = "플레이리스트 추가")
     @PostMapping("/playlist/{playlistName}")
-    public ApiResponse<Long> addPlaylist(@AuthUser Member member, @PathVariable("playlistName") String playlistName) {
+    public ApiResponse<CreatePlaylistDTO> addPlaylist(@AuthUser Member member, @PathVariable("playlistName") String playlistName) {
 
         log.info("POST /api/playlist/{}", playlistName);
 
@@ -46,11 +46,11 @@ public class PlaylistController {
 
     @Operation(summary = "플레이리스트 수정")
     @PatchMapping("/playlist/{playlistId}")
-    public ApiResponse<ModifyPlaylistDTO> modifyPlaylist(@AuthUser Member member,
+    public ApiResponse<UpdatePlaylistDTO> modifyPlaylist(@AuthUser Member member,
                                                          @PathVariable("playlistId") Long playlistId,
                                                          @RequestParam("playlistName") String playlistName) {
         System.out.println("PATCH /api/playlist/" + playlistId);
-        return ApiResponse.onSuccess(playlistService.modifyPlaylist(member, playlistId, playlistName));
+        return ApiResponse.onSuccess(playlistService.updatePlaylist(member, playlistId, playlistName));
     }
 
     @CrossOrigin

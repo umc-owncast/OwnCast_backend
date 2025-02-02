@@ -1,11 +1,11 @@
-package com.umc.owncast.domain.playlist.template;
+package com.umc.owncast.domain.playlist.template.playlist;
 
+import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.playlist.dto.CastDTO;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.playlist.factory.PlaylistDTOFactory;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -13,6 +13,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public abstract class GetPlaylists {
+
+    // TODO final 붙이면 super 해야하는 이유?
+    protected final CastPlaylistRepository castPlaylistRepository;
+    protected final PlaylistRepository playlistRepository;
 
     protected final int pageSize = 5;
 

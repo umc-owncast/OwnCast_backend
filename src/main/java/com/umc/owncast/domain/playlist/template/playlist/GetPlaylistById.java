@@ -1,4 +1,4 @@
-package com.umc.owncast.domain.playlist.template;
+package com.umc.owncast.domain.playlist.template.playlist;
 
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
@@ -12,12 +12,12 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 public class GetPlaylistById extends GetPlaylists {
 
-    private final CastPlaylistRepository castPlaylistRepository;
-    private final PlaylistRepository playlistRepository;
-
+    // TODO super 이부분 고치기
+    public GetPlaylistById(CastPlaylistRepository castPlaylistRepository, PlaylistRepository playlistRepository) {
+        super(castPlaylistRepository, playlistRepository);
+    }
 
     @Override
     protected List<CastPlaylist> fetchData(Member member, long playlistId, int page) {

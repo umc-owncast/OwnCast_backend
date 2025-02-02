@@ -7,7 +7,7 @@ import lombok.Setter;
 @Builder
 @Setter
 @Getter
-public class ModifyPlaylistDTO {
+public class UpdatePlaylistDTO {
     Long playlistId;
     String playlistName;
 }

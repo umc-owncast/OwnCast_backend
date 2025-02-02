@@ -3,14 +3,18 @@ package com.umc.owncast.domain.playlist.template.crud;
 import com.umc.owncast.common.exception.handler.UserHandler;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.member.entity.Member;
+import com.umc.owncast.domain.playlist.dto.CreatePlaylistDTO;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
+import static com.umc.owncast.domain.playlist.factory.PlaylistDTOFactory.createCreatePlaylistDTO;
+
 public class CreatePlaylist extends PlaylistCRUD{
 
-    private final PlaylistRepository playlistRepository;
+    public CreatePlaylist(PlaylistRepository playlistRepository) {
+        super(playlistRepository);
+    }
 
     @Override
     protected void validate(Member member, String playlistName, long playlistId) {
@@ -19,13 +23,13 @@ public class CreatePlaylist extends PlaylistCRUD{
     }
 
     @Override
-    protected Long process(Member member, String playlistName, long playlistId) {
+    protected CreatePlaylistDTO process(Member member, String playlistName, long playlistId) {
 
         Playlist newPlaylist = Playlist.builder()
                 .name(playlistName)
                 .member(member)
                 .build();
 
-        return playlistRepository.save(newPlaylist).getId();
+        return createCreatePlaylistDTO(playlistRepository.save(newPlaylist).getId());
     }
 }

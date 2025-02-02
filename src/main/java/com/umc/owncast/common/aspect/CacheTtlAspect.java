@@ -12,12 +12,12 @@ import java.time.Duration;
 @Component
 public class CacheTtlAspect {
 
-    private final StringRedisTemplate redisTemplate;
+    /*private final StringRedisTemplate redisTemplate;
     private static final Duration TTL = Duration.ofMinutes(10); // TTL 10분
 
     public CacheTtlAspect(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
-    }
+    }*/
 
     /*@AfterReturning(
             value = "@annotation(org.springframework.transaction.annotation.Transactional) && args(member, playlistName)",
