@@ -23,6 +23,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final CastRepository castRepository;
     private final CastPlaylistRepository castPlaylistRepository;
+    /*private final RedisSingleDataService redisSingleDataService;*/
     private GetPlaylists getPlaylists;
     private PlaylistCRUD playlistCRUD;
 
@@ -70,7 +72,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
         playlistCRUD = new UpdatePlaylist(playlistRepository);
 
-        return (UpdatePlaylistDTO) playlistCRUD.execute(member, null, playlistId);
+        return (UpdatePlaylistDTO) playlistCRUD.execute(member, playlistName, playlistId);
     }
 
     @Override
@@ -118,6 +120,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     @Transactional
     public DeleteCastFromPlaylistDTO deleteCast(Long playlistId, Long castId, Member member) {
+
         Cast cast = castRepository.findById(castId).orElseThrow(() -> new UserHandler(ErrorCode.CAST_NOT_FOUND));
         Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
 
@@ -130,6 +133,8 @@ public class PlaylistServiceImpl implements PlaylistService {
         }
 
         castPlaylistRepository.deleteByCastAndPlaylist(cast, playlist);
+
+        /*redisSingleDataService.setSingleData(String.valueOf(playlistId), null);*/
 
         return DeleteCastFromPlaylistDTO.builder()
                 .castId(castId)
