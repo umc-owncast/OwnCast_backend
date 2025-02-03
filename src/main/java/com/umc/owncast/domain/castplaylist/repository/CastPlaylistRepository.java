@@ -2,6 +2,7 @@ package com.umc.owncast.domain.castplaylist.repository;
 
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
+import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,8 +28,6 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
     @Query("SELECT cp.cast FROM CastPlaylist cp WHERE cp.cast.member.id = :memberId AND cp.playlist.member.id = :memberId ORDER BY cp.createdAt ASC")
     Page<Cast> findFirstSavedCast(@Param("memberId") long memberId, Pageable pageable);
 
-    long countAllByPlaylist(@Param("playlist") Playlist playlist);
-
     void deleteAllByPlaylistId(Long playlistId);
 
     void deleteAllByCast(Cast cast);
@@ -37,10 +36,10 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
     List<Cast> findSavedCast(@Param("memberId") long memberId);
 
     @Query("SELECT cp FROM CastPlaylist cp WHERE cp.playlist.member.id = :memberId AND cp.cast.member.id != :memberId")
-    List<CastPlaylist> findAllSavedCast(@Param("memberId") long memberId);
+    Page<CastPlaylist> findAllSavedCast(@Param("memberId") long memberId, Pageable pageable);
 
     @Query("SELECT cp FROM CastPlaylist cp WHERE cp.playlist.member.id = :memberId AND cp.cast.member.id = :memberId")
-    List<CastPlaylist> findAllMyCast(@Param("memberId") long memberId);
+    Page<CastPlaylist> findAllMyCast(@Param("memberId") long memberId, Pageable pageable);
 
     Page<CastPlaylist> findByPlaylistId(Long playlistId, Pageable pageable);
 
@@ -56,4 +55,8 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
 
 //    @Query("SELECT c FROM CastPlaylist c WHERE c.playlist.member.id = :memberId AND c.cast.id = :castId ")
     Optional<CastPlaylist> findByPlaylistMemberIdAndCastId(Long memberId, Long castId);
+
+    List<CastPlaylist> findAllByPlaylistMember(@Param("member") Member member);
+
+    CastPlaylist findFirstByPlaylistOrderByCreatedAt(Playlist playlist);
 }

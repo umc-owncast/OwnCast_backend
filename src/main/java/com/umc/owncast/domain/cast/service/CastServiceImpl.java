@@ -157,6 +157,9 @@ public class CastServiceImpl implements CastService {
         }
 
         Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new UserHandler(ErrorCode.PLAYLIST_NOT_FOUND));
+
+        if(playlist.getImagePath() == null) playlist.setImagePath(cast.getImagePath()); // playlist image가 null인 경우 이미지 세팅
+
         castPlaylistRepository.save(CastPlaylist.builder() // 새 castPlaylist 추가
                 .cast(cast)
                 .playlist(playlist)
@@ -196,9 +199,11 @@ public class CastServiceImpl implements CastService {
         if(!cast.getImagePath().equals(CAST_DEFAULT_IMAGE_PATH)) {
             fileService.deleteFile(cast.getImagePath());
         }
+
         fileService.deleteFile(cast.getFilePath());
 
         castPlaylistRepository.deleteAllByCast(cast);
+
         sentenceService.deleteAllByCast(cast);
 
         castRepository.delete(cast);

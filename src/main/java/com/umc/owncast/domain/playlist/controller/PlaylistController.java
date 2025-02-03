@@ -27,8 +27,10 @@ public class PlaylistController {
     @CrossOrigin
     @Operation(summary = "플레이리스트 추가")
     @PostMapping("/playlist/{playlistName}")
-    public ApiResponse<AddPlaylistDTO> addPlaylist(@AuthUser Member member, @PathVariable("playlistName") String playlistName) {
-        System.out.println("POST /api/playlist/" + playlistName);
+    public ApiResponse<CreatePlaylistDTO> addPlaylist(@AuthUser Member member, @PathVariable("playlistName") String playlistName) {
+
+        log.info("POST /api/playlist/{}", playlistName);
+
         return ApiResponse.onSuccess(playlistService.addPlaylist(member, playlistName));
     }
 
@@ -36,17 +38,19 @@ public class PlaylistController {
     @Operation(summary = "사용자의 플레이리스트 불러오기")
     @GetMapping("/playlist/view")
     public ApiResponse<List<PlaylistResultDTO>> getPlaylists(@AuthUser Member member) {
-        System.out.println("GET /api/playlist/view");
+
+        log.info("GET /api/playlist/view");
+
         return ApiResponse.onSuccess(playlistService.getAllPlaylists(member));
     }
 
     @Operation(summary = "플레이리스트 수정")
     @PatchMapping("/playlist/{playlistId}")
-    public ApiResponse<ModifyPlaylistDTO> modifyPlaylist(@AuthUser Member member,
+    public ApiResponse<UpdatePlaylistDTO> modifyPlaylist(@AuthUser Member member,
                                                          @PathVariable("playlistId") Long playlistId,
                                                          @RequestParam("playlistName") String playlistName) {
         System.out.println("PATCH /api/playlist/" + playlistId);
-        return ApiResponse.onSuccess(playlistService.modifyPlaylist(member, playlistId, playlistName));
+        return ApiResponse.onSuccess(playlistService.updatePlaylist(member, playlistId, playlistName));
     }
 
     @CrossOrigin
@@ -60,28 +64,27 @@ public class PlaylistController {
     @CrossOrigin
     @Operation(summary = "플레이리스트 조회")
     @GetMapping("/playlist/{playlistId}")
-    public ApiResponse<GetPlaylistDTO> getPlaylist(@AuthUser Member member,
+    public ApiResponse<List<CastDTO>> getPlaylist(@AuthUser Member member,
                                                     @PathVariable("playlistId") Long playlistId,
-                                                    @RequestParam("page") Integer page,
-                                                    @RequestParam("size") Integer size) {
+                                                    @RequestParam("page") Integer page) {
         System.out.println("GET /api/playlist/" + playlistId);
-        return ApiResponse.onSuccess(playlistService.getPlaylist(member, playlistId, page, size));
+        return ApiResponse.onSuccess(playlistService.getPlaylist(member, playlistId, page));
     }
 
     @CrossOrigin
     @Operation(summary = "내가 담아온 플레이리스트 조회")
     @GetMapping("/playlist/saved")
-    public ApiResponse<GetPlaylistDTO> getSavedPlaylist(@AuthUser Member member) {
+    public ApiResponse<List<CastDTO>> getSavedPlaylist(@AuthUser Member member, @RequestParam("page") Integer page) {
         System.out.println("POST /api/playlist/saved");
-        return ApiResponse.onSuccess(playlistService.getAllSavedPlaylists(member)); // TODO PAGE로 크기 조절
+        return ApiResponse.onSuccess(playlistService.getAllSavedPlaylists(member, page)); // TODO PAGE로 크기 조절
     }
 
     @CrossOrigin
     @Operation(summary = "저장한 플레이리스트 조회")
     @GetMapping("/playlist/my")
-    public ApiResponse<GetPlaylistDTO> getAllMyPlaylist(@AuthUser Member member) {
+    public ApiResponse<List<CastDTO>> getAllMyPlaylist(@AuthUser Member member, @RequestParam("page") Integer page) {
         System.out.println("POST /api/playlist/my");
-        return ApiResponse.onSuccess(playlistService.getAllMyPlaylists(member));
+        return ApiResponse.onSuccess(playlistService.getAllMyPlaylists(member, page));
     }
 
     @CrossOrigin
