@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class RootController {
 
-    @GetMapping("/health")
+        @GetMapping("/health")
     public String healthCheck() {
-        return "OwnCast health check!";
+        return "OwnCast health check!!!";
     }
 }

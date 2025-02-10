@@ -3,7 +3,9 @@ name: Java CI with Gradle
 # 동작 조건 설정: master 브랜치에 push 또는 pull request가 발생할 경우 실행
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 # GitHub Actions가 접근 가능한 권한 설정
 permissions:
@@ -34,7 +36,7 @@ jobs:
 
       # 1.5 Docker 이미지 빌드
       - name: Build Docker Image
-        run: docker build --no-cache -t '${{ secrets.DOCKER_USERNAME }}/github-actions-demo' -f .docker/Dockerfile .
+        run: docker build -t '${{ secrets.DOCKER_USERNAME }}/github-actions-demo' -f .docker/Dockerfile .
 
       # 1.6 Docker Hub 로그인
       - name: Docker Hub Login
@@ -49,7 +51,7 @@ jobs:
 
       # 환경 변수 설정
       - name: Set up Environment
-        run: echo "${{ secrets.ENV_PROPERTIES_DEV }}" > ./.env # GitHub SecretKey 에서 설정한 내용으로 .env 파일 생성
+        run: echo "${{ secrets.ENV_PROPERTIES }}" > ./.env # GitHub SecretKey 에서 설정한 내용으로 .env 파일 생성
 
       # 환경 변수 파일 서버로 전달하기(복사 후 붙여넣기)
       - name: Send env file
@@ -79,20 +81,8 @@ jobs:
             sudo docker stop my-container || true
             sudo docker rm my-container || true
             
-            # 2. 기존 Docker 이미지 삭제
-            sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/github-actions-demo || true
-            
-            # 3. Docker 네트워크 생성
-            sudo docker network create my-network || true  
-            
-            # 4. Docker Hub에서 최신 이미지 pull
+            # 2. Docker Hub에서 최신 이미지 pull
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
-
-            # 5. Spring Boot 애플리케이션 컨테이너 실행 (네트워크 연결)
-            sudo docker run -d --name my-container -p 8080:8080 \
-            --env ACTIVE_PROFILE=dev \
-            --env-file /home/ubuntu/.env \
-            --network my-network \
-            --memory="512m" \
-            --memory-swap="1024m" \
-            ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
+            
+            # 3. 새로운 컨테이너 실행 (환경 변수 전달)
+            sudo docker run -d --name my-container -p 8080:8080 --env ACTIVE_PROFILE=main --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
