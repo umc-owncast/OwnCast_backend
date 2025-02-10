@@ -13,6 +13,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -25,13 +26,13 @@ import java.nio.charset.StandardCharsets;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final AuthenticationManager authenticationManager;
     private final LoginService loginService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
 
-    public LoginFilter(AuthenticationManagerBuilder authenticationManagerBuilder, LoginService loginService) {
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
+    public LoginFilter(AuthenticationManager authenticationManager, LoginService loginService) {
+        this.authenticationManager = authenticationManager;
         this.loginService = loginService;
 
         setFilterProcessesUrl("/api/users/login");
@@ -55,7 +56,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
          UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginId, password);
 
-        return authenticationManagerBuilder.getObject().authenticate(authToken);
+        return authenticationManager.authenticate(authToken);
     }
 
     @Override

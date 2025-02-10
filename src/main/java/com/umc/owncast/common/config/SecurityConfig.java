@@ -1,14 +1,22 @@
 package com.umc.owncast.common.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.owncast.common.jwt.*;
 import com.umc.owncast.common.jwt.handler.JwtAccessDeniedHandler;
 import com.umc.owncast.common.jwt.handler.JwtAuthenticationEntryPoint;
+import com.umc.owncast.common.oauth.filter.SocialLoginFilter;
+import com.umc.owncast.common.oauth.util.SocialProvider;
 import com.umc.owncast.domain.member.service.CustomUserDetailsService;
+import com.umc.owncast.domain.member.service.KakaoService;
+import com.umc.owncast.domain.member.service.SocialLoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -34,11 +42,21 @@ public class  SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final SocialLoginService socialLoginService;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final ObjectMapper objectMapper;
+    private final AuthenticationConfiguration authenticationConfiguration;
+    private final LoginService loginService;
+    private final KakaoService kakaoService;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, LoginFilter.class)
+                .addFilterAt(new LoginFilter(authenticationManager(), loginService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new LogoutFilter(loginService), org.springframework.security.web.authentication.logout.LogoutFilter.class)
+                .addFilterBefore(socialLoginFilter(), JwtAuthenticationFilter.class) // SocialLoginFilter 추가
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
@@ -65,11 +83,22 @@ public class  SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, CustomUserDetailsService customUserDetailsService) throws Exception {
-        http
-                .getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(customUserDetailsService);
-        return http.getSharedObject(AuthenticationManager.class);
+    public AuthenticationManager authenticationManager() {
+
+        SocialProvider socialProvider = new SocialProvider(socialLoginService);
+
+        DaoAuthenticationProvider loginProvider = new DaoAuthenticationProvider();
+        loginProvider.setPasswordEncoder(passwordEncoder());
+        loginProvider.setUserDetailsService(customUserDetailsService);
+
+        return new ProviderManager(socialProvider, loginProvider);
+    }
+
+    @Bean
+    public SocialLoginFilter socialLoginFilter() {
+        SocialLoginFilter socialLoginFilter = new SocialLoginFilter(objectMapper, kakaoService);
+        socialLoginFilter.setAuthenticationManager(authenticationManager());
+        return socialLoginFilter;
     }
 
     @Bean

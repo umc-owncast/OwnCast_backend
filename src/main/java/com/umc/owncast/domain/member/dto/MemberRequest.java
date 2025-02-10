@@ -45,4 +45,13 @@ public class MemberRequest {
         String loginId;
         String password;
     }
+
+    @Getter
+    public static class joinKakaoDto {
+
+        Long kakaoId;
+
+        @NotBlank
+        String nickname;
+    }
 }

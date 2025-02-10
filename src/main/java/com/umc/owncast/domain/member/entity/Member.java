@@ -2,6 +2,7 @@ package com.umc.owncast.domain.member.entity;
 
 import com.umc.owncast.common.entity.BaseTimeEntity;
 import com.umc.owncast.domain.enums.Language;
+import com.umc.owncast.domain.enums.SocialType;
 import com.umc.owncast.domain.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,6 +41,13 @@ public class Member extends BaseTimeEntity {
     @Setter
     @Enumerated(EnumType.STRING)
     private Language language;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "social_type")
+    private SocialType socialType; // 일반로그인인 경우, null
+
+    @Column(name = "social_id")
+    private String socialId;
 
     public void updateMember(String loginId, String username, String nickname){
         this.loginId = loginId;
