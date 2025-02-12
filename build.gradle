@@ -62,6 +62,9 @@ dependencies {
     //NLP
     implementation 'org.apache.opennlp:opennlp-tools:1.9.4'
 
+    // REDIS
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 tasks.named('test') {
