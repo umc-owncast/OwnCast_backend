@@ -10,17 +10,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
 public class TTSService {
-    private static final Integer MaxByteLength = 4000;
+    private static final Integer MaxByteLength = 4000; // 구글 api 바이트 제한
     private final RestTemplate restTemplate;
     private final ParsingService parsingService;
     private final FileService fileService;
@@ -33,10 +35,14 @@ public class TTSService {
         List<Double> timePoints = new ArrayList<>();
         timePoints.add(0.0);
         byte[] audio = new byte[0];
-        List<List<String>> splitScript = splitSentencesByByte(script);
+        // API 바이트 제한에 맞도록 script 분할하여 각자 API 요청
+        List<List<String>> splitScript = splitSentencesByByte(script, MaxByteLength);
         for (List<String> row : splitScript) {
-            TTSTempDTO ttsTempDTO= requestSpeech(setSpeech(row, keywordCastCreationDTO));
+            // todo 이 부분도 어떻게 병렬화 가능할 거 같은데
+            // API 요청
+            TTSTempDTO ttsTempDTO = requestSpeech(setSpeech(row, keywordCastCreationDTO));
 
+            // 응답 mp3 파일 처리
             byte[] result = new byte[audio.length + ttsTempDTO.getAudioBytes().length];
             System.arraycopy(audio, 0, result, 0, audio.length);
             System.arraycopy(ttsTempDTO.getAudioBytes(), 0, result, audio.length, ttsTempDTO.getAudioBytes().length);
@@ -115,6 +121,11 @@ public class TTSService {
                 .build();
     }
 
+    /**
+     * byte 파일을 mp3로 업로드한 후 url 반환
+     * @param audioBytes mp3 파일
+     * @return 파일 url
+     * */
     private String makeAudioFile (byte[] audioBytes) {
         MultipartFile multipartFile = new MockMultipartFile(
                 UUID.randomUUID() + ".mp3",
@@ -124,7 +135,13 @@ public class TTSService {
         return fileService.uploadFile(multipartFile);
     }
 
-    private List<List<String>> splitSentencesByByte(String[] sentences) {
+    /**
+     * 주어진 문자열 배열을 byteLength를 초과하지 않도록 분할하여 리스트에 담아 반환
+     * @param sentences 분할할 문자열 배열
+     * @param byteLength 바이트 제한
+     * @return byteLength를 넘지 않도록 분할한 문자열 리스트 (리스트 각 요소는 byteLength를 넘지 않음)
+     * */
+    private List<List<String>> splitSentencesByByte(String[] sentences, int byteLength) {
         List<List<String>> result = new ArrayList<>();
         int i = 0;
 
@@ -136,7 +153,7 @@ public class TTSService {
                 row.add(sentences[i]);
                 len += sentences[i].getBytes(StandardCharsets.UTF_8).length;
                 i++;
-            } while (len < MaxByteLength && i < sentences.length);
+            } while (len < byteLength && i < sentences.length);
             result.add(row);
         }
 
