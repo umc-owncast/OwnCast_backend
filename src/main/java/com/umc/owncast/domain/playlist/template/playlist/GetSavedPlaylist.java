@@ -7,14 +7,16 @@ import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
 public class GetSavedPlaylist extends GetPlaylists{
 
-    public GetSavedPlaylist(CastPlaylistRepository castPlaylistRepository, PlaylistRepository playlistRepository) {
-        super(castPlaylistRepository, playlistRepository);
-    }
+    private final CastPlaylistRepository castPlaylistRepository;
+
 
     @Override
     protected List<CastPlaylist> fetchData(Member member, long playlistId, int page) {

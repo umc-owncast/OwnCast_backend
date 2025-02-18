@@ -6,15 +6,16 @@ import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.playlist.dto.CreatePlaylistDTO;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import static com.umc.owncast.domain.playlist.factory.PlaylistDTOFactory.createCreatePlaylistDTO;
 
+@Service
+@RequiredArgsConstructor
 public class CreatePlaylist extends PlaylistCRUD{
 
-    public CreatePlaylist(PlaylistRepository playlistRepository) {
-        super(playlistRepository);
-    }
+    private final PlaylistRepository playlistRepository;
 
     @Override
     protected void validate(Member member, String playlistName, long playlistId) {

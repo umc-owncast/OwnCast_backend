@@ -23,7 +23,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,9 +37,13 @@ public class PlaylistServiceImpl implements PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final CastRepository castRepository;
     private final CastPlaylistRepository castPlaylistRepository;
-    /*private final RedisSingleDataService redisSingleDataService;*/
-    private GetPlaylists getPlaylists;
-    private PlaylistCRUD playlistCRUD;
+    private final CreatePlaylist createPlaylist;
+    private final DeletePlaylist deletePlaylist;
+    private final UpdatePlaylist updatePlaylist;
+    private final GetAllMyPlaylist getAllMyPlaylist;
+    private final GetPlaylistById getPlaylistById;
+    private final GetSavedPlaylist getSavedPlaylist;
+
 
     @Value("${app.image.default-path}")
     private String DEFAULT_IMAGE_PATH;
@@ -49,20 +52,15 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Transactional
     public CreatePlaylistDTO addPlaylist(Member member, String playlistName) {
 
-        playlistCRUD = new CreatePlaylist(playlistRepository);
-
         // TODO 이렇게 타입 캐스팅 해도 될까?
-        return (CreatePlaylistDTO) playlistCRUD.execute(member, playlistName, 0);
+        return (CreatePlaylistDTO) createPlaylist.execute(member, playlistName, 0);
     }
 
     @Override
     @Transactional
     public DeletePlaylistDTO deletePlaylist(Member member, Long playlistId) {
 
-        //TODO 주입 받는게 마음에 안듬. 강한 결합?!
-        playlistCRUD = new DeletePlaylist(playlistRepository);
-
-        return (DeletePlaylistDTO) playlistCRUD.execute(member, null, playlistId);
+        return (DeletePlaylistDTO) deletePlaylist.execute(member, null, playlistId);
 
     }
 
@@ -70,9 +68,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Transactional
     public UpdatePlaylistDTO updatePlaylist(Member member, Long playlistId, String playlistName) {
 
-        playlistCRUD = new UpdatePlaylist(playlistRepository);
-
-        return (UpdatePlaylistDTO) playlistCRUD.execute(member, playlistName, playlistId);
+        return (UpdatePlaylistDTO) updatePlaylist.execute(member, playlistName, playlistId);
     }
 
     @Override
@@ -95,26 +91,20 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Transactional
     public List<CastDTO> getPlaylist(Member member, Long playlistId, int page) {
 
-        //TODO 의존성 주입이 나을지?
-        getPlaylists = new GetPlaylistById(castPlaylistRepository, playlistRepository);
-
-        return getPlaylists.get(member, playlistId, page);
+        return getPlaylistById.get(member, playlistId, page);
 
     }
 
     @Override
     public List<CastDTO> getAllSavedPlaylists(Member member, int page) {
 
-        getPlaylists = new GetSavedPlaylist(castPlaylistRepository, playlistRepository);
-
-        return getPlaylists.get(member, 0, page);
+        return getSavedPlaylist.get(member, 0, page);
     }
 
     @Override
     public List<CastDTO> getAllMyPlaylists(Member member, int page) {
-        getPlaylists = new GetAllMyPlaylist(castPlaylistRepository, playlistRepository);
 
-        return getPlaylists.get(member, 0, page);
+        return getAllMyPlaylist.get(member, 0, page);
     }
 
     @Override

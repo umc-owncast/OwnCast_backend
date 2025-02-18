@@ -8,12 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
 @Slf4j
 public abstract class PlaylistCRUD {
-
-    protected final PlaylistRepository playlistRepository;
 
     //TODO OBject를 사용해도 될까? 제네릭을 사용할까?
     public final Object execute(Member member, String playlistName, long playlistId){

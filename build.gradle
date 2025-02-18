@@ -62,7 +62,7 @@ dependencies {
     //NLP
     implementation 'org.apache.opennlp:opennlp-tools:1.9.4'
 
-    //Redis
+    // REDIS
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 }

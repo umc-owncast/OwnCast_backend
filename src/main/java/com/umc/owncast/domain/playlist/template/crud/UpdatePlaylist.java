@@ -8,15 +8,16 @@ import com.umc.owncast.domain.playlist.dto.UpdatePlaylistDTO;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import static com.umc.owncast.domain.playlist.factory.PlaylistDTOFactory.createCreatePlaylistDTO;
 import static com.umc.owncast.domain.playlist.factory.PlaylistDTOFactory.createUpdatePlaylistDTO;
 
+@Service
+@RequiredArgsConstructor
 public class UpdatePlaylist extends PlaylistCRUD {
 
-    public UpdatePlaylist(PlaylistRepository playlistRepository) {
-        super(playlistRepository);
-    }
+    private final PlaylistRepository playlistRepository;
 
     @Override
     protected void validate(Member member, String playlistName, long playlistId) {

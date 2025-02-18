@@ -9,12 +9,13 @@ import com.umc.owncast.domain.playlist.entity.Playlist;
 import com.umc.owncast.domain.playlist.factory.PlaylistDTOFactory;
 import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
+@Service
+@RequiredArgsConstructor
 public class DeletePlaylist extends PlaylistCRUD {
 
-    public DeletePlaylist(PlaylistRepository playlistRepository) {
-        super(playlistRepository);
-    }
+    private final PlaylistRepository playlistRepository;
 
     @Override
     protected void validate(Member member, String playlistName, long playlistId) {

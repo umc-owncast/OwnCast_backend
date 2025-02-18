@@ -10,13 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
-@RequiredArgsConstructor
-@Service
 public abstract class GetPlaylists {
-
-    // TODO final 붙이면 super 해야하는 이유?
-    protected final CastPlaylistRepository castPlaylistRepository;
-    protected final PlaylistRepository playlistRepository;
 
     protected final int pageSize = 5;
 
