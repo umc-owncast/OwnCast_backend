@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 @TrackExecutionTime
 public interface CastRepository extends JpaRepository<Cast, Long> {
@@ -42,4 +43,6 @@ public interface CastRepository extends JpaRepository<Cast, Long> {
                                                       @Param("member") Member member,
                                                       @Param("language") Language language,
                                                       Pageable pageable);
+
+    Optional<Cast> findFirstByMemberIdOrderByCreatedAtDesc(@Param("memberId") Long memberId);
 }

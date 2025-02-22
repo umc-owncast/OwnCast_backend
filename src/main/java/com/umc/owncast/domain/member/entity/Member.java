@@ -12,9 +12,14 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "member")
+@Table(name = "member",
+        indexes = {
+                @Index(name = "idx_member_id", columnList = "member_id"),
+                @Index(name = "idx_created", columnList = "created_at")
+        })
 @AllArgsConstructor
 public class Member extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")

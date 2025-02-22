@@ -59,4 +59,6 @@ public interface CastPlaylistRepository extends JpaRepository<CastPlaylist, Long
     List<CastPlaylist> findAllByPlaylistMember(@Param("member") Member member);
 
     CastPlaylist findFirstByPlaylistOrderByCreatedAt(Playlist playlist);
+
+    Optional<CastPlaylist> findFirstByPlaylist_MemberOrderByCreatedAt(Member member);
 }

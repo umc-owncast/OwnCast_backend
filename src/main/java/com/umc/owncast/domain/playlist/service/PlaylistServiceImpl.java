@@ -2,9 +2,11 @@ package com.umc.owncast.domain.playlist.service;
 
 import com.umc.owncast.common.annotation.TrackExecutionTime;
 import com.umc.owncast.common.exception.handler.UserHandler;
+import com.umc.owncast.common.redis.service.RedisSingleDataService;
 import com.umc.owncast.common.response.status.ErrorCode;
 import com.umc.owncast.domain.cast.entity.Cast;
 import com.umc.owncast.domain.cast.repository.CastRepository;
+import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
 import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.playlist.dto.*;
@@ -23,6 +25,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,6 +46,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     private final GetAllMyPlaylist getAllMyPlaylist;
     private final GetPlaylistById getPlaylistById;
     private final GetSavedPlaylist getSavedPlaylist;
+    private final RedisSingleDataService redisSingleDataService;
 
 
     @Value("${app.image.default-path}")
@@ -79,7 +83,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         List<PlaylistResultDTO> playlistDTOList = new ArrayList<>();
 
         // 기본 캐스트 리스트 추가
-        addDefaultPlaylists(playlistDTOList);
+        addDefaultPlaylists(playlistDTOList, member);
 
         // 모든 플레이리스트 추가
         playlistDTOList.addAll(PlaylistDTOFactory.createMultiplePlaylistResultDTO(playlistRepository.findAllByMember(member)));
@@ -159,10 +163,45 @@ public class PlaylistServiceImpl implements PlaylistService {
     }*/
 
     // 기본 캐스트 리스트를 추가하는 메서드
-    private void addDefaultPlaylists(List<PlaylistResultDTO> playlistDTOList) {
-        playlistDTOList.add(PlaylistDTOFactory.createPlaylistResultDTO("내가 만든 캐스트", DEFAULT_IMAGE_PATH, null, null)); // TODO 이것도 개선 해야 됨.
-        playlistDTOList.add(PlaylistDTOFactory.createPlaylistResultDTO("담아온 캐스트", DEFAULT_IMAGE_PATH, null, null));
+
+    private void addDefaultPlaylists(List<PlaylistResultDTO> playlistDTOList, Member member) {
+        playlistDTOList.add(PlaylistDTOFactory.createPlaylistResultDTO("내가 만든 캐스트", getMyOldestCast(member), null, null)); // TODO 일단은 null로 반환
+        playlistDTOList.add(PlaylistDTOFactory.createPlaylistResultDTO("담아온 캐스트", getSavedOldestCast(member), null, null));
     }
+
+    public String getMyOldestCast(Member member) {
+
+        String imagePath = redisSingleDataService.getSingleData(member.getNickname() + "getMyOldestCast");
+
+        if(imagePath == null || imagePath.isEmpty()){ // 캐싱이 안 되어 있거나 값이 비어있는 경우
+            log.info("getMyOldestCast 캐싱: {}", member.getNickname());
+
+            Cast cast = castRepository.findFirstByMemberIdOrderByCreatedAtDesc(member.getId()).orElse(null);
+
+            imagePath = cast == null ? DEFAULT_IMAGE_PATH : cast.getImagePath();
+
+            redisSingleDataService.setSingleData(member.getNickname() + "getMyOldestCast", imagePath);
+        }
+
+        return imagePath;
+    }
+
+    public String getSavedOldestCast(Member member) {
+
+        String imagePath = redisSingleDataService.getSingleData(member.getNickname() + "getSavedOldestCast");
+
+        if(imagePath == null || imagePath.isEmpty()){ // 캐싱이 안 되어 있거나 값이 비어있는 경우
+            log.info("getSavedOldestCast 캐싱: {}", member.getNickname());
+
+            CastPlaylist castPlaylist = castPlaylistRepository.findFirstByPlaylist_MemberOrderByCreatedAt(member).orElse(null);
+            imagePath = castPlaylist == null ? DEFAULT_IMAGE_PATH : castPlaylist.getCast().getImagePath();
+
+            redisSingleDataService.setSingleData(member.getNickname() + "getSavedOldestCast", imagePath);
+        }
+
+        return imagePath;
+    }
+
 
     // 가장 오래된 캐스트의 이미지 가져오기
     private String getPlaylistImage(Playlist playlist){
@@ -172,5 +211,4 @@ public class PlaylistServiceImpl implements PlaylistService {
             return castPlaylistRepository.findFirstByPlaylistOrderByCreatedAt(playlist).getPlaylist().getImagePath();
         }
     }
-
 }

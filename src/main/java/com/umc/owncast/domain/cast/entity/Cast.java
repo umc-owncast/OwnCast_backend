@@ -24,10 +24,10 @@ import java.util.Objects;
 @Table(
         name = "cast",
         indexes = {
-                @Index(name = "idx_member_id_created_at", columnList = "member_id, created_at")
+                @Index(name = "idx_member_id_created_at", columnList = "member_id, created_at"),
+                @Index(name = "idx_created_at", columnList = "created_at")
         }
 )
-
 @AllArgsConstructor
 public class Cast extends BaseTimeEntity {
 

@@ -14,6 +14,8 @@ import com.umc.owncast.domain.playlist.repository.PlaylistRepository;
 import com.umc.owncast.domain.cast.repository.CastRepository;
 import com.umc.owncast.domain.castplaylist.repository.CastPlaylistRepository;
 import com.umc.owncast.domain.playlist.service.PlaylistService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -42,6 +45,9 @@ public class PlaylistServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private PlaylistService playlistService;
@@ -94,7 +100,22 @@ public class PlaylistServiceTest {
 
     @Test
     void search() {
-        System.out.println(playlistService.getAllMyPlaylists(member, 0));
+
+        List<Object[]> result = entityManager.createNativeQuery("EXPLAIN SELECT * FROM cast WHERE member_id = 3 ORDER BY created_at LIMIT 1")
+                .getResultList();
+
+        for (Object[] row : result) {
+            System.out.println(String.join(" | ", Arrays.toString(row)));
+        }
+
+        long startTime = System.nanoTime();
+
+//        castRepository.findFirstByMember_IdOrderByCreatedAtDesc(1000L); // 399174400 ns -> 194197700 ns
+
+        long endTime = System.nanoTime();
+        long duration = endTime - startTime;
+
+        System.out.println("Execution Time: " + duration + " ns");
     }
 }
 
