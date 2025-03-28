@@ -82,3 +82,13 @@ jwt:
 app:
   image:
     default-path: ${DEFAULT_IMAGE_PATH}
+
+prompt:
+  - "Trace the historical evolution of {keyword} from its origins to the present day. Include at least 3 key milestones or turning points in its development."
+  - "Identify and analyze the top 3 current trends related to {keyword}. For each trend, explain its cause, current impact, and potential future implications."
+  - "Forecast the future of {keyword} over the next 5-10 years. Discuss potential technological advancements, market changes, and societal shifts that could influence its trajectory."
+  - "Compare 3 positive and 3 negative impacts of {keyword} on our society. For each impact, provide a specific example and explain its broader implications."
+  - "Define and explain 5 key terms or concepts closely related to {keyword}. For each term, provide a clear definition and a brief example of its application or relevance."
+  - "Describe how public perception of {keyword} has changed over time. Identify at least 3 major shifts in opinion, explaining the catalysts for each change and its consequences."
+  - "Discuss the 3 most significant recent developments or controversies surrounding {keyword}. For each issue, explain its background, current status, and potential future implications."
+

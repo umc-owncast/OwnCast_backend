@@ -3,13 +3,14 @@ package com.umc.owncast.domain.cast.service.chatGPT;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
+import com.umc.owncast.common.config.PromptConfig;
 import com.umc.owncast.domain.enums.Formality;
-import com.umc.owncast.domain.enums.Language;
 import com.umc.owncast.domain.member.entity.Member;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 /* 사용자 입력 정보를 바탕으로 ChatGPT에 건넬 프롬프트를 생성 */
@@ -26,6 +27,11 @@ public class ChatGptPromptGenerator {
      * 2에 가까울 수록 랜덤하고 다양한 답변을 얻음 (아무말대잔치)
      **/
     private final double DEFAULT_TEMPERATURE = 0.1;
+    private final PromptConfig promptConfig;
+
+    public ChatGptPromptGenerator(PromptConfig promptConfig) {
+        this.promptConfig = promptConfig;
+    }
 
     /* 사용자의 keyword를 바탕으로 프롬프트 생성 */
     public ChatCompletionRequest generatePrompt(String keyword, Formality formality, int audioTime, Member member) {
@@ -33,7 +39,7 @@ public class ChatGptPromptGenerator {
     }
 
     public ChatCompletionRequest generatePrompt(String keyword, Formality formality, int audioTime, String modelName, Member member) {
-        List<ChatMessage> promptMessage = createPromptMessage(keyword, formality, audioTime, member);
+        List<ChatMessage> promptMessage = createRandomPromptMessage(keyword, formality, audioTime, member);
 
         ChatCompletionRequest prompt = ChatCompletionRequest.builder()
                 .model(modelName)
@@ -46,6 +52,36 @@ public class ChatGptPromptGenerator {
         return prompt;
     }
 
+    public List<ChatMessage> createRandomPromptMessage(String keyword, Formality formality, int audioTime, Member member) {
+        String language = member.getLanguage().getRealLanguage();
+        List<ChatMessage> systemPrompts;
+        List<ChatMessage> chatPrompts;
+
+        final String SYSTEM = ChatMessageRole.SYSTEM.value();
+        systemPrompts = List.of(
+                new ChatMessage(SYSTEM, "Provide informative and engaging content about the given topic."),
+                new ChatMessage(SYSTEM, "Focus on delivering accurate and up-to-date information."),
+                new ChatMessage(SYSTEM, "Use a " + formality.name().toLowerCase() + " tone in your response."),
+                new ChatMessage(SYSTEM, "Respond in " + language + ".")
+        );
+
+        Random random = new Random();
+        String selectedPrompt = promptConfig.getList().get(random.nextInt(promptConfig.getList().size()));
+
+        selectedPrompt = selectedPrompt.replace("{keyword}", keyword);
+
+        final String USER = ChatMessageRole.USER.value();
+        chatPrompts = List.of(
+                new ChatMessage(USER, "Create a " + String.format("%.1f", audioTime / 60f) + " minute informative script that " + selectedPrompt + ". Use approximately " + ChatGptPromptGenerator.calculateWords(audioTime, member) + " words.")
+        );
+
+        List<ChatMessage> result = new ArrayList<>();
+        result.addAll(systemPrompts);
+        result.addAll(chatPrompts);
+        return result;
+    }
+
+    //기존의 팟캐스트역할 부여 prompt => 사용 X
     public List<ChatMessage> createPromptMessage(String keyword, Formality formality, int audioTime, Member member) {
         // 현재 사용자의 언어 설정에 맞춘다
         String language = member.getLanguage().getRealLanguage();
@@ -55,7 +91,7 @@ public class ChatGptPromptGenerator {
         // 시스템 프롬프트
         final String SYSTEM = ChatMessageRole.SYSTEM.value();
         systemPrompts = List.of(
-                /* 예전 프롬프트
+                /* 예전 프롬프트 1
                 new ChatMessage(SYSTEM, "You are the host of the podcast."),
                 new ChatMessage(SYSTEM, "Your job is to make a podcast script about what happened recently. It is best if you say things based on real news"),
                 new ChatMessage(SYSTEM, "script should only contain what you have to say (no markdowns or background musics)"),
