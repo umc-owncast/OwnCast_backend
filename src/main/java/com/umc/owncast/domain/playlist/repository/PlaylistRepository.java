@@ -1,5 +1,6 @@
 package com.umc.owncast.domain.playlist.repository;
 
+import com.umc.owncast.domain.member.entity.Member;
 import com.umc.owncast.domain.playlist.entity.Playlist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,8 +13,12 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
     List<Playlist> findAllByMemberIdOrderByCreatedAt(@Param("memberId") Long memberId);
 
+    List<Playlist> findAllByImagePathIsNull();
+
     boolean existsByNameAndMemberId(String name, Long memberId);
 
     Optional<Playlist> findByIdAndMemberId(Long id, Long memberId);
+
+    List<Playlist> findAllByMember(@Param("Member") Member member);
 
 }

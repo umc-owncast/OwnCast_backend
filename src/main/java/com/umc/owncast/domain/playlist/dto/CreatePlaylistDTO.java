@@ -7,6 +7,6 @@ import lombok.Setter;
 @Builder
 @Setter
 @Getter
-public class AddPlaylistDTO {
+public class CreatePlaylistDTO {
     Long playlistId;
 }

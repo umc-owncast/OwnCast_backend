@@ -12,11 +12,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 @TrackExecutionTime
 public interface CastRepository extends JpaRepository<Cast, Long> {
 
     List<Cast> findCastsByMember_Id(@Param("memberId") Long memberId);
+
+    Cast findFirstByMemberIdOrderByCreatedAt (@Param("memberId") Long memberId);
 
     @Query(value = "SELECT * FROM `cast` " +
             "WHERE MATCH(title) AGAINST(:text IN BOOLEAN MODE) " +
@@ -40,4 +43,6 @@ public interface CastRepository extends JpaRepository<Cast, Long> {
                                                       @Param("member") Member member,
                                                       @Param("language") Language language,
                                                       Pageable pageable);
+
+    Optional<Cast> findFirstByMemberIdOrderByCreatedAtDesc(@Param("memberId") Long memberId);
 }

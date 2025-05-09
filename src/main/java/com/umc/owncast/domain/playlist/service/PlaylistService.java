@@ -7,19 +7,21 @@ import java.util.List;
 
 public interface PlaylistService {
 
-    AddPlaylistDTO addPlaylist(Member member, String playlistName);
+    CreatePlaylistDTO addPlaylist(Member member, String playlistName);
+
+    UpdatePlaylistDTO updatePlaylist(Member member, Long playlistId, String playlistName);
 
     DeletePlaylistDTO deletePlaylist(Member member, Long playlistId);
 
-    GetPlaylistDTO getPlaylist(Member member, Long playlistId, int page, int size);
-
-    ModifyPlaylistDTO modifyPlaylist(Member member, Long playlistId, String playlistName);
+    List<CastDTO> getPlaylist(Member member, Long playlistId, int page);
 
     List<PlaylistResultDTO> getAllPlaylists(Member member);
 
-    GetPlaylistDTO getAllSavedPlaylists(Member member);
+    List<CastDTO> getAllSavedPlaylists(Member member, int page);
 
-    GetPlaylistDTO getAllMyPlaylists(Member member);
+    List<CastDTO> getAllMyPlaylists(Member member, int page);
 
     DeleteCastFromPlaylistDTO deleteCast(Long playlistId, Long castId, Member member);
+
+    /*void updateImage();*/
 }

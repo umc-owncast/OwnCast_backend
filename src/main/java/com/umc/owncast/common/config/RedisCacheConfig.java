@@ -26,7 +26,7 @@ public class RedisCacheConfig {
 
         // 기본으로 5시간으로 설정
         RedisCacheConfiguration redisCacheConfiguration = generateCacheConfiguration()
-                .entryTtl(Duration.ofHours(5L));
+                .entryTtl(Duration.ofSeconds(10L)); // 테스트를 위해 짧게 설정
 
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(redisConnectionFactory)

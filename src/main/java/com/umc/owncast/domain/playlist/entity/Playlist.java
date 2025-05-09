@@ -4,10 +4,7 @@ import com.umc.owncast.common.entity.BaseTimeEntity;
 import com.umc.owncast.domain.castplaylist.entity.CastPlaylist;
 import com.umc.owncast.domain.member.entity.Member;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +13,12 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @Entity
-@Table(name = "playlist")
+@Table(
+        name = "playlist",
+        indexes = {
+                @Index(name = "idx_member_id", columnList = "member_id")
+        }
+)
 @AllArgsConstructor
 public class Playlist extends BaseTimeEntity {
     @Id
@@ -27,20 +29,22 @@ public class Playlist extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Setter
     @Column(name = "title", nullable = false, length = 50)
     private String name;
 
+    @Setter
     @Column
     private String imagePath;
 
     @Column(nullable = false)
     private boolean isPublic;
 
+    @Column
+    private Long castSize;
+
     @Builder.Default
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL)
     private List<CastPlaylist> castPlaylistList = new ArrayList<>();
 
-    public void setName(String name) {
-        this.name = name;
-    }
 }
